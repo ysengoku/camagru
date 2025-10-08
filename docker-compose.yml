@@ -1,0 +1,52 @@
+networks:
+  camagru_network:
+    driver: bridge
+
+services:
+  server:
+    container_name: server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    expose:
+      - "9000:9000"
+    env_file:
+      - ./.env
+    depends_on:
+      - database
+    volumes:
+      - ./server:/var/www/html
+    networks:
+      - camagru_network
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "9443:443"
+    depends_on:
+      server:
+        condition: service_started
+    networks:
+      - camagru_network
+
+  database:
+    container_name: database
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./.env
+    volumes:
+      - db_volume:/var/lib/mysql
+    expose:
+        - "3306"
+    networks:
+      - camagru_network
+
+volumes:
+  db_volume:
+    name: db_volume
