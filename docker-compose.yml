@@ -1,0 +1,51 @@
+networks:
+  camagru_network:
+    driver: bridge
+
+services:
+  app:
+    container_name: camagru_app
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    networks:
+      - camagru_network
+    expose:
+      - "9000"
+    env_file:
+      - .env
+    volumes:
+      - ./app:/var/www/html
+      - uploads_volume:/var/www/html/public/uploads
+    depends_on:
+      - database
+
+  nginx:
+    container_name: camagru_nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    networks:
+      - camagru_network
+    depends_on:
+      - app
+
+  database:
+    container_name: camagru_database
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    networks:
+      - camagru_network
+    expose:
+      - "3306"
+    env_file:
+      - .env
+    volumes:
+      - database_volume:/var/lib/mysql
+
+volumes:
+  database_volume:
+    name: database_volume
+  uploads_volume:
+    name: uploads_volume
