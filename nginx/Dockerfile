@@ -1,17 +1,20 @@
 FROM nginx:alpine AS base
 
-ARG ENV=dev
-
-COPY nginx.${ENV}.conf /etc/nginx/conf.d/default.conf
-
-
 FROM base AS development
 
+COPY nginx.dev.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g" ,"daemon off;"]
 
 FROM base AS production
 
-COPY ssl/server.crt /etc/ssl/certs/
-COPY ssl/server.key /etc/ssl/private/
+COPY nginx.prod.conf /etc/nginx/nginx.conf
+
+RUN apk add --no-cache openssl && \
+    mkdir -p /etc/nginx/ssl && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/camagru.key \
+    -out /etc/nginx/ssl/camagru.crt \
+    -subj "/C=FR/ST=AURA/L=Lyon/O=42/OU=42/CN=localhost/UID=yusengok" \
+    && chmod 600 /etc/nginx/ssl/camagru.key /etc/nginx/ssl/camagru.crt
 
 CMD ["nginx", "-g" ,"daemon off;"]
