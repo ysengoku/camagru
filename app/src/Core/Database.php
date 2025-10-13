@@ -1,33 +1,68 @@
 <?php
 
 class Database {
+    private static $instance = null;
+    private $conn;
+
     private $host;
     private $name;
     private $port;
     private $user;
     private $password;
 
-    private $conn;
-
-    public function __construct() {
-        $this->host = getenv('DB_HOST');
-        $this->name = getenv('DB_NAME');
-        $this->port = getenv('DB_PORT');
-        $this->user = getenv('MYSQL_USER');
-        $this->password = getenv('MYSQL_PASSWORD');
-
-        $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->name . ";port=" . $this->port;
+    private function __construct() {
+        $dsn = sprintf(
+            "mysql:host=%s;dbname=%s;port=%s",
+            getenv('DB_HOST'),
+            getenv('DB_NAME'),
+            getenv('DB_PORT')
+        );
         $options = [
             PDO::ATTR_PERSISTENT => true,
-            PDO::ERRMODE => PDO::ERRMODE_EXCEPTION
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
 
         try {
-            $this->conn = new PDO($dsn, $this->user, $this->password, $options);
+            $this->conn = new PDO($dsn, getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), $options);
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
+            exit(1);
         }
     }
-}
 
-?>
+    public static function getInstance(): Database {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
+
+    public function getConnection(): PDO {
+        return $this->conn;
+    }
+
+    public function query(string $sql, array $params = []): PDOStatement {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    public function fetch(string $sql, array $params = []): ?array {
+        $res = $this->query($sql, $params)->fetch(PDO::FETCH_ASSOC);
+        return $res ?: null;
+    }
+
+    public function fetchAll(string $sql, array $params = []): array {
+        return $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function execute(string $sql, array $params = []): bool {
+        return this->query($sql, $params) !== false;
+    }
+
+    public function close(): void {
+        $this->conn = null;
+        self::$instance = null;
+    }
+}
