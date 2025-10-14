@@ -17,3 +17,7 @@ services:
         ENV: prod
     ports:
       - "8443:443"
+
+  database:
+    build:
+      target: production

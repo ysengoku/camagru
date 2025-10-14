@@ -4,23 +4,17 @@ class Database {
     private static $instance = null;
     private $conn;
 
-    private $host;
-    private $name;
-    private $port;
-    private $user;
-    private $password;
-
     private function __construct() {
         $dsn = sprintf(
             "mysql:host=%s;dbname=%s;port=%s",
             getenv('DB_HOST'),
-            getenv('DB_NAME'),
+            getenv('MYSQL_DATABASE'),
             getenv('DB_PORT')
         );
         $options = [
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
 
         try {

@@ -3,6 +3,7 @@ FROM php:8.4-fpm AS base
 WORKDIR /var/www/html
 
 RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update && apt-get install -y default-mysql-client
 
 COPY . .
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh

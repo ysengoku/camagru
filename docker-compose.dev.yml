@@ -10,10 +10,13 @@ services:
       - ./app:/var/www/html
 
   nginx:
-    container_name: camagru_nginx
     build:
       target: development
       args:
         ENV: dev
     ports:
       - "8080:80"
+
+  database:
+    build:
+      target: base
