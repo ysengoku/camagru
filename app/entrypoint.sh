@@ -10,6 +10,7 @@ until mysqladmin ping -h"$DB_HOST" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --ssl=0 -
   sleep 2
 done
 
-php init.php
+echo "Running database migrations..."
+php migrate.php
 
 exec "$@"

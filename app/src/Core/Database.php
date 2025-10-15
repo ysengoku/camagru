@@ -20,7 +20,7 @@ class Database {
         try {
             $this->conn = new PDO($dsn, getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), $options);
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
+            error_log("Connection failed: " . $e->getMessage());
             exit(1);
         }
     }
@@ -52,7 +52,7 @@ class Database {
     }
 
     public function execute(string $sql, array $params = []): bool {
-        return this->query($sql, $params) !== false;
+        return $this->query($sql, $params) !== false;
     }
 
     public function close(): void {
