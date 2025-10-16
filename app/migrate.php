@@ -3,7 +3,7 @@
 require_once __DIR__.'/src/Core/Database.php';
 
 $db = Database::getInstance();
-$pdo = $db->getConnection();
+$dbh = $db->getConnection();
 
 $models = [];
 foreach (glob(__DIR__.'/src/Models/*.php') as $modelFile) {
@@ -18,7 +18,7 @@ foreach ($models as $modelClass) {
 
     $sql = $model->createMigrationSql();
     try {
-        $db->execute($sql);
+        $dbh->exec($sql);
     } catch (PDOException $e) {
         error_log("Migration of '$modelClass' failed: $e->getMessage()");
         exit (1);
@@ -32,9 +32,9 @@ foreach ($models as $modelClass) {
 
 foreach ($foreignKeyStatements as $sql) {
     try {
-        $db->execute($sql);
+        $dbh->exec($sql);
     } catch (PDOException $e) {
-        error_log("FK creation failed: $e->getMessage()");
+        error_log("Foreign Keys creation failed: $e->getMessage()");
         exit (1);
     }
 }
