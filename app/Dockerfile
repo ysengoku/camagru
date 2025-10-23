@@ -1,22 +1,22 @@
-FROM php:8.4-fpm AS base
+FROM node:24 AS base
 
-WORKDIR /var/www/html
+WORKDIR /usr/src/app
 
-RUN docker-php-ext-install pdo pdo_mysql
-RUN apt-get update && apt-get install -y default-mysql-client
+COPY package*.json ./
+RUN npm install
 
 COPY . .
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 FROM base AS development
 
-ENTRYPOINT [ "entrypoint.sh" ]
-CMD [ "php-fpm" ]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD [ "npm", "run", "dev" ]
 
 FROM base AS production
 
-RUN rm -rf /var/www/html/tests /var/www/html/.git
+RUN npm ci --only=production
+RUN npm run build
 
-ENTRYPOINT [ "entrypoint.sh" ]
-CMD [ "php-fpm" ]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD [ "npm", "run", "start" ]

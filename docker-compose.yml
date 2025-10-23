@@ -14,9 +14,6 @@ services:
       - "9000"
     env_file:
       - .env
-    volumes:
-      - ./app:/var/www/html
-      - uploads_volume:/var/www/html/public/uploads
     depends_on:
       - database
 
