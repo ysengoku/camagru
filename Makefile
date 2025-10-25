@@ -23,6 +23,6 @@ dev:
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up --build
 
 lint:
-	php -l server/app/**/*.php server/public/index.php
+	docker exec app npm run lint
 
 .PHONY: all dev up down clean fclean lint
