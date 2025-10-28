@@ -9,15 +9,22 @@ COPY . .
 COPY ./entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+
 FROM base AS development
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "npm", "run", "dev" ]
 
+
+FROM base AS build
+
+RUN npm run build
+
+
 FROM base AS production
 
 RUN npm ci --only=production
-RUN npm run build
+COPY --from=build /usr/src/app/dist ./dist
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "npm", "run", "start" ]
