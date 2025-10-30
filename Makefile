@@ -7,8 +7,11 @@ ENV = development
 all: ENV=production
 all: up
 
-up: 
-	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) up --build
+build: 
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) build --no-cache
+
+up: build
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) up
 
 down: 
 	docker compose -f $(COMPOSE_FILE) down
@@ -19,8 +22,11 @@ clean: down
 fclean: clean
 	@docker volume rm $$(docker volume ls -q)
 
-dev: 
-	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up --build
+build-dev:
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development build --no-cache
+
+dev: build-dev
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up
 
 lint:
 	docker exec app npm run lint

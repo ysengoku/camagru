@@ -9,6 +9,7 @@ services:
     volumes:
       - ./app:/usr/src/app
       - uploads_volume:/usr/src/app/public/uploads
+      - /usr/src/app/node_modules
 
   nginx:
     build:

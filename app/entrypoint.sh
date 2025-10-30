@@ -6,27 +6,26 @@ chown -R node:node /usr/src/app/public/uploads
 chmod 755 /usr/src/app/public/uploads
 
 node <<'EOF'
-const mysql = require('mysql2/promise');
-const { DB_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } = process.env;
+const net = require('net');
+const { MYSQL_DATABASE, DB_PORT } = process.env;
 
-(async function waitForDb() {
-  while (1) {
-    try {
-      const conn = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE,
+function waitForDb() {
+  return new Promise((resolve) => {
+    const tryConnect = () => {
+      const socket = net.createConnection({ host: MYSQL_DATABASE, port: DB_PORT }, () => {
+        socket.destroy();
+        resolve();
       });
-      await conn.end();
-      console.log('Database is ready');
-      break;
-    } catch {
-      console.log('Waiting for Database...');
-      await new Promise(r => setTimeout(r, 2000));
-    }
-  }
-})();
+      socket.on('error', () => {
+        console.log('Waiting for database...');
+        setTimeout(tryConnect, 2000);
+      });
+    };
+    tryConnect();
+  });
+};
+
+waitForDb();
 EOF
 
 exec "$@"
