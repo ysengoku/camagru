@@ -2,6 +2,10 @@ COMPOSE_FILE = ./docker-compose.yml
 COMPOSE_FILE_DEV = ./docker-compose.dev.yml
 COMPOSE_FILE_PROD = ./docker-compose.prod.yml
 
+APP_CONTAINER = camagru_app
+NGINX_CONTAINER = camagru_nginx
+DB_CONTAINER = camagru_database
+
 ENV = development
 
 all: ENV=production
@@ -29,6 +33,9 @@ dev: build-dev
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up
 
 lint:
-	docker exec app npm run lint
+	docker exec $(APP_CONTAINER) npm run lint
+
+test-app:
+	docker exec $(APP_CONTAINER) npm run test
 
 .PHONY: all dev up down clean fclean lint
