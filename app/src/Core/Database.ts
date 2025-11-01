@@ -2,12 +2,13 @@ import mysql from 'mysql2/promise';
 
 export class Database {
   private static instance: Database | null = null;
+  private pool: mysql.Pool | null = null;
+
   private host: string;
   private port: number;
   private databaseUser: string;
   private databasePassword: string;
   private databaseName: string;
-  private pool: mysql.Pool | null = null;
 
   private constructor() {
     this.host = process.env.DB_HOST || 'camagru_database';
@@ -40,12 +41,14 @@ export class Database {
     });
   }
 
-  public async execute<T = any>(sql: string, params: any[] = []): Promise<T> {
+  public async execute<T extends mysql.QueryResult = mysql.ResultSetHeader>(
+    sql: string,
+    params: any[] = []
+  ): Promise<[T, mysql.FieldPacket[]]> {
     if (!this.pool) {
       throw new Error('Database not connected');
     }
-    const [rows] = await this.pool.execute(sql, params);
-    return rows as T;
+    return this.pool.execute<T>(sql, params);
   }
 
   public async transaction<T>(fn: (conn: mysql.PoolConnection) => Promise<T>): Promise<T> {
