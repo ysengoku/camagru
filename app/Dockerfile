@@ -19,12 +19,13 @@ CMD [ "npm", "run", "dev" ]
 FROM base AS build
 
 RUN npm run build
-
+RUN npm run build:css
 
 FROM base AS production
 
 RUN npm ci --only=production
 COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/public/assets/css/output.css ./public/assets/css/output.css
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "npm", "run", "start" ]
