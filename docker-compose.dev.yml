@@ -18,6 +18,8 @@ services:
         ENV: dev
     ports:
       - "8080:80"
+    volumes:
+      - ./app/public:/usr/src/app/public:ro
 
   database:
     build:

@@ -7,7 +7,7 @@ CMD ["nginx", "-g" ,"daemon off;"]
 
 FROM base AS production
 
-COPY nginx.prod.conf /etc/nginx/nginx.conf
+COPY nginx.prod.conf /etc/nginx/conf.d/default.conf
 
 RUN apk add --no-cache openssl && \
     mkdir -p /etc/nginx/ssl && \

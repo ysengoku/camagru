@@ -25,7 +25,7 @@ FROM base AS production
 
 RUN npm ci --only=production
 COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/public/assets/css/output.css ./public/assets/css/output.css
+COPY --from=build /usr/src/app/public/assets ./public/assets
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "npm", "run", "start" ]

@@ -11,7 +11,16 @@ ENV = development
 all: ENV=production
 all: up
 
-build: 
+ensure-env:
+	@if [ ! -f .env ]; then \
+		echo ".env file not found, copying from .env.example"; \
+		cp .env.example .env; \
+	fi
+
+init-ip:
+	bash init-ip.sh
+
+build: ensure-env init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) build --no-cache
 
 up: build
@@ -26,7 +35,7 @@ clean: down
 fclean: clean
 	@docker volume rm $$(docker volume ls -q)
 
-build-dev:
+build-dev: ensure-env init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development build --no-cache
 
 dev: build-dev
