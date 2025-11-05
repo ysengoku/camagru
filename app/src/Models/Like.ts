@@ -1,6 +1,6 @@
-import { Model } from '../Core/Model';
+import { Model } from '../core/Model';
 
-class Like extends Model {
+export class LikeModel extends Model {
   public id: number = 0;
   public post_id: number = 0;
   public author_id: number = 0;

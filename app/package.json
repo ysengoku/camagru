@@ -1,6 +1,7 @@
 {
   "name": "camagru-app",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev:ts": "CHOKIDAR_USEPOLLING=true tsx watch src/app.ts",
     "dev:css": "tailwindcss -i ./src/styles/main.css -o ./public/assets/css/output.css --watch",

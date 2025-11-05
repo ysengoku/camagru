@@ -11,7 +11,7 @@ export abstract class Model {
 
   async create(data: Record<string, any>): Promise<number> {
     const sql = `INSERT INTO ${this.tableName} SET ?`;
-    const [result] = await this.db.execute<ResultSetHeader>(sql, [data]);
+    const [result] = await this.db.query<ResultSetHeader>(sql, [data]);
     return result.insertId;
   }
 

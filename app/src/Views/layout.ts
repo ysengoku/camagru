@@ -30,8 +30,6 @@ export const layout = (
 		navbarHtml += '\n' + navbarItemsHtml.edit + '\n' + navbarItemsHtml.settings;
 	}
 
-  console.log('CONFIG ----- ', config);
-
   return `
   <!DOCTYPE html>
   <html>

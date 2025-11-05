@@ -1,8 +1,10 @@
 import { UserModel } from './User'
-import { IPost, PostModel } from './Post';
+import { PostModel } from './Post';
+
+import type { IPost } from './Post';
 
 export {
   UserModel,
-  IPost,
   PostModel,
+  IPost,
 }

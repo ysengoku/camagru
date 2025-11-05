@@ -41,6 +41,16 @@ export class Database {
     });
   }
 
+  public async query<T extends mysql.QueryResult = mysql.ResultSetHeader>(
+    sql: string,
+    params: any[] = []
+  ):  Promise<[T, mysql.FieldPacket[]]> {
+    if (!this.pool) {
+      throw new Error('Database not connected');
+    }
+    return this.pool.query<T>(sql, params);
+  }
+
   public async execute<T extends mysql.QueryResult = mysql.ResultSetHeader>(
     sql: string,
     params: any[] = []
