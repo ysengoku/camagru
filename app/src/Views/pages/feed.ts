@@ -1,6 +1,6 @@
 import { VIEW_CONFIG, layout } from '../index';
 import { IPost } from '../../Models/index';
-import { postComponent } from '../index';
+import { postComponent, signupFormComponent } from '../index';
 
 const mockPost: IPost = {
   id: 1,
@@ -14,7 +14,7 @@ const mockPost: IPost = {
 
 export const feedView = (items: IPost[], isLoggedIn: boolean) => {
   // Demo data
-  const posts = Array(6).fill(mockPost);
+  const posts = Array(9).fill(mockPost);
   const postsHtml = posts.map(post => postComponent(post)).join('');
 
   const body = `
@@ -26,5 +26,10 @@ export const feedView = (items: IPost[], isLoggedIn: boolean) => {
     </div>
   `;
 
-  return layout(body, VIEW_CONFIG.feed, isLoggedIn);
+  let modals = '';
+  if (!isLoggedIn) {
+    modals += '\n' + signupFormComponent;
+  }
+
+  return layout(body, modals, VIEW_CONFIG.feed, isLoggedIn);
 };

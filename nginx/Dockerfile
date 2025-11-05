@@ -7,7 +7,7 @@ CMD ["nginx", "-g" ,"daemon off;"]
 
 FROM base AS production
 
-COPY nginx.prod.conf /etc/nginx/conf.d/default.conf
+COPY nginx.prod.conf /etc/nginx/conf.d/default.conf.template
 
 RUN apk add --no-cache openssl && \
     mkdir -p /etc/nginx/ssl && \
@@ -17,4 +17,5 @@ RUN apk add --no-cache openssl && \
     -subj "/C=FR/ST=AURA/L=Lyon/O=42/OU=42/CN=localhost/UID=yusengok" \
     && chmod 600 /etc/nginx/ssl/camagru.key /etc/nginx/ssl/camagru.crt
 
-CMD ["nginx", "-g" ,"daemon off;"]
+CMD envsubst '$HOST_IP' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf \
+    && nginx -g 'daemon off;'

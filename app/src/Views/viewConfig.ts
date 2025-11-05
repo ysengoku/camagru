@@ -1,6 +1,6 @@
 export interface ViewConfig {
   title: string,
-  scriptPath: string,
+  scriptPath: string | null,
 }
 
 export const VIEW_CONFIG = {
@@ -18,6 +18,6 @@ export const VIEW_CONFIG = {
   },
 	notFound: {
 		title: 'Page Not Found | Camagru',
-    scriptPath: '',
+    scriptPath: null,
 	}
 }

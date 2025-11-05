@@ -24,6 +24,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - camagru_network
+    env_file:
+      - .env
     depends_on:
       - app
 

@@ -1,4 +1,3 @@
-import { Post } from '../Models/Post';
 import { feedView } from "../Views";
 import { IncomingMessage, ServerResponse } from "node:http";
 

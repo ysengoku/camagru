@@ -2,7 +2,7 @@
   "name": "camagru-app",
   "version": "1.0.0",
   "scripts": {
-    "dev:ts": "CHOKIDAR_USEPOLLING=true tsx watch src/index.ts",
+    "dev:ts": "CHOKIDAR_USEPOLLING=true tsx watch src/app.ts",
     "dev:css": "tailwindcss -i ./src/styles/main.css -o ./public/assets/css/output.css --watch",
     "dev": "concurrently \"npm run dev:css\" \"npm run dev:ts\"",
     "build": "tsc",
@@ -12,9 +12,11 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "mysql2": "^3.15.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^24.9.1",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
