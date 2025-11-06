@@ -9,4 +9,4 @@ export const pageNotFoundView = (isLoggedIn: boolean) => {
   `;
 
   return layout(body, '', VIEW_CONFIG.notFound, isLoggedIn);
-}
+};

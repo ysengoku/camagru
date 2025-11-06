@@ -15,7 +15,7 @@ const mockPost: IPost = {
 export const feedView = (items: IPost[], isLoggedIn: boolean) => {
   // Demo data
   const posts = Array(9).fill(mockPost);
-  const postsHtml = posts.map(post => postComponent(post)).join('');
+  const postsHtml = posts.map((post) => postComponent(post)).join('');
 
   const body = `
     <div class="md:ml-24 p-8">

@@ -1,5 +1,5 @@
-import { pageNotFoundView } from "../index";
-import { ServerResponse } from "node:http";
+import { pageNotFoundView } from '../index';
+import { ServerResponse } from 'node:http';
 
 export function pageNotFoundController(res: ServerResponse) {
   // Check auth status

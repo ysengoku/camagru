@@ -1,5 +1,5 @@
-import { signupService } from "./signupService";
+import { signupService } from './signupService';
 
 export {
   signupService,
-}
+};

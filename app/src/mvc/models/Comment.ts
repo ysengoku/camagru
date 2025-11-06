@@ -10,5 +10,4 @@ export class CommentModel extends Model {
   public constructor() {
     super('comments');
   }
-
 }

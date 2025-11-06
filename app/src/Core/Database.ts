@@ -43,8 +43,8 @@ export class Database {
 
   public async query<T extends mysql.QueryResult = mysql.ResultSetHeader>(
     sql: string,
-    params: any[] = []
-  ):  Promise<[T, mysql.FieldPacket[]]> {
+    params: any[] = [],
+  ): Promise<[T, mysql.FieldPacket[]]> {
     if (!this.pool) {
       throw new Error('Database not connected');
     }
@@ -53,7 +53,7 @@ export class Database {
 
   public async execute<T extends mysql.QueryResult = mysql.ResultSetHeader>(
     sql: string,
-    params: any[] = []
+    params: any[] = [],
   ): Promise<[T, mysql.FieldPacket[]]> {
     if (!this.pool) {
       throw new Error('Database not connected');
@@ -61,7 +61,9 @@ export class Database {
     return this.pool.execute<T>(sql, params);
   }
 
-  public async transaction<T>(fn: (conn: mysql.PoolConnection) => Promise<T>): Promise<T> {
+  public async transaction<T>(
+    fn: (conn: mysql.PoolConnection) => Promise<T>,
+  ): Promise<T> {
     if (!this.pool) {
       throw new Error('Database not connected');
     }
@@ -77,7 +79,7 @@ export class Database {
       } catch (rollbackError) {
         console.error('Rollback failed:', rollbackError);
       }
-      throw error; 
+      throw error;
     } finally {
       conn.release();
     }

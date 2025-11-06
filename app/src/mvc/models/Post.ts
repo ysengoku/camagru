@@ -4,9 +4,9 @@ export interface IPost {
   id: number;
   authorName: string;
   image: string;
-  caption?: string,
+  caption?: string;
   likes?: number;
-  likedByUser: boolean,
+  likedByUser: boolean;
   comments?: number;
 }
 

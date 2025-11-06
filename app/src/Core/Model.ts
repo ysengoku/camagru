@@ -20,9 +20,9 @@ export abstract class Model {
     const [result] = await this.db.execute<ResultSetHeader>(sql, [data, id]);
     return result.affectedRows > 0;
   }
-  
+
   async delete(id: number): Promise<boolean> {
-    const sql = `DELETE FROM ${this.tableName} WHERE id = ?`
+    const sql = `DELETE FROM ${this.tableName} WHERE id = ?`;
     const [result] = await this.db.execute<ResultSetHeader>(sql, [id]);
     return result.affectedRows > 0;
   }
@@ -36,9 +36,15 @@ export abstract class Model {
     return rows[0];
   }
 
-  async fetchRange(limit: number, offset: number = 0) : Promise<Record<string, any>[]> {
+  async fetchRange(
+    limit: number,
+    offset: number = 0,
+  ) : Promise<Record<string, any>[]> {
     const sql = `SELECT * FROM ${this.tableName} LIMIT ? OFFSET ?`;
-    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [limit, offset]);
+    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [
+      limit,
+      offset,
+    ]);
     return rows;
   }
 }

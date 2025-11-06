@@ -1,6 +1,6 @@
 export interface ViewConfig {
-  title: string,
-  scriptPath: string | null,
+  title: string;
+  scriptPath: string | null;
 }
 
 export const VIEW_CONFIG = {
@@ -10,14 +10,14 @@ export const VIEW_CONFIG = {
   },
   edit: {
     title: 'Edit | Camagru',
-    scriptPath: '/assets/js/edit.js'
+    scriptPath: '/assets/js/edit.js',
   },
   settings: {
     title: 'Settings | Camagru',
-    scriptPath: '/assets/js/settings.js'
+    scriptPath: '/assets/js/settings.js',
   },
-	notFound: {
-		title: 'Page Not Found | Camagru',
+  notFound: {
+    title: 'Page Not Found | Camagru',
     scriptPath: null,
-	}
-}
+  },
+};

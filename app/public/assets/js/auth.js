@@ -1,4 +1,4 @@
-import { ENDPOINTS } from "./api.js";
+import { ENDPOINTS } from './api.js';
 
 const signupButton = document.getElementById('signup-button');
 const signupDialog = document.getElementById('signup-modal');

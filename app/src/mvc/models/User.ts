@@ -1,9 +1,6 @@
 import { Model } from '../../core/Model';
 import { RowDataPacket } from 'mysql2/promise';
 
-export interface IUser {
-}
-
 export class UserModel extends Model {
   public id: number = 0;
   public username: string = '';
@@ -13,9 +10,9 @@ export class UserModel extends Model {
   public verification_token: string = '';
   public created_at: Date | null = null;
 
-	public constructor() {
-		super('users');
-	}
+  public constructor() {
+    super('users');
+  }
 
   public async createUser(): Promise<this> {
     const insertId = await super.create({
@@ -29,14 +26,18 @@ export class UserModel extends Model {
     return this;
   }
 
-  public async findByKey(key: string, value: string): Promise<UserModel | null> {
+  public async findByKey(
+    key: string,
+    value: string,
+  ): Promise<UserModel | null> {
     const allowedKeys = ['username', 'email'];
     if (!allowedKeys.includes(key)) {
       throw new Error('Invalid search key');
     }
     const sql = `SELECT * FROM ${this.tableName} WHERE ${key} = ? LIMIT 1`;
-    console.log('SQL: ', sql, value);
-    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [value]);
+    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [
+      value,
+    ]);
     if (rows.length === 0) {
       return null;
     }

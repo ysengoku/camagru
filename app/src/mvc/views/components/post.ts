@@ -1,7 +1,9 @@
 import { IPost } from '../../index';
 
 export const postComponent = (post: IPost): string => {
-  const heartIconSrc = post.likedByUser ? '/assets/icons/heart-fill.svg' : '/assets/icons/heart.svg';
+  const heartIconSrc = post.likedByUser
+    ? '/assets/icons/heart-fill.svg'
+    : '/assets/icons/heart.svg';
 
   return `
     <article class="rounded-lg shadow-md overflow-hidden">
@@ -23,4 +25,4 @@ export const postComponent = (post: IPost): string => {
       </div>
     </article>
 `;
-}
+};

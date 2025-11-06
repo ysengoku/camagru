@@ -1,34 +1,34 @@
-import { ViewConfig } from "../index";
+import { ViewConfig } from '../index';
 
 const navbarItemsHtml = {
-		feed: `<a href="/" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
-      <img src="/assets/icons/home.svg" alt="Feed" class="w-8 h-8" />
-      <p class="text-sm">Feed</p>
-      </a>`,
-		edit: `<a href="/edit" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
-      <img src="/assets/icons/camera.svg" alt="Edit" class="w-8 h-8" />
-      <p class="text-sm">Edit</p>
-      </a>`,
-		settings: `<a href="/settings" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
-      <img src="/assets/icons/settings.svg" class="w-8 h-8" />
-      <p class="text-sm">Settings</p>
-      </a>`,
-	}
+  feed: `<a href="/" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
+    <img src="/assets/icons/home.svg" alt="Feed" class="w-8 h-8" />
+    <p class="text-sm">Feed</p>
+    </a>`,
+  edit: `<a href="/edit" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
+    <img src="/assets/icons/camera.svg" alt="Edit" class="w-8 h-8" />
+    <p class="text-sm">Edit</p>
+    </a>`,
+  settings: `<a href="/settings" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">
+    <img src="/assets/icons/settings.svg" class="w-8 h-8" />
+    <p class="text-sm">Settings</p>
+    </a>`,
+};
 
 export const layout = (
   content: string,
   modals: string = '',
   config: ViewConfig,
-  isLoggedin: boolean = false
+  isLoggedin: boolean = false,
 ): string => {
-  const headerButtonsHtml = isLoggedin ?
-   `<button id="logout-button" class="pe-4">Logout</button>` :
-   `<button id="login-button" class="pe-4">Login</button>\n<button id="signup-button" class="pe-4">Sign up</button>`;
+  const headerButtonsHtml = isLoggedin
+    ? '<button id="logout-button" class="pe-4">Logout</button>'
+    : '<button id="login-button" class="pe-4">Login</button>\n<button id="signup-button" class="pe-4">Sign up</button>';
 
-	let navbarHtml = navbarItemsHtml.feed;
-	if (isLoggedin) {
-		navbarHtml += '\n' + navbarItemsHtml.edit + '\n' + navbarItemsHtml.settings;
-	}
+  let navbarHtml = navbarItemsHtml.feed;
+  if (isLoggedin) {
+    navbarHtml += '\n' + navbarItemsHtml.edit + '\n' + navbarItemsHtml.settings;
+  }
 
   return `
   <!DOCTYPE html>

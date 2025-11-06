@@ -1,5 +1,6 @@
 // models
-import { UserModel } from './models/User'
+import { UserModel } from './models/User';
+import { SessionModel } from './models/Session';
 import { PostModel } from './models/Post';
 
 import type { IPost } from './models/Post';
@@ -16,26 +17,27 @@ import type { ViewConfig } from './views/viewConfig';
 
 // controllers
 import { feedController } from './controllers/feedController';
-import { editController } from './controllers/EditController';
-import { settingsController } from './controllers/SettingsController';
+import { editController } from './controllers/editController';
+import { settingsController } from './controllers/settingsController';
 import { pageNotFoundController } from './controllers/pageNotFoundController';
 
 export {
   // models
   UserModel,
+  SessionModel,
   PostModel,
   IPost,
   // views
   VIEW_CONFIG,
-	layout,
-	feedView,
-	pageNotFoundView,
-	signupFormComponent,
-	postComponent,
-	ViewConfig,
+  layout,
+  feedView,
+  pageNotFoundView,
+  signupFormComponent,
+  postComponent,
+  ViewConfig,
   // controllers
   feedController,
   editController,
   settingsController,
   pageNotFoundController,
-}
+};

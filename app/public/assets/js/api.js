@@ -5,4 +5,4 @@ export const ENDPOINTS = {
 
 }
 
-export const HEADER = '{ "Content-Type": "application/json" }';
+export const HEADER = '{ \'Content-Type\': \'application/json\' }';

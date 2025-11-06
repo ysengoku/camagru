@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.ts",
-    "./src/**/**/*.ts",
+    './src/**/*.ts',
+    './src/**/**/*.ts',
   ],
   safelist: [
     'flex', 'flex-row', 'flex-col', 'min-h-screen', 'bg-cyan-900',
@@ -13,5 +13,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-}
-
+};
