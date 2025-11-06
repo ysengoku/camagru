@@ -1,4 +1,4 @@
-import { Model } from '../core/Model';
+import { Model } from '../../core/Model';
 import { RowDataPacket } from 'mysql2/promise';
 
 export interface IUser {

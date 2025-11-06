@@ -1,6 +1,6 @@
-import { VIEW_CONFIG, layout } from '../index';
-import { IPost } from '../../Models/index';
-import { postComponent, signupFormComponent } from '../index';
+import { VIEW_CONFIG, layout } from '../../index';
+import { IPost } from '../../index';
+import { postComponent, signupFormComponent } from '../../index';
 
 const mockPost: IPost = {
   id: 1,

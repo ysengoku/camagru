@@ -1,4 +1,4 @@
-import { feedView } from "../Views";
+import { feedView } from "../index";
 import { IncomingMessage, ServerResponse } from "node:http";
 
 export function feedController(req: IncomingMessage, res: ServerResponse) {

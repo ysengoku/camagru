@@ -1,4 +1,4 @@
-import { ViewConfig } from "./index";
+import { ViewConfig } from "../index";
 
 const navbarItemsHtml = {
 		feed: `<a href="/" class="flex-1 md:flex-none md:py-6 py-1 w-full flex flex-col items-center">

@@ -1,5 +1,5 @@
 import { Database } from './core/Database';
-import { feedController, editController, settingsController, pageNotFoundController } from './Controllers';
+import { feedController, editController, settingsController, pageNotFoundController } from './mvc';
 import { apiRouter } from './api/apiRouter';
 import http from 'http';
 

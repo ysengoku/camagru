@@ -1,9 +1,9 @@
-import { UserModel } from '../Models'
+import { UserModel } from '../mvc';
 import bcrypt from 'bcrypt';
 
 export async function signupService(
   data: { username: string, email: string, password: string, password_repeat: string }
-): Promise<{ success: boolean, message?: string | null}> {
+): Promise<{ success: boolean, message?: string | null }> {
   const { username, email, password, password_repeat } = data;
   if (!username || !email || !password || !password_repeat) {
     return { success: false, message: 'Missing required fields' };

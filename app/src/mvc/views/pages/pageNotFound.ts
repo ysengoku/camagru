@@ -1,4 +1,4 @@
-import { VIEW_CONFIG, layout } from '../index';
+import { VIEW_CONFIG, layout } from '../../index';
 
 export const pageNotFoundView = (isLoggedIn: boolean) => {
   const body = `

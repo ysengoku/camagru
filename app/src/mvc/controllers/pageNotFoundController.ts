@@ -1,4 +1,4 @@
-import { pageNotFoundView } from "../Views";
+import { pageNotFoundView } from "../index";
 import { ServerResponse } from "node:http";
 
 export function pageNotFoundController(res: ServerResponse) {

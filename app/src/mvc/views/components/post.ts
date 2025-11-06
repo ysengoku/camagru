@@ -1,4 +1,4 @@
-import { IPost } from '../../Models/index';
+import { IPost } from '../../index';
 
 export const postComponent = (post: IPost): string => {
   const heartIconSrc = post.likedByUser ? '/assets/icons/heart-fill.svg' : '/assets/icons/heart.svg';

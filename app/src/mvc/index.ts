@@ -1,0 +1,41 @@
+// models
+import { UserModel } from './models/User'
+import { PostModel } from './models/Post';
+
+import type { IPost } from './models/Post';
+
+// views
+import { VIEW_CONFIG } from './views/viewConfig';
+import { layout } from './views/layout';
+import { feedView } from './views/pages/feed';
+import { pageNotFoundView } from './views/pages/pageNotFound';
+import { signupFormComponent } from './views/components/signup';
+import { postComponent } from './views/components/post';
+
+import type { ViewConfig } from './views/viewConfig';
+
+// controllers
+import { feedController } from './controllers/feedController';
+import { editController } from './controllers/EditController';
+import { settingsController } from './controllers/SettingsController';
+import { pageNotFoundController } from './controllers/pageNotFoundController';
+
+export {
+  // models
+  UserModel,
+  PostModel,
+  IPost,
+  // views
+  VIEW_CONFIG,
+	layout,
+	feedView,
+	pageNotFoundView,
+	signupFormComponent,
+	postComponent,
+	ViewConfig,
+  // controllers
+  feedController,
+  editController,
+  settingsController,
+  pageNotFoundController,
+}
