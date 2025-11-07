@@ -1,9 +1,9 @@
 import { feedView } from '../index';
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-export function feedController(req: IncomingMessage, res: ServerResponse) {
+export function feedController(req: IncomingMessage, res: ServerResponse, userId: number) {
   // Check auth status
-  const isLoggedIn = false;
+  const isLoggedIn = userId > 0;
 
   // Fetch items
   // const items = Post.fetchRange();

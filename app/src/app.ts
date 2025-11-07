@@ -1,4 +1,5 @@
 import { Database } from './core/Database';
+import { authMiddleware } from './middleware/authMiddleware';
 import { feedController, editController, settingsController, pageNotFoundController } from './mvc';
 import { apiRouter } from './api/apiRouter';
 import http from 'http';
@@ -12,15 +13,21 @@ try {
   process.exit(1);
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
+
+  const auth = await authMiddleware(req, res, url.pathname);
+  if (!auth.success) {
+    return;
+  }
+  const userId = auth.session?.user_id || -1;
 
   if (url.pathname.startsWith('/api')) {
     apiRouter(req, res);
     return;
   }
 
-  const routeMap: Record<string, (req: http.IncomingMessage, res: http.ServerResponse) => void> = {
+  const routeMap: Record<string, (req: http.IncomingMessage, res: http.ServerResponse, userId: number) => void> = {
     '/': feedController,
     '/edit': editController,
     '/settings': settingsController,
@@ -28,7 +35,7 @@ const server = http.createServer((req, res) => {
 
   const handler = routeMap[url.pathname];
   if (handler) {
-    handler(req, res);
+    handler(req, res, userId);
     return;
   }
   pageNotFoundController(res);
