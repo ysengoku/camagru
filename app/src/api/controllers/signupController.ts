@@ -20,7 +20,6 @@ export function signupController(req: IncomingMessage, res: ServerResponse) {
     let result;
     try {
       const data = JSON.parse(requestBody);
-      console.log(data);
       result = await signupService(data);
     } catch (error) {
       result = { success: false, message: 'Invalid data' };

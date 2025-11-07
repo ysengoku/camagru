@@ -18,15 +18,15 @@ async function requestSignUp(event) {
   const username = document.getElementById('signup-form-username')?.value;
   const email = document.getElementById('signup-form-email')?.value;
   const password = document.getElementById('signup-form-password')?.value;
-  const password_repeat = document.getElementById('signup-form-password-repeat')?.value;
-  console.log('Sign up requested', username, email, password, password_repeat);
+  const passwordRepeat = document.getElementById('signup-form-password-repeat')?.value;
+  console.log('Sign up requested', username, email, password, passwordRepeat);
   // TODO: Client side validation
 
   try {
     const response = await fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, password_repeat }),
+      body: JSON.stringify({ username, email, password, passwordRepeat }),
     });
     console.log('Response', response);
     const result = await response.json();
