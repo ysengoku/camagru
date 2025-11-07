@@ -1,6 +1,6 @@
 import { VIEW_CONFIG, layout } from '../../index';
 import { IPost } from '../../index';
-import { postComponent, signupFormComponent } from '../../index';
+import { postComponent, signupFormComponent, loginFormComponent } from '../../index';
 
 const mockPost: IPost = {
   id: 1,
@@ -28,7 +28,7 @@ export const feedView = (items: IPost[], isLoggedIn: boolean) => {
 
   let modals = '';
   if (!isLoggedIn) {
-    modals += '\n' + signupFormComponent;
+    modals += '\n' + signupFormComponent + '\n' + loginFormComponent;
   }
 
   return layout(body, modals, VIEW_CONFIG.feed, isLoggedIn);

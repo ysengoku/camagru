@@ -11,6 +11,7 @@ import { layout } from './views/layout';
 import { feedView } from './views/pages/feed';
 import { pageNotFoundView } from './views/pages/pageNotFound';
 import { signupFormComponent } from './views/components/signup';
+import { loginFormComponent } from './views/components/login';
 import { postComponent } from './views/components/post';
 
 import type { ViewConfig } from './views/viewConfig';
@@ -33,6 +34,7 @@ export {
   feedView,
   pageNotFoundView,
   signupFormComponent,
+  loginFormComponent,
   postComponent,
   ViewConfig,
   // controllers

@@ -20,7 +20,7 @@ This document lists Node.js functions, classes, or methods used in this project 
 | Node.js                          | PHP                     | Description |
 |----------------------------------|-------------------------|-------------|
 | `bcrypt.hash()`                  | `password_hash()`       | Creates a hash of the password. |
-| `bcrypt.compare()`               | `password_verify()`     | Compare user input pqssword and hashed password. |
+| `bcrypt.compare()`               | `password_verify()`     | Compare user input password and hashed password. |
 | `randomBytes()`                  | `random_bytes()`        | Generate a cryptographically secure 32-byte random value. |
 | `JSON.parse()`                   | `json_decode()`         | Parses a JSON string into an object or array. |
 | `JSON.stringify()`               | `json_encode()`         | Converts an object or array into a JSON string. |

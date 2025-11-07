@@ -61,9 +61,7 @@ export class Database {
     return this.pool.execute<T>(sql, params);
   }
 
-  public async transaction<T>(
-    fn: (conn: mysql.PoolConnection) => Promise<T>,
-  ): Promise<T> {
+  public async transaction<T>(fn: (conn: mysql.PoolConnection) => Promise<T>): Promise<T> {
     if (!this.pool) {
       throw new Error('Database not connected');
     }

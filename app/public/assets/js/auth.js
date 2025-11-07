@@ -1,57 +1,158 @@
 import { ENDPOINTS } from './api.js';
 
-const signupButton = document.getElementById('signup-button');
-const signupDialog = document.getElementById('signup-modal');
-const signupSubmitButton = document.getElementById('submit-signup');
-const signupCloseButton = document.getElementById('signup-close');
-
-signupButton?.addEventListener('click', showSignupForm);
-signupSubmitButton?.addEventListener('click', requestSignUp);
-signupCloseButton?.addEventListener('click', () => signupDialog?.close());
-
-function showSignupForm() {
-  signupDialog?.showModal();
-};
-
-async function requestSignUp(event) {
+export async function requestSignUp(event) {
   event.preventDefault();
   const username = document.getElementById('signup-form-username')?.value;
   const email = document.getElementById('signup-form-email')?.value;
   const password = document.getElementById('signup-form-password')?.value;
   const passwordRepeat = document.getElementById('signup-form-password-repeat')?.value;
-  console.log('Sign up requested', username, email, password, passwordRepeat);
-  // TODO: Client side validation
+
+  const errorMessage = document.getElementById('signup-form-error');
+  const errorMessageContent = document.getElementById('signup-form-error-message');
+
+  // Client side validation
+  const validators = [
+    validateUsername(username),
+    validateEmail(email),
+    validatePassword(username, password, passwordRepeat),
+  ];
+  const failed = validators.find((v) => !v.valid);
+  if (failed) {
+    errorMessageContent.textContent = failed.message;
+    errorMessage?.classList.remove('hidden');
+  }
 
   try {
-    const response = await fetch('/api/signup', {
+    const response = await fetch(ENDPOINTS.SIGNUP, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password, passwordRepeat }),
     });
-    console.log('Response', response);
     const result = await response.json();
     if (result.success) {
-      console.log('Sign up successfully', result);
+      console.log('Sign up successfully.', result);
+      // TODO: Show message: Check your email
       return;
     }
-    console.error('Signup failed:', result.message);
+    errorMessageContent.textContent = result.message;
+    errorMessage?.classList.remove('hidden');
   } catch (error) {
     console.error('Server error');
   }
 }
 
-const loginButton = document.getElementById('login-button');
-const logoutButton = document.getElementById('logout-button');
+export async function requestLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById('login-form-username')?.value;
+  const password = document.getElementById('login-form-password')?.value;
 
-loginButton?.addEventListener('click', showLoginForm);
+  try {
+    const response = await fetch(ENDPOINTS.LOGIN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const result = await response.json();
+    if (result.success) {
+      window.location.reload();
+      return;
+    }
+    const errorMessage = document.getElementById('login-form-error');
+    const messageContent = document.getElementById('login-form-error-message');
+    messageContent.textContent = result.message;
+    errorMessage?.classList.remove('hidden');
+  } catch (error) {
+    console.error('Server error');
+  }
+}
 
-function showLoginForm() {
-  console.log('Login button pressed')
-};
+export function requestPasswordReset() {}
 
-logoutButton?.addEventListener('click', requestLogout);
-function requestLogout() {
+export function requestLogout() {
   console.log('Logout requested');
   // Add handling
-  logoutButton?.removeEventListener('click', requestLogout);
+}
+
+function validateUsername(username) {
+  const minLength = 3;
+  const maxLength = 20;
+  const regex = /^[a-zA-Z0-9_-]+$/;
+
+  if (username.length < minLength) {
+    return {
+      valid: false,
+      message: `Username must be at least ${minLength} characters long`,
+    };
+  }
+  if (username.length > maxLength) {
+    return {
+      valid: false,
+      message: `Username must not exceed ${maxLength} characters`,
+    };
+  }
+  if (!regex.test(username)) {
+    return {
+      valid: false,
+      message: 'Username can only contain letters, numbers, underscore, and hyphen',
+    };
+  }
+  return { valid: true };
+}
+
+function validateEmail(email) {
+  const maxLength = 254;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (email.length > maxLength) {
+    return {
+      valid: false,
+      message: `Email must not exceed ${maxLength} characters`,
+    };
+  }
+  if (!regex.test(email)) {
+    return { valid: false, message: 'Email format is invalid' };
+  }
+  return { valid: true };
+}
+
+function validatePassword(username, password, passwordRepeat) {
+  const minLength = 12;
+  const maxLength = 72;
+
+  if (password !== passwordRepeat) {
+    return {
+      valid: false,
+      message: 'The password and password confirmation do not match',
+    };
+  }
+  if (password.length < minLength) {
+    return {
+      valid: false,
+      message: `Password must be at least ${minLength} characters long`,
+    };
+  }
+  if (password.length > maxLength) {
+    return {
+      valid: false,
+      message: `Password must not exceed ${maxLength} characters`,
+    };
+  }
+  if (password.toLowerCase().includes(username.toLowerCase())) {
+    return { valid: false, message: 'Password must not contain the username' };
+  }
+  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    return {
+      valid: false,
+      message:
+        'Password must contain at least one lowercase, \
+        one uppercase, and one digit',
+    };
+  }
+  if (/[^a-zA-Z0-9]/.test(password)) {
+    return {
+      valid: false,
+      message: 'Password may contain only alphanumeric characters',
+    };
+  }
+  return { valid: true };
 }

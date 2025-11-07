@@ -36,15 +36,9 @@ export abstract class Model {
     return rows[0];
   }
 
-  async fetchRange(
-    limit: number,
-    offset: number = 0,
-  ) : Promise<Record<string, any>[]> {
+  async fetchRange(limit: number, offset: number = 0): Promise<Record<string, any>[]> {
     const sql = `SELECT * FROM ${this.tableName} LIMIT ? OFFSET ?`;
-    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [
-      limit,
-      offset,
-    ]);
+    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [limit, offset]);
     return rows;
   }
 }

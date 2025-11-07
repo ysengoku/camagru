@@ -19,25 +19,20 @@ export class UserModel extends Model {
       username: this.username,
       email: this.email,
       password_hash: this.password_hash,
-      email_verified: false,
+      email_verified: true, // TODO: Set to false after email verification is implemented
       verification_token: this.verification_token,
     });
     this.id = insertId;
     return this;
   }
 
-  public async findByKey(
-    key: string,
-    value: string,
-  ): Promise<UserModel | null> {
+  public async findByKey(key: string, value: string): Promise<UserModel | null> {
     const allowedKeys = ['username', 'email'];
     if (!allowedKeys.includes(key)) {
       throw new Error('Invalid search key');
     }
     const sql = `SELECT * FROM ${this.tableName} WHERE ${key} = ? LIMIT 1`;
-    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [
-      value,
-    ]);
+    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [value]);
     if (rows.length === 0) {
       return null;
     }

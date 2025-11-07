@@ -14,11 +14,16 @@ export class SessionModel extends Model {
     super('sessions');
   }
 
-  public async createSession(): Promise<{
+  public async createSession(
+    userId: number,
+    csrfToken: string,
+  ): Promise<{
     success: boolean;
     session?: SessionModel;
     error?: any;
   }> {
+    this.user_id = userId;
+    this.csrf_token = csrfToken;
     this.expired_at = new Date(Date.now() + 12 * 60 * 60 * 1000);
 
     let insertId = -1;
@@ -28,6 +33,7 @@ export class SessionModel extends Model {
         insertId = await super.create({
           user_id: this.user_id,
           session_token: this.session_token,
+          csrf_token: this.csrf_token,
           expired_at: this.expired_at,
         });
       } catch (error: any) {

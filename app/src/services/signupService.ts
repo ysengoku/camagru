@@ -69,8 +69,7 @@ function validateUsername(username: string) {
   if (!regex.test(username)) {
     return {
       valid: false,
-      message:
-        'Username can only contain letters, numbers, underscore, and hyphen',
+      message: 'Username can only contain letters, numbers, underscore, and hyphen',
     };
   }
   return { valid: true };
@@ -92,11 +91,7 @@ function validateEmail(email: string) {
   return { valid: true };
 }
 
-function validatePassword(
-  username: string,
-  password: string,
-  passwordRepeat: string,
-) {
+function validatePassword(username: string, password: string, passwordRepeat: string) {
   const minLength = 12;
   const maxLength = 72;
 
@@ -121,11 +116,7 @@ function validatePassword(
   if (password.toLowerCase().includes(username.toLowerCase())) {
     return { valid: false, message: 'Password must not contain the username' };
   }
-  if (
-    !/[a-z]/.test(password) ||
-    !/[A-Z]/.test(password) ||
-    !/[0-9]/.test(password)
-  ) {
+  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
     return {
       valid: false,
       message:

@@ -1,5 +1,6 @@
 import { verifySession } from './session';
 import { SessionModel } from '../mvc';
+import { parseCookies } from './cookies';
 import { HEADERS } from '../utils/constants';
 import { IncomingMessage, ServerResponse } from 'node:http';
 
@@ -39,16 +40,4 @@ export async function authMiddleware(
     return { success: false };
   }
   return { success: true, session };
-}
-
-function parseCookies(cookieHeader: string | undefined): Record<string, string> {
-  if (!cookieHeader) {
-    return {};
-  }
-  return Object.fromEntries(
-    cookieHeader.split(';').map((c) => {
-      const [key, ...v] = c.trim().split('=');
-      return [key, decodeURIComponent(v.join('='))];
-    }),
-  );
 }
