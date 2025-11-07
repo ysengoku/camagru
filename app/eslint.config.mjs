@@ -28,7 +28,7 @@ export default [
 
       "@typescript-eslint/no-unused-vars": "warn",
       "no-console": "warn",
-      "max-len": ["error", { code: 80, ignoreTemplateLiterals: true }],
+      "max-len": ["error", { code: 120, ignoreTemplateLiterals: true }],
       "no-tabs": "off",
       "semi": ["error", "always"],
       "object-curly-spacing": ["error", "always"],
