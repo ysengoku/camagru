@@ -20,6 +20,7 @@ import type { ViewConfig } from './views/viewConfig';
 import { feedController } from './controllers/feedController';
 import { editController } from './controllers/editController';
 import { settingsController } from './controllers/settingsController';
+import { verifyEmailController } from './controllers/verifyEmailController';
 import { pageNotFoundController } from './controllers/pageNotFoundController';
 
 export {
@@ -41,5 +42,6 @@ export {
   feedController,
   editController,
   settingsController,
+  verifyEmailController,
   pageNotFoundController,
 };

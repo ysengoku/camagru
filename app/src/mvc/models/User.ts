@@ -19,31 +19,44 @@ export class UserModel extends Model {
       username: this.username,
       email: this.email,
       password_hash: this.password_hash,
-      email_verified: true, // TODO: Set to false after email verification is implemented
+      email_verified: false,
       verification_token: this.verification_token,
     });
     this.id = insertId;
     return this;
   }
 
-  public async findByKey(key: string, value: string): Promise<UserModel | null> {
-    const allowedKeys = ['username', 'email'];
+  public async emailVerified(): Promise<void> {
+    this.email_verified = true;
+    this.verification_token = '';
+
+    this.edit(this.id, {
+      email_verified: this.email_verified,
+      verification_token: this.verification_token,
+    });
+  }
+
+  public static async findByKey(key: string, value: string): Promise<UserModel | null> {
+    const allowedKeys = ['username', 'email', 'verification_token'];
     if (!allowedKeys.includes(key)) {
       throw new Error('Invalid search key');
     }
-    const sql = `SELECT * FROM ${this.tableName} WHERE ${key} = ? LIMIT 1`;
-    const [rows, _fields] = await this.db.execute<RowDataPacket[]>(sql, [value]);
+    const instance = new this();
+    const sql = `SELECT * FROM ${instance.tableName} WHERE ${key} = ? LIMIT 1`;
+    const [rows, _fields] = await instance.db.execute<RowDataPacket[]>(sql, [value]);
     if (rows.length === 0) {
       return null;
     }
     const row = rows[0];
-    this.id = row.id;
-    this.username = row.username;
-    this.email = row.email;
-    this.password_hash = row.password_hash;
-    this.email_verified = row.email_verified === 1;
-    this.verification_token = row.verification_token;
-    this.created_at = row.created_at;
-    return this;
+
+    const user = new this();
+    user.id = row.id;
+    user.username = row.username;
+    user.email = row.email;
+    user.password_hash = row.password_hash;
+    user.email_verified = row.email_verified === 1;
+    user.verification_token = row.verification_token;
+    user.created_at = row.created_at;
+    return user;
   }
 }

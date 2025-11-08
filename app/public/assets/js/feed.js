@@ -62,16 +62,17 @@ function showModal(modal, form, otherModals) {
  */
 function closeModal(modal, form) {
   form.reset();
-  const errorMessage = modal.querySelector('.form-error');
-  errorMessage?.classList.add('hidden');
+  modal.querySelectorAll('.form-message').forEach((element) => {
+    element.classList.add('hidden');
+  });
   modal.close();
 }
 
 function setClearErrorMessageHandler(modal, form) {
   form.querySelectorAll('input').forEach((input) => {
     input.addEventListener('focus', () => {
-      const errorMessage = modal.querySelector('.form-error');
+      const errorMessage = modal.querySelector('.form-message');
       errorMessage?.classList.add('hidden');
-    })
-  })
+    });
+  });
 }

@@ -10,7 +10,7 @@ export async function authMiddleware(
   path: string,
 ): Promise<{ success: boolean; session?: SessionModel | null }> {
   const authExemptedEndpoints = ['/api/signup', '/api/login'];
-  const authExemptedPages = ['/'];
+  const authExemptedPaths = ['/', '/verify-email'];
 
   const cookies = parseCookies(req.headers.cookie);
   const sessionToken = cookies.sessionToken || null;
@@ -18,7 +18,7 @@ export async function authMiddleware(
 
   // For MVC
   if (!path.startsWith('/api')) {
-    if (session || authExemptedPages.includes(path)) {
+    if (session || authExemptedPaths.includes(path)) {
       return { success: true, session };
     }
     res.writeHead(302, { Location: '/' });

@@ -5,7 +5,7 @@ export interface ViewConfig {
 
 export const VIEW_CONFIG = {
   feed: {
-    title: 'Feed | Camagru',
+    title: 'Camagru',
     scriptPath: '/assets/js/feed.js',
   },
   edit: {

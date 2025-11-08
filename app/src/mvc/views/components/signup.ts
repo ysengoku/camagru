@@ -16,9 +16,12 @@ export const signupFormComponent = `
       <label class="mt-4">Confirm password</label>
       <input id="signup-form-password-repeat" name="passwordRepeat" type="password" placeholder="Password" class="border rounded p-2 w-full" required>
 
-      <div id="signup-form-error" class="form-error flex flex-row items-center p-2 mt-4 w-full gap-1 hidden">
+      <div id="signup-form-error" class="form-message flex flex-row items-center p-2 mt-4 w-full gap-1 hidden">
         <img src="/assets/icons/error.svg" alt="Error icon" class="h-6" />
         <p id="signup-form-error-message" class="w-full break-words pr-8 text-red-500 font-semibold"></p>
+      </div>
+
+      <div id="signup-form-confirmation" class="form-message flex flex-col items-start p-2 mt-4 w-full gap-2 hidden">
       </div>
 
       <button id="submit-signup" type="submit" class="text-center mt-8 py-2 w-full bg-teal-600 text-cyan-100 rounded">Sign up</button>

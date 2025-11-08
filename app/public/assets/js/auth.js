@@ -31,13 +31,18 @@ export async function requestSignUp(event) {
     const result = await response.json();
     if (result.success) {
       console.log('Sign up successfully.', result);
-      // TODO: Show message: Check your email
+
+      // Show message to inform email verification is required
+      const messageWrapper = document.getElementById('signup-form-confirmation');
+      messageWrapper?.classList.remove('hidden');
+      sendConfirmationMail(username, password, messageWrapper);
+      createResendButton(username, password, messageWrapper);
       return;
     }
     errorMessageContent.textContent = result.message;
     errorMessage?.classList.remove('hidden');
   } catch (error) {
-    console.error('Server error');
+    console.error(error);
   }
 }
 
@@ -60,10 +65,43 @@ export async function requestLogin(event) {
     const errorMessage = document.getElementById('login-form-error');
     const messageContent = document.getElementById('login-form-error-message');
     messageContent.textContent = result.message;
+    // If the response is 409 (email not verified), show button to resend email
+    if (result.code === 409) {
+      if (!document.getElementById('resend-email-button')) {
+        createResendButton(username, password, errorMessage);
+      }
+    }
     errorMessage?.classList.remove('hidden');
   } catch (error) {
-    console.error('Server error');
+    console.error('error');
   }
+}
+
+function createResendButton(username, password, wrapperElement) {
+  const resendButton = document.createElement('button');
+  resendButton.type = 'button';
+  resendButton.id = 'resend-email-button';
+  resendButton.style.fontSize = '0.9rem';
+  resendButton.style.marginTop = '0.5rem';
+  resendButton.style.marginBottom = '0.5rem';
+  resendButton.style.textDecoration = 'underline';
+  resendButton.textContent = 'Resend confirmation email';
+
+  resendButton.addEventListener('click', async () => {
+    resendButton.classList.add('hidden');
+    await sendConfirmationMail(username, password, wrapperElement);
+  });
+  wrapperElement?.appendChild(resendButton);
+}
+
+async function sendConfirmationMail(username, password, wrapperElement) {
+  console.log('Resend button clicked', username, password);
+  // TODO: Request to resend confirmation email.
+
+  const emailSent = document.createElement('p');
+  emailSent.classList.add('confirmation-message');
+  emailSent.textContent = 'Confirmation link sent! Check your email to complete verification.';
+  wrapperElement.appendChild(emailSent);
 }
 
 export function requestPasswordReset() {}

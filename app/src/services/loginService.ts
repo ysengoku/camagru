@@ -11,19 +11,18 @@ export async function loginService(data: {
     return { success: false, code: 400, message: 'Missing required fields' };
   }
 
-  const user = new UserModel();
-  let result;
+  let user;
   try {
-    result = await user.findByKey('username', username);
+    user = await UserModel.findByKey('username', username);
   } catch (error) {
     console.error(error);
     return { success: false, code: 500, message: 'Internal server error' };
   }
-  if (!result) {
+  if (!user) {
     return { success: false, code: 404, message: 'User not found' };
   }
   if (!user.email_verified) {
-    return { success: false, code: 403, message: 'Account not verified' };
+    return { success: false, code: 409, message: 'Email not confirmed. Your account is pending.' };
   }
   const passwordMatch = await bcrypt.compare(password, user.password_hash);
   if (!passwordMatch) {

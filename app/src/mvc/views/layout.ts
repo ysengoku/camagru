@@ -15,11 +15,38 @@ const navbarItemsHtml = {
     </a>`,
 };
 
+function generateFlashScript(flashMessage: { type: string; message: string }): string {
+  return `
+    <script>
+      const flash = { type: "${flashMessage.type}", message: "${flashMessage.message}" };
+      const dialog = document.createElement('dialog');
+      dialog.classList.add('flash-dialog');
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('flash-message');
+      const p = document.createElement('p');
+      p.textContent = flash.message;
+      wrapper.appendChild(p);
+      dialog.appendChild(wrapper);
+      document.body.appendChild(dialog);
+      dialog.showModal();
+        setTimeout(() => {
+          dialog.remove();
+          if (window.location.search) {
+            const url = new URL(window.location.href);
+            url.search = '';
+            window.history.replaceState({}, '', url.toString());
+          }
+        }, 30000);
+    </script>
+  `;
+}
+
 export const layout = (
   content: string,
   modals: string = '',
   config: ViewConfig,
   isLoggedin: boolean = false,
+  flashMessage: { type: string; message: string } | null = null,
 ): string => {
   const headerButtonsHtml = isLoggedin
     ? '<button id="logout-button" class="pe-4">Logout</button>'
@@ -30,11 +57,15 @@ export const layout = (
     navbarHtml += '\n' + navbarItemsHtml.edit + '\n' + navbarItemsHtml.settings;
   }
 
+  const script = config.scriptPath ? `<script src="${config.scriptPath}" type="module"></script>` : null;
+  const flashScript = flashMessage ? generateFlashScript(flashMessage) : null;
+
   return `
   <!DOCTYPE html>
   <html>
     <head>
       <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>${config.title}</title>
       <link rel="stylesheet" href="/assets/css/output.css">
       <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
@@ -59,7 +90,8 @@ export const layout = (
       <footer class="text-center text-sm py-4">
         © 2025 Camagru
       </footer>
-      ${config.scriptPath ? `<script src="${config.scriptPath}" type="module"></script>` : ''}
+      ${script}
+      ${flashScript}
     </body>
   </html>
 `;

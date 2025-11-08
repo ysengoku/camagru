@@ -1,6 +1,12 @@
 import { Database } from './core/Database';
 import { authMiddleware } from './middleware/authMiddleware';
-import { feedController, editController, settingsController, pageNotFoundController } from './mvc';
+import {
+  feedController,
+  editController,
+  settingsController,
+  verifyEmailController,
+  pageNotFoundController,
+} from './mvc';
 import { apiRouter } from './api/apiRouter';
 import http from 'http';
 
@@ -12,6 +18,13 @@ try {
   console.error('Failed to connect to database:', error);
   process.exit(1);
 }
+
+const routeMap: Record<string, (req: http.IncomingMessage, res: http.ServerResponse, userId: number) => void> = {
+  '/': feedController,
+  '/edit': editController,
+  '/settings': settingsController,
+  '/verify-email': verifyEmailController,
+};
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '', `http://${req.headers.host}`);
@@ -26,13 +39,6 @@ const server = http.createServer(async (req, res) => {
     apiRouter(req, res);
     return;
   }
-
-  const routeMap: Record<string, (req: http.IncomingMessage, res: http.ServerResponse, userId: number) => void> = {
-    '/': feedController,
-    '/edit': editController,
-    '/settings': settingsController,
-  };
-
   const handler = routeMap[url.pathname];
   if (handler) {
     handler(req, res, userId);

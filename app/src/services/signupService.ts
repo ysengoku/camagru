@@ -1,4 +1,6 @@
 import { UserModel } from '../mvc';
+import { EmailService } from './EmailService';
+import { generateToken } from '../utils/crypto';
 import bcrypt from 'bcrypt';
 
 export async function signupService(data: {
@@ -22,27 +24,37 @@ export async function signupService(data: {
   if (failed) {
     return { success: false, message: failed.message };
   }
-  const newUser = new UserModel();
+
   try {
     // Verify uniqueness of username and email
-    const usernameExists = await newUser.findByKey('username', username);
+    const usernameExists = await UserModel.findByKey('username', username);
     if (usernameExists) {
       return {
         success: false,
         message: 'User with this username exists already',
       };
     }
-    const emailExists = await newUser.findByKey('email', email);
+    const emailExists = await UserModel.findByKey('email', email);
     if (emailExists) {
       return { success: false, message: 'This email is already used' };
     }
 
+    // Crreate a new user
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = generateToken();
+    const newUser = new UserModel();
     newUser.username = username;
     newUser.email = email;
     newUser.password_hash = hashedPassword;
+    newUser.verification_token = verificationToken;
     await newUser.createUser();
-    return { success: true };
+
+    const emailService = EmailService.getInstance();
+    const sent = await emailService.sendConfirmationEmail(newUser.email, newUser.verification_token);
+    if (sent.success) {
+      return { success: true };
+    }
+    return { success: false, message: sent.error };
   } catch (error) {
     console.error(error);
     return { success: false, message: 'Database error' };
