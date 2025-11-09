@@ -28,6 +28,7 @@ export function loginController(req: IncomingMessage, res: ServerResponse, userI
       console.log(data);
       result = await loginService(data);
     } catch (error) {
+      console.error(error);
       res.writeHead(400, HEADERS.JSON);
       res.end(JSON.stringify({ success: false, message: 'Bad Request' }));
       return;

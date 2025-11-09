@@ -16,8 +16,12 @@ export abstract class Model {
   }
 
   async edit(id: number, data: Record<string, any>): Promise<boolean> {
-    const sql = `UPDATE ${this.tableName} SET ? WHERE id = ?`;
-    const [result] = await this.db.execute<ResultSetHeader>(sql, [data, id]);
+    const setClause = Object.keys(data)
+      .map((key) => `\`${key}\` = ?`)
+      .join(', ');
+    const values = Object.values(data);
+    const sql = `UPDATE \`${this.tableName}\` SET ${setClause} WHERE id = ?`;
+    const [result] = await this.db.execute<ResultSetHeader>(sql, [...values, id]);
     return result.affectedRows > 0;
   }
 

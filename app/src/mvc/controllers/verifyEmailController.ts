@@ -1,4 +1,4 @@
-import { UserModel } from '../index';
+import { verifyEmailService } from '../../services';
 import { feedView } from '../index';
 import { fetchItems } from './feedController';
 import { FLASH_MESSAGE_TYPE } from '../../utils/constants';
@@ -9,27 +9,24 @@ export async function verifyEmailController(req: IncomingMessage, res: ServerRes
   const token = url.searchParams.get('token');
 
   const items = await fetchItems();
-  let html = feedView(items, false, {
+  if (!token) {
+    const html = feedView(items, false, {
       type: FLASH_MESSAGE_TYPE.ERROR,
       message: 'Verification failed. Please try again.',
     });
-  if (!token) {
     res.writeHead(400, { 'Content-Type': 'text/html' });
     res.end(html);
     return;
   }
-  const user = await UserModel.findByKey('verification_token', token);
-  if (!user) {
-    res.writeHead(400, { 'Content-Type': 'text/html' });
-    res.end(html);
-    return;
-  }
-  await user.emailVerified();
 
-  html = feedView(items, false, {
-      type: FLASH_MESSAGE_TYPE.SUCCESS,
-      message: 'Email verification completed! Please log in to continue.',
-    });
-  res.writeHead(200, { 'Content-Type': 'text/html' });
+  const verified = await verifyEmailService(token);
+
+  const flashMessage = verified
+    ? { type: FLASH_MESSAGE_TYPE.SUCCESS, message: 'Email verification completed! Please log in to continue.' }
+    : { type: FLASH_MESSAGE_TYPE.ERROR, message: 'Verification failed. Please try again.' };
+
+  const status = verified ? 200 : 400;
+  const html = feedView(items, false, flashMessage);
+  res.writeHead(status, { 'Content-Type': 'text/html' });
   res.end(html);
 }

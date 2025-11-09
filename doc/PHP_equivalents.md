@@ -32,6 +32,12 @@ This document lists Node.js functions, classes, or methods used in this project 
 |-----------------------|-------|-------------|
 | `mysql2.createPool()` | `PDO` | Creates a pool of database connections. |
 
+## Email
+
+| Node.js      | PHP      | Description |
+|--------------|----------|-------------|
+| `nodemailer` | `mail()` | Sends emails via SMTP or other transport methods. |
+
 ## File System
 
 | Node.js              | PHP                   | Description |

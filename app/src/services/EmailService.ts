@@ -17,9 +17,10 @@ export class EmailService {
   };
 
   private constructor() {
-    this.baseUrl = process.env.NODE_ENV === 'production'
-      ? process.env.APP_BASE_URL_PROD || 'http://localhost:8080'
-      : process.env.APP_BASE_URL_DEV || 'https://localhost:8443';
+    this.baseUrl =
+      process.env.NODE_ENV === 'production'
+        ? process.env.APP_BASE_URL_PROD || 'http://localhost:8080'
+        : process.env.APP_BASE_URL_DEV || 'https://localhost:8443';
     this.transporter = nodemailer.createTransport(this.options);
   }
 
@@ -30,7 +31,7 @@ export class EmailService {
     return EmailService.instance;
   }
 
-  public async sendConfirmationEmail(to: string, token: string): Promise<{success: boolean, error?: string}> {
+  public async sendConfirmationEmail(to: string, token: string): Promise<{ success: boolean; error?: string }> {
     const link = `${this.baseUrl}/verify-email?token=${token}`;
     const html = `
       <p>Welcome to Camagru.</p>
@@ -43,10 +44,9 @@ export class EmailService {
       to: to,
       subject: 'Please confirm your email',
       html: html,
-    }
+    };
     try {
       const info = await this.transporter.sendMail(mail);
-      console.log('Email sent successfully.', info);
       return { success: true };
     } catch (error) {
       console.error('Error while sending an email', error);

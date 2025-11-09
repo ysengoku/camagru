@@ -30,7 +30,7 @@ export class UserModel extends Model {
     this.email_verified = true;
     this.verification_token = '';
 
-    this.edit(this.id, {
+    await this.edit(this.id, {
       email_verified: this.email_verified,
       verification_token: this.verification_token,
     });

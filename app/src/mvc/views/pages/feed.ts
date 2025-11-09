@@ -12,7 +12,11 @@ const mockPost: IPost = {
   comments: 5,
 };
 
-export const feedView = (items: IPost[], isLoggedIn: boolean, flash: {type: string, message: string} | null = null) => {
+export const feedView = (
+  items: IPost[],
+  isLoggedIn: boolean,
+  flash: { type: string; message: string } | null = null,
+) => {
   // Demo data
   const posts = Array(9).fill(mockPost);
   const postsHtml = posts.map((post) => postComponent(post)).join('');

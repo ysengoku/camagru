@@ -4,6 +4,6 @@ export const HEADERS = {
 };
 
 export enum FLASH_MESSAGE_TYPE {
-  SUCCESS='success',
-  ERROR='error',
+  SUCCESS = 'success',
+  ERROR = 'error',
 }
