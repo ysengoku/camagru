@@ -2,3 +2,32 @@
 **/node_modules/**
 **/.cache/
 **/dist/
+
+# PHP vendor
+vendor/
+
+# Storage / media (user-generated)
+storage/media/
+app/public/media/
+
+# Git
+.git
+.gitignore
+
+# Logs and temp
+*.log
+tmp/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Tests
+/tests
+/tests/
+
+# Build outputs
+build/

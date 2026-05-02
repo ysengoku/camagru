@@ -16,6 +16,8 @@ services:
       - .env
     depends_on:
       - database
+    volumes:
+      - media_volume:/var/www/storage/media
 
   nginx:
     container_name: camagru_nginx
@@ -28,6 +30,8 @@ services:
       - .env
     depends_on:
       - app
+    volumes:
+      - media_volume:/var/www/html/public/media:ro
 
   database:
     container_name: camagru_database
@@ -46,5 +50,5 @@ services:
 volumes:
   database_volume:
     name: database_volume
-  uploads_volume:
-    name: uploads_volume
+  media_volume:
+    name: media_volume

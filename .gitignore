@@ -2,3 +2,6 @@
 output.css
 
 node_modules/
+
+# storage for user uploads
+storage/media/
