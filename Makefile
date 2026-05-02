@@ -41,10 +41,13 @@ build-dev: ensure-env init-ip
 dev: build-dev
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up
 
-lint:
-	docker exec $(APP_CONTAINER) npm run lint
-
 test-app:
 	docker exec $(APP_CONTAINER) npm run test
 
-.PHONY: all dev up down clean fclean lint
+lint-php:
+	docker exec $(APP_CONTAINER) vendor/bin/phpcs --standard=phpcs.xml src
+
+fix-php:
+	docker exec $(APP_CONTAINER) vendor/bin/phpcbf --standard=phpcs.xml src
+
+.PHONY: all dev up down clean fclean lint-php fix-php

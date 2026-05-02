@@ -4,6 +4,7 @@ services:
       target: development
     volumes:
       - ./app:/var/www/html
+      - vendor_volume:/var/www/html/vendor
 
   nginx:
     build:
@@ -18,3 +19,6 @@ services:
   database:
     build:
       target: base
+
+volumes:
+  vendor_volume:
