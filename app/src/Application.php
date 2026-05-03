@@ -34,11 +34,13 @@ class Application {
 
         $controllerInstance = new $controllerClass();
         $content = $controllerInstance->run($action);
+        $status = $controllerInstance->getStatus();
+        $this->response->setStatusCode($status['code'], $status['text']);
         $this->response->setContent($content);
     }
 
     private function getPathInfo(): string {
-        return $_SERVER['PATH_INFO'] ?? '/';
+        return $_SERVER['PATH_INFO'] ?? '';
     }
 
     private function renderNotFound(): void {

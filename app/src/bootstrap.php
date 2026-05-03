@@ -2,8 +2,9 @@
 
 spl_autoload_register(function ($class) {
     $paths = [
-        __DIR__ . '/Core/' . $class . '.php',
         __DIR__ . '/' . $class . '.php',
+        __DIR__ . '/Core/' . $class . '.php',
+        __DIR__ . '/Controllers/' . $class . '.php',
     ];
 
     foreach ($paths as $path) {

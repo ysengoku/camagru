@@ -1,6 +1,6 @@
 <?php
 
-abstract class Router {
+class Router {
     private array $routes;
 
     public function __construct(array $routes) {
@@ -10,9 +10,11 @@ abstract class Router {
     public function resolve(string $pathInfo): ?array {
         foreach ($this->routes as $route) {
             if ($route['path'] === $pathInfo) {
+
                 return $route;
             }
         }
+
         return null;
     }
 }

@@ -2,7 +2,7 @@
 
 $routes = [
     // Feed (root page)
-    ['path' => '/', 'controller' => 'feed', 'action' => 'index'],
+    ['path' => '', 'controller' => 'feed', 'action' => 'index'],
 
     // Auth routes
     ['path' => '/login', 'controller' => 'auth', 'action' => 'login'],

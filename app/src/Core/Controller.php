@@ -2,13 +2,20 @@
 
 abstract class Controller {
     protected string $actionName;
+    protected int $statusCode = 200;
+    protected string $statusText = 'OK';
 
     public function run(string $action): string {
         if (!method_exists($this, $action)) {
             throw new HTTPNotFoundException();
         }
         $this->actionName = $action;
+
         return $this->$action();
+    }
+
+    public function getStatus(): array {
+        return ['code' => $this->statusCode, 'text' => $this->statusText];
     }
 
     protected function render(array $props = [], ?string $template = null): string {

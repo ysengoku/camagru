@@ -4,6 +4,30 @@
   --primary-600-rgb: 0, 150, 137;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 1rem;
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  background-color: var(--primary-600);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
 .confirmation-message {
   background-color: rgba(var(--primary-600-rgb), 0.1);
   border-radius: 0.5rem;

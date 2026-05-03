@@ -1,12 +1,12 @@
 <?php
 
-abstract class Response {
+class Response {
     protected string $content;
     protected int $statusCode;
     protected string $statusText;
 
     public function send(): void {
-        header("HTTP/1.1 {$this->statusCode} . ' ' . {$this->statusText}");
+        header(sprintf('HTTP/1.1 %d %s', $this->statusCode, $this->statusText));
         echo $this->content;
     }
 
