@@ -50,4 +50,11 @@ lint-php:
 fix-php:
 	docker exec $(APP_CONTAINER) vendor/bin/phpcbf --standard=phpcs.xml src
 
-.PHONY: all dev up down clean fclean lint-php fix-php
+psalm:
+	docker exec $(APP_CONTAINER) composer psalm
+
+quality-php:
+	$(MAKE) fix-php
+	$(MAKE) psalm
+
+.PHONY: all dev up down clean fclean lint-php fix-php psalm quality-php

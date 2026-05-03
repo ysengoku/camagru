@@ -3,7 +3,7 @@
 abstract class Controller {
     protected string $actionName;
 
-    public function run($action) {
+    public function run(string $action): string {
         if (!method_exists($this, $action)) {
             throw new HTTPNotFoundException();
         }
@@ -11,9 +11,9 @@ abstract class Controller {
         return $this->$action();
     }
 
-    protected function render($props = [], $template = null): string {
+    protected function render(array $props = [], ?string $template = null): string {
         $view = new View(__DIR__ . '/../Views');
-        if (!$template) {
+        if ($template === null) {
             $template = $this->actionName;
         }
 

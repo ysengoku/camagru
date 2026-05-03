@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+  <file src="src/Application.php">
+    <AbstractInstantiation>
+      <code><![CDATA[new Response()]]></code>
+      <code><![CDATA[new Router(require __DIR__ . '/config/routes.php')]]></code>
+    </AbstractInstantiation>
+    <ClassMustBeFinal>
+      <code><![CDATA[Application]]></code>
+    </ClassMustBeFinal>
+    <UndefinedClass>
+      <code><![CDATA[HTTPNotFoundException]]></code>
+      <code><![CDATA[HTTPNotFoundException]]></code>
+      <code><![CDATA[HTTPNotFoundException]]></code>
+    </UndefinedClass>
+    <UnusedClass>
+      <code><![CDATA[Application]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Controllers/FeedController.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[FeedController]]></code>
+    </ClassMustBeFinal>
+    <MissingReturnType>
+      <code><![CDATA[index]]></code>
+    </MissingReturnType>
+    <UndefinedMethod>
+      <code><![CDATA[getAllPosts]]></code>
+      <code><![CDATA[getAllUsers]]></code>
+      <code><![CDATA[getCurrentUser]]></code>
+    </UndefinedMethod>
+    <UnusedClass>
+      <code><![CDATA[FeedController]]></code>
+    </UnusedClass>
+    <UnusedVariable>
+      <code><![CDATA[$currentUser]]></code>
+    </UnusedVariable>
+  </file>
+  <file src="src/Core/Controller.php">
+    <MissingConstructor>
+      <code><![CDATA[$actionName]]></code>
+    </MissingConstructor>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[run]]></code>
+    </PossiblyUnusedMethod>
+    <UndefinedClass>
+      <code><![CDATA[HTTPNotFoundException]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="src/Core/Database.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Database]]></code>
+    </ClassMustBeFinal>
+    <MissingPropertyType>
+      <code><![CDATA[$conn]]></code>
+      <code><![CDATA[$instance]]></code>
+    </MissingPropertyType>
+    <PossiblyFalseArgument>
+      <code><![CDATA[getenv('DB_HOST')]]></code>
+      <code><![CDATA[getenv('DB_PORT')]]></code>
+      <code><![CDATA[getenv('MYSQL_DATABASE')]]></code>
+      <code><![CDATA[getenv('MYSQL_PASSWORD')]]></code>
+      <code><![CDATA[getenv('MYSQL_USER')]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[close]]></code>
+      <code><![CDATA[execute]]></code>
+      <code><![CDATA[fetch]]></code>
+      <code><![CDATA[fetchAll]]></code>
+      <code><![CDATA[getConnection]]></code>
+    </PossiblyUnusedMethod>
+    <RedundantCondition>
+      <code><![CDATA[$this->query($sql, $params) !== false]]></code>
+    </RedundantCondition>
+  </file>
+  <file src="src/Core/Model.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$queries]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[string]]></code>
+    </InvalidReturnType>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[createForeignKeySql]]></code>
+      <code><![CDATA[createMigrationSql]]></code>
+      <code><![CDATA[getDb]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Core/Router.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Core/View.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[View]]></code>
+    </ClassMustBeFinal>
+    <FalsableReturnStatement>
+      <code><![CDATA[ob_get_clean()]]></code>
+    </FalsableReturnStatement>
+    <InvalidFalsableReturnType>
+      <code><![CDATA[string]]></code>
+    </InvalidFalsableReturnType>
+    <PossiblyUnusedParam>
+      <code><![CDATA[$props]]></code>
+      <code><![CDATA[$template]]></code>
+    </PossiblyUnusedParam>
+    <UndefinedClass>
+      <code><![CDATA[HTTPNotFoundException]]></code>
+    </UndefinedClass>
+  </file>
+  <file src="src/Models/Comment.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Comment]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[Comment]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Models/Like.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Like]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[Like]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Models/Post.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Post]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$created_at]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$url]]></code>
+      <code><![CDATA[$user_id]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/Models/Session.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Session]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[Session]]></code>
+    </UnusedClass>
+  </file>
+  <file src="src/Models/User.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[User]]></code>
+    </ClassMustBeFinal>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$created_at]]></code>
+      <code><![CDATA[$email]]></code>
+      <code><![CDATA[$email_varified]]></code>
+      <code><![CDATA[$id]]></code>
+      <code><![CDATA[$password_hash]]></code>
+      <code><![CDATA[$username]]></code>
+      <code><![CDATA[$verification_token]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/Views/auth.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[strtotime($post['created_at'])]]></code>
+    </PossiblyFalseArgument>
+    <UndefinedGlobalVariable>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$post]]></code>
+      <code><![CDATA[$user]]></code>
+    </UndefinedGlobalVariable>
+  </file>
+  <file src="src/Views/feed.php">
+    <UnusedForeachValue>
+      <code><![CDATA[$post]]></code>
+    </UnusedForeachValue>
+  </file>
+</files>

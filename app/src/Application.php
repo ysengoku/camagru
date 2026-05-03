@@ -9,10 +9,10 @@ class Application {
         $this->response = new Response();
     }
 
-    public function run() {
+    public function run(): void {
         try {
             $params = $this->router->resolve($this->getPathInfo());
-            if (!$params) {
+            if ($params === null) {
                 throw new HTTPNotFoundException();
             }
 
@@ -26,7 +26,7 @@ class Application {
         $this->response->send();
     }
 
-    private function runAction($controller, $action) {
+    private function runAction(string $controller, string $action): void {
         $controllerClass = ucfirst($controller) . 'Controller';
         if (!class_exists($controllerClass)) {
             throw new HTTPNotFoundException();
@@ -37,11 +37,11 @@ class Application {
         $this->response->setContent($content);
     }
 
-    private function getPathInfo() {
+    private function getPathInfo(): string {
         return $_SERVER['PATH_INFO'] ?? '/';
     }
 
-    private function renderNotFound() {
+    private function renderNotFound(): void {
         $this->response->setStatusCode(404, 'Not Found');
         $this->response->setContent('404 Not Found'); // TODO
     }

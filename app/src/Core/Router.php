@@ -7,7 +7,7 @@ abstract class Router {
         $this->routes = $routes;
     }
 
-    public function resolve($pathInfo) {
+    public function resolve(string $pathInfo): ?array {
         foreach ($this->routes as $route) {
             if ($route['path'] === $pathInfo) {
                 return $route;
