@@ -1,7 +1,6 @@
 <?php
 
-class Like extends Model
-{
+class Like extends Model {
     protected static string $name = 'likes';
     protected static array $schema = [
         'id' => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -15,7 +14,6 @@ class Like extends Model
     public int $author_id = 0;
     public ?string $created_at = '';
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 }

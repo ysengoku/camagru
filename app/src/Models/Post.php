@@ -1,7 +1,6 @@
 <?php
 
-class Post extends Model
-{
+class Post extends Model {
     protected static string $name  = 'posts';
     protected static array $schema = [
         'id' => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -15,7 +14,6 @@ class Post extends Model
     public string $url = '';
     public ?string $created_at = '';
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 }

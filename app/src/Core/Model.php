@@ -1,14 +1,12 @@
 <?php
 
-abstract class Model
-{
+abstract class Model {
     protected static ?Database $db        = null;
     protected static string $name;
     protected static array $schema    = [];
     protected static array $relations = [];
 
-    public function createMigrationSql(): string
-    {
+    public function createMigrationSql(): string {
         $tableName = static::$name;
         $columns = [];
         foreach (static::$schema as $field => $type) {
@@ -17,8 +15,7 @@ abstract class Model
         return ("CREATE TABLE IF NOT EXISTS `$tableName` (" . implode(", ", $columns) . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
     }
 
-    public function createForeignKeySql(): string
-    {
+    public function createForeignKeySql(): string {
         $tableName = static::$name;
         $queries = [];
         foreach (static::$relations as $field => $relation) {
@@ -32,8 +29,7 @@ abstract class Model
         return $queries;
     }
 
-    protected static function getDb(): Database
-    {
+    protected static function getDb(): Database {
         if (self::$db === null) {
             self::$db = Database::getInstance();
         }

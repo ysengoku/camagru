@@ -1,11 +1,9 @@
 <?php
 
-abstract class Controller
-{
+abstract class Controller {
     protected string $actionName;
 
-    public function run($action)
-    {
+    public function run($action) {
         if (!method_exists($this, $action)) {
             throw new HTTPNotFoundException();
         }
@@ -13,8 +11,7 @@ abstract class Controller
         return $this->$action();
     }
 
-    protected function render($parameters = [], $template = null): string
-    {
+    protected function render($props = [], $template = null): string {
         $view = new View(__DIR__ . '/../Views');
         if (!$template) {
             $template = $this->actionName;
@@ -23,6 +20,6 @@ abstract class Controller
         $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
         $path = $controllerName . '/' . $template;
 
-        return $view->render($path, $parameters);
+        return $view->render($path, $props);
     }
 }

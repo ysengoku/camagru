@@ -1,18 +1,15 @@
 <?php
 
-class Application
-{
+class Application {
     private Router $router;
     protected Response $response;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->router   = new Router(require __DIR__ . '/config/routes.php');
         $this->response = new Response();
     }
 
-    public function run()
-    {
+    public function run() {
         try {
             $params = $this->router->resolve($this->getPathInfo());
             if (!$params) {
@@ -29,8 +26,7 @@ class Application
         $this->response->send();
     }
 
-    private function runAction($controller, $action)
-    {
+    private function runAction($controller, $action) {
         $controllerClass = ucfirst($controller) . 'Controller';
         if (!class_exists($controllerClass)) {
             throw new HTTPNotFoundException();
@@ -41,13 +37,11 @@ class Application
         $this->response->setContent($content);
     }
 
-    private function getPathInfo()
-    {
+    private function getPathInfo() {
         return $_SERVER['PATH_INFO'] ?? '/';
     }
 
-    private function renderNotFound()
-    {
+    private function renderNotFound() {
         $this->response->setStatusCode(404, 'Not Found');
         $this->response->setContent('404 Not Found'); // TODO
     }

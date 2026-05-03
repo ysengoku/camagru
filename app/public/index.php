@@ -5,4 +5,3 @@ require '../src/Application.php';
 
 $app = new Application();
 $app->run();
-

@@ -1,12 +1,10 @@
 <?php
 
-class Database
-{
+class Database {
     private static $instance = null;
     private $conn;
 
-    private function __construct()
-    {
+    private function __construct() {
         $dsn = sprintf(
             "mysql:host=%s;dbname=%s;port=%s",
             getenv('DB_HOST'),
@@ -27,44 +25,37 @@ class Database
         }
     }
 
-    public static function getInstance(): Database
-    {
+    public static function getInstance(): Database {
         if (self::$instance === null) {
             self::$instance = new Database();
         }
         return self::$instance;
     }
 
-    public function getConnection(): PDO
-    {
+    public function getConnection(): PDO {
         return $this->conn;
     }
 
-    public function query(string $sql, array $params = []): PDOStatement
-    {
+    public function query(string $sql, array $params = []): PDOStatement {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
         return $stmt;
     }
 
-    public function fetch(string $sql, array $params = []): ?array
-    {
+    public function fetch(string $sql, array $params = []): ?array {
         $res = $this->query($sql, $params)->fetch(PDO::FETCH_ASSOC);
         return $res ?: null;
     }
 
-    public function fetchAll(string $sql, array $params = []): array
-    {
+    public function fetchAll(string $sql, array $params = []): array {
         return $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function execute(string $sql, array $params = []): bool
-    {
+    public function execute(string $sql, array $params = []): bool {
         return $this->query($sql, $params) !== false;
     }
 
-    public function close(): void
-    {
+    public function close(): void {
         $this->conn = null;
         self::$instance = null;
     }

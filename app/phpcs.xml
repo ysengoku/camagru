@@ -1,11 +1,28 @@
 <?xml version="1.0"?>
-<ruleset name="Camagru Rules">
-  <description>Project coding standard - PSR12</description>
-  <rule ref="PSR12" />
-  <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-    <severity>0</severity>
-  </rule>
+<ruleset name="Camagru Custom Rules">
+  <description>Enforce same-line opening braces for classes/functions/methods.</description>
+
+  <!-- Paths -->
   <file>src</file>
   <file>app</file>
   <exclude-pattern>*/vendor/*</exclude-pattern>
+
+  <!-- Enforce same-line braces -->
+  <rule ref="Generic.Classes.OpeningBraceSameLine" />
+  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
+
+  <!-- Keep indentation/whitespace rules compatible with same-line braces -->
+  <rule ref="Generic.WhiteSpace.ScopeIndent" />
+
+  <!-- Disable opposing/ambiguous sniffs that enforce next-line/BSD Allman style -->
+  <rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman">
+    <severity>0</severity>
+  </rule>
+  <rule ref="PEAR.Functions.FunctionDeclaration">
+    <severity>0</severity>
+  </rule>
+  <rule ref="PSR2.Classes.ClassDeclaration.OpenBraceNewLine">
+    <severity>0</severity>
+  </rule>
+
 </ruleset>

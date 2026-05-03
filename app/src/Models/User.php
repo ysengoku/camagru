@@ -1,7 +1,6 @@
 <?php
 
-class User extends Model
-{
+class User extends Model {
     protected static string $name = 'users';
     protected static array $schema = [
         'id'                 => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -21,7 +20,6 @@ class User extends Model
     public string $verification_token = '';
     public ?string $created_at        = '';
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 }

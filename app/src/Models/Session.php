@@ -1,7 +1,6 @@
 <?php
 
-class Session extends Model
-{
+class Session extends Model {
     protected static string $name = 'sessions';
     protected static array $schema = [
         'id'         => 'INT AUTO_INCREMENT PRIMARY KEY',

@@ -1,9 +1,7 @@
 <?php
 
-class FeedController extends Controller
-{
-    public function index()
-    {
+class FeedController extends Controller {
+    public function index() {
         $userModel = new User();
         $currentUser = $userModel->getCurrentUser();
         $users = $userModel->getAllUsers();

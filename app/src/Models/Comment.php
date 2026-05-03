@@ -1,7 +1,7 @@
 <?php
 
-class Comment extends Model
-{
+class Comment extends Model {
+
     protected static string $name = 'comments';
     protected static array $schema = [
         'id' => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -17,7 +17,6 @@ class Comment extends Model
     public string $content = '';
     public ?string $created_at = '';
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 }
