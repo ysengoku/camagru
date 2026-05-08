@@ -7,11 +7,13 @@
             <?php echo $title ?? 'Camagru'; ?>
         </title>
         <link rel="stylesheet" href="/styles/main.css">
+        <link rel="stylesheet" href="/styles/utilities.css">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
     </head>
     <body>
         <?php echo $header ?? ''; ?>
 
-        <main class="container">
+        <main class="container mx-auto p-4">
             <?php echo $content ?? ''; ?>
         </main>
 

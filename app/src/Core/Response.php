@@ -14,7 +14,7 @@ class Response {
         $this->content = $content;
     }
 
-    public function setStatusCode(int $statusCode, string $statusText): void {
+    public function setStatus(int $statusCode, string $statusText): void {
         $this->statusCode = $statusCode;
         $this->statusText = $statusText;
     }

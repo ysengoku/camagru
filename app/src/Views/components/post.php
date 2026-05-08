@@ -1,8 +1,9 @@
-        <article class="post" id="post-<?php echo htmlspecialchars($post['id'], ENT_QUOTES); ?>">
-          <header>
-            <strong><?php echo htmlspecialchars($post['author_name'], ENT_QUOTES); ?></strong>
-            <span class="meta"><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($post['created_at'])), ENT_QUOTES); ?></span>
-          </header>
+
+  <article class="post" id="post-<?php echo htmlspecialchars($post['id'], ENT_QUOTES); ?>">
+    <header>
+      <strong><?php echo htmlspecialchars($post['author_name'], ENT_QUOTES); ?></strong>
+      <span class="meta"><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($post['created_at'])), ENT_QUOTES); ?></span>
+    </header>
 
             <?php if (!empty($post['image_path'])) : ?>
             <div class="post-image">
@@ -46,3 +47,4 @@
             <?php endif; ?>
           </section>
         </article>
+

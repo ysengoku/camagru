@@ -10,7 +10,7 @@
   <p>No posts yet.</p>
 <?php else : ?>
     <?php foreach ($posts as $post) : ?>
-    <hr>
+        <?php include __DIR__ . '/postPreview.php'; ?>
     <?php endforeach; ?>
 <?php endif; ?>
 

@@ -35,7 +35,7 @@ class Application {
         $controllerInstance = new $controllerClass();
         $content = $controllerInstance->run($action);
         $status = $controllerInstance->getStatus();
-        $this->response->setStatusCode($status['code'], $status['text']);
+        $this->response->setStatus($status['code'], $status['text'] ?? '');
         $this->response->setContent($content);
     }
 
@@ -44,7 +44,7 @@ class Application {
     }
 
     private function renderNotFound(): void {
-        $this->response->setStatusCode(404, 'Not Found');
+        $this->response->setStatus(404, 'Not Found');
         $this->response->setContent('404 Not Found'); // TODO
     }
 }
