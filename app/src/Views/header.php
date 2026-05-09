@@ -1,25 +1,23 @@
-<header>
-    <div class="flex justify-between align-center p-4">
-        <img src="/assets/img/logo.png" alt="Camagru Logo" class="logo">
-        <nav class="flex gap-2">
-            <a href="/" class="nav-link">
-                <?php $name = 'house'; include __DIR__ . '/components/icon.php'; ?>
-
-            </a>
+<header >
+    <div class="flex align-center px-4 pt-1 gap-4 relative">
+        <a href="/" class="logo-link">
+            <img src="/assets/img/logo.png" alt="Camagru Logo" class="logo">
+        </a>
+        <div class="navbar flex justify-between absolute bottom-0 right-0 px-4">
             <?php if ($user) : ?>
-                <a href="/profile" class="nav-link">
-                    <?php $name = 'user'; include __DIR__ . '/components/icon.php'; ?>
-                </a>    
-                        <use xlink:href="/assets/icons/user.svg#user-icon"></use>
-                    </svg>
-                </a>
-                <button type="submit" class="nav-link border-none bg-transparent">
-                    <?php $name = 'logout'; include __DIR__ . '/components/icon.php'; ?>
-                </button>
-                
-            <?php else : ?>
-                <a href="/login" class="nav-link">Login</a>
+                <?php include __DIR__ . '/components/navLink.php'; ?>
             <?php endif; ?>
-        </nav>
+            <nav class="flex gap-2">
+                <?php if ($user) : ?>
+                    <button type="submit" class="nav-action border-none bg-transparent p-0 font-size-4 color-gray-500 cursor-pointer" form="logout-form">
+                    Logout
+                    </button>
+                <?php else : ?>
+                    <a href="/login" class="nav-action font-size-4 color-gray-500 cursor-pointer text-decoration-none">
+                        Login
+                </a>
+                <?php endif; ?>
+            </nav>
+        </div>
     </div>
 </header>
