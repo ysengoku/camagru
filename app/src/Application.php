@@ -40,7 +40,13 @@ class Application {
     }
 
     private function getPathInfo(): string {
-        return $_SERVER['PATH_INFO'] ?? '';
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+        if (strpos($uri, '?') !== false) {
+            $uri = substr($uri, 0, strpos($uri, '?'));
+        }
+
+        return $uri === '/' ? '' : $uri;
     }
 
     private function renderNotFound(): void {

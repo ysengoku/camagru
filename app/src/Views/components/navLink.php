@@ -6,8 +6,8 @@
             <?php $name = 'gallery'; include __DIR__ . '/icon.php'; ?>
         </a>
     </div>
-    <div class="nav-link-container <?php echo strpos($current, 'edit') === 0 ? 'nav-link-active' : ''; ?>">
-        <a href="/edit" class="px-1 nav-link">
+    <div class="nav-link-container <?php echo strpos($current, '/studio') === 0 ? 'nav-link-active' : ''; ?>">
+        <a href="/studio" class="px-1 nav-link">
             <?php $name = 'camera'; include __DIR__ . '/icon.php'; ?>
         </a>
     </div>
