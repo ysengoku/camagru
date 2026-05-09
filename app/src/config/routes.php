@@ -4,6 +4,9 @@ $routes = [
     // Feed (root page)
     ['path' => '', 'controller' => 'feed', 'action' => 'index'],
 
+    // Post routes
+    ['path' => '/post/', 'controller' => 'post', 'action' => 'view'],
+
     // Auth routes
     ['path' => '/login', 'controller' => 'auth', 'action' => 'login'],
     ['path' => '/signup', 'controller' => 'auth', 'action' => 'signup'],

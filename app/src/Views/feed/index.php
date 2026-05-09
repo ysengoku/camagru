@@ -5,12 +5,14 @@
 //   id, author_name, author_id, image_path, caption, created_at, likes_count, comments (array)
 ?>
 
-
-<?php if (empty($posts)) : ?>
-  <p>No posts yet.</p>
-<?php else : ?>
-    <?php foreach ($posts as $post) : ?>
-        <?php include __DIR__ . '/postPreview.php'; ?>
-    <?php endforeach; ?>
-<?php endif; ?>
-
+<div class="p-4">
+    <?php if (empty($posts)) : ?>
+      <p>No posts found</p>
+    <?php else : ?>
+        <div class="grid grid-cols-auto gap-4">
+        <?php foreach ($posts as $post) : ?>
+            <?php include __DIR__ . '/postPreview.php'; ?>
+        <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>

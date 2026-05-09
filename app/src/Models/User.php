@@ -21,5 +21,16 @@ class User extends Model {
     public ?string $created_at        = '';
 
     public function __construct() {
+        
+    }
+
+    public function getCurrentUser(): ?self {
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+
+        $userId = $_SESSION['user_id'];
+
+        return $this->findById($userId);
     }
 }

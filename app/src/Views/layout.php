@@ -13,7 +13,7 @@
     <body>
         <?php echo $header ?? ''; ?>
 
-        <main class="container mx-auto p-4">
+        <main class="container mx-auto">
             <?php echo $content ?? ''; ?>
         </main>
 
