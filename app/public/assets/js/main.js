@@ -1,7 +1,7 @@
-import { logout } from './auth/logout.js';
+// import { logout } from './auth/logout.js';
 
-window.App = {
-  Auth: {
-    logout,
-  }
-};
+// window.App = {
+//   Auth: {
+//     logout,
+//   }
+// };

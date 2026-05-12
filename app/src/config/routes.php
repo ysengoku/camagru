@@ -16,9 +16,6 @@ $routes = [
 
     // Camera/Studio routes (authenticated only)
     ['path' => '/studio', 'controller' => 'studio', 'action' => 'index'],
-    ['path' => '/studio/capture', 'controller' => 'studio', 'action' => 'capture'],
-    ['path' => '/studio/upload', 'controller' => 'studio', 'action' => 'upload'],
-    ['path' => '/studio/delete', 'controller' => 'studio', 'action' => 'delete'],
 
     // User profile routes
     ['path' => '/profile', 'controller' => 'profile', 'action' => 'index'],

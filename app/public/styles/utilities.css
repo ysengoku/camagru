@@ -103,12 +103,18 @@
 .font-size-7 { font-size: 1.75rem; }
 .font-size-8 { font-size: 2rem; }
 
+.opacity-50 { opacity: 0.5; }
+
 /* -------- Other utilities -------- */
 .bg-transparent { background-color: transparent; }
 .bg-primary-100 { background-color: var(--primary-100); }
+.bg-gray-200 { background-color: var(--gray-200); }
 
 .text-decoration-none { text-decoration: none; }
 .border-none { border: none; }
 
 .cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
 .hover-scale:hover { transform: scale(1.1, 1.1); }
+
+.display-none { display: none; }
