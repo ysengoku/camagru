@@ -6,17 +6,17 @@ class StudioController extends Controller {
             // header('Location: /login');
             // exit();
 
-        // Load all overlays from the overlays directory
-        $overlays = [];
-        $overlayDir = __DIR__ . '/../../public/assets/overlays/';
-        if (is_dir($overlayDir)) {
-            $files = array_diff(scandir($overlayDir), ['.', '..']);
+        // Load all stickers from the stickers directory
+        $stickers = [];
+        $stickerDir = __DIR__ . '/../../public/assets/stickers/';
+        if (is_dir($stickerDir)) {
+            $files = array_diff(scandir($stickerDir), ['.', '..']);
             foreach ($files as $file) {
                 if (preg_match('/\.(png|jpg|jpeg|svg)$/i', $file)) {
-                    $overlays[] = '/assets/overlays/' . $file;
+                    $stickers[] = '/assets/stickers/' . $file;
                 }
             }
-            sort($overlays);
+            sort($stickers);
         }
 
         // Test data
@@ -48,7 +48,7 @@ class StudioController extends Controller {
         return $this->render([
             'user' => $user,
             'posts' => $posts,
-            'overlays' => $overlays
+            'stickers' => $stickers
         ]);
     }
 }

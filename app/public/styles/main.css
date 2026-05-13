@@ -1,3 +1,24 @@
+@font-face {
+  font-family: "Raleway";
+  src: url("/assets/fonts/Raleway-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Raleway";
+  src: url("/assets/fonts/Raleway-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Raleway";
+  src: url("/assets/fonts/Raleway-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
 :root {
   --primary-100: #f2fcfa;
   --primary-200: #b3fff4;
@@ -48,7 +69,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Raleway", sans-serif;
   background-image: linear-gradient(
     to right bottom,
     #009689,
@@ -65,6 +86,17 @@ body {
     #006e64
   );
   background-attachment: fixed;
+}
+
+/* Ensure form controls and buttons inherit the page font */
+button,
+input,
+select,
+textarea,
+optgroup,
+option {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 header {
@@ -226,7 +258,7 @@ p {
 }
 
 .studio-menu-button {
-  color: var(--secondary-500);
+  color: rgba(var(--secondary-500-rgb), 0.8);
 
   svg {
     width: 64px;
@@ -301,14 +333,38 @@ p {
   }
 }
 
-.overlay-container {
+#studio-tools {
   width: 640px;
-  height: 120px;
-  padding: 0 1rem;
 }
 
-#overlay-list {
-  width: 90%;
+#studio-tools-menu {
+  ul {
+    list-style-type: none;
+      li {
+        display: inline;
+        margin-right: 1rem;
+        padding: 0 0.5rem 0.25rem 0.5rem;
+    }
+  }
+}
+
+.tool-menu-item:has(.tool-active) {
+  border-bottom: 3px solid var(--primary-500);
+}
+
+.tool-active {
+  color: var(--primary-500);
+}
+
+.tool-container {
+  display: flex;
+  align-items: center;
+  width: 640px;
+  height: 96px;
+}
+
+#sticker-list {
+  width: 80%;
   height: 100%;
   overflow-x: auto;
   flex-wrap: nowrap;
@@ -317,11 +373,11 @@ p {
   scrollbar-width: none; /* Firefox */
 }
 
-#overlay-list::-webkit-scrollbar {
+#sticker-list::-webkit-scrollbar {
   display: none; /* Chrome */
 }
 
-.overlay-option {
+.stickers-option {
   width: 80px;
   height: 80px;
   flex-shrink: 0;
@@ -336,7 +392,7 @@ p {
   }
 }
 
-.overlay-option:hover {
+.sticker-option:hover {
   transform: scale(1.1, 1.1);
 }
 
@@ -347,6 +403,16 @@ p {
   height: 32px;
   border: none;
   background-color: transparent;
+  cursor: pointer;
+}
+
+.filter-option {
+  width: 80px;
+  height: 80px;
+  margin: 0 0.5rem;
+  border-radius: 50%;
+  background-color: var(--primary-600); /* TODO: Use actual filter preview images */
+  border: none;
   cursor: pointer;
 }
 
