@@ -13,17 +13,18 @@ class StudioManager {
       captureButtonDisabled: true,
       selectedTool: 'stickers',
       selectedStickers: [],
+      selectedFilter: 'none',
     };
 
     this.config = {
       toolMenuItems: [],
+      filterItems: [],
+      canvasAspectRatio: null,
+      stickerInitialPosX: null,
+      stickerInitialPosY: null,
     };
 
     this.videoStream = null;
-
-    this.canvasAspectRatio = null;
-    this.stickerInitialPosX = null;
-    this.stickerInitialPosY = null;
 
     this.studioMenu = document.getElementById('studio-menu');
     this.editorContainer = document.getElementById('studio-editor');
@@ -47,9 +48,11 @@ class StudioManager {
     this.shareButton = document.getElementById('share-button');
     this.resetButton = document.getElementById('reset-button');
 
+    // TODO: Do in initCanvas
     this.initStudioMenu();
-    this.initTools();
+    this.initToolMenu();
     this.initStickerTool();
+    this.initFiltersTool();
   }
 
   async initWebcam() {
@@ -69,15 +72,20 @@ class StudioManager {
   }
 
   initCanvas() {
+    // this.initStudioMenu();
+    // this.initToolMenu();
+    // this.initStickerTool();
+    // this.initFiltersTool();
+
     const computedStyle = getComputedStyle(this.canvas);
     const cssWidth = parseInt(computedStyle.width);
     const cssHeight = parseInt(computedStyle.height);
 
     this.canvas.width = cssWidth;
     this.canvas.height = cssHeight;
-    this.canvasAspectRatio = cssWidth / cssHeight;
-    this.stickerInitialPosX = cssWidth * 0.25;
-    this.stickerInitialPosY = cssHeight * 0.25;
+    this.config.canvasAspectRatio = cssWidth / cssHeight;
+    this.config.stickerInitialPosX = cssWidth * 0.25;
+    this.config.stickerInitialPosY = cssHeight * 0.25;
     this.canvasContext = this.canvas.getContext('2d');
   }
 
@@ -99,7 +107,7 @@ class StudioManager {
     });
   }
 
-  initTools() {
+  initToolMenu() {
     this.config.toolMenuItems = [
       {
         button: this.stickerToolButton,
@@ -131,6 +139,42 @@ class StudioManager {
       }
       const stickerPath = stickerBtn.dataset.sticker;
       this.selectSticker(stickerPath);
+    });
+  }
+
+  async initFiltersTool() {
+    // Fetch filter definitions from server config
+    try {
+      const response = await fetch('/api/filters');
+      const filters = await response.json();
+
+      this.config.filterItems = Object.entries(filters).map(
+        ([key, config]) => ({
+          button: document.getElementById(`filter-${key}`),
+          filter: key,
+          filterValue: config.css,
+        })
+      );
+
+      // Dynamically create CSS classes for filters
+      const styleSheet = document.createElement('style');
+      Object.entries(filters).forEach(([key, config]) => {
+        styleSheet.textContent += `.filter-${key} { filter: ${config.css}; }\n`;
+      });
+      document.head.appendChild(styleSheet);
+    } catch (error) {
+      console.error('Error loading filters:', error);
+      // TODO: Show error message to user
+      return;
+    }
+
+    this.filtersTool?.addEventListener('click', (e) => {
+      const filterBtn = e.target.closest('button[data-filter]');
+      if (!filterBtn) {
+        return;
+      }
+      const filterName = filterBtn.dataset.filter;
+      this.applyFilter(filterName);
     });
   }
 
@@ -210,27 +254,27 @@ class StudioManager {
 
     const img = new Image();
     img.onload = () => {
-      this.aspectRatio = img.naturalWidth / img.naturalHeight;
+      const aspectRatio = img.naturalWidth / img.naturalHeight;
 
       let drawWidth, drawHeight;
-      if (this.aspectRatio > this.canvasAspectRatio) {
+      if (aspectRatio > this.config.canvasAspectRatio) {
         drawWidth = this.canvas.width * 0.5;
-        drawHeight = (this.canvas.width / this.aspectRatio) * 0.5;
+        drawHeight = (this.canvas.width / aspectRatio) * 0.5;
       } else {
         drawHeight = this.canvas.height * 0.5;
-        drawWidth = this.canvas.height * this.aspectRatio * 0.5;
+        drawWidth = this.canvas.height * aspectRatio * 0.5;
       }
       this.canvasContext.drawImage(
         img,
-        this.stickerInitialPosX,
-        this.stickerInitialPosY,
+        this.config.stickerInitialPosX,
+        this.config.stickerInitialPosY,
         drawWidth,
         drawHeight
       );
       this.stickerData = {
         path: stickerPath,
-        x: this.stickerInitialPosX,
-        y: this.stickerInitialPosY,
+        x: this.config.stickerInitialPosX,
+        y: this.config.stickerInitialPosY,
         width: drawWidth,
         height: drawHeight,
       };
@@ -240,7 +284,23 @@ class StudioManager {
     this.updateCaptureButtonState();
   }
 
-  // applyFilter(filterName) {}
+  applyFilter(filterName) {
+    if (!this.state.inEditor) {
+      return;
+    }
+
+    const selectedFilterObj = this.config.filterItems.find(
+      (item) => item.filter === filterName
+    );
+
+    this.config.filterItems.forEach(({ button, filter }) => {
+      const isActive = filter === filterName;
+      button.classList.toggle('selected-filter', isActive);
+    });
+
+    this.state.selectedFilter = filterName;
+    this.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
+  }
 
   capturePhoto() {}
 

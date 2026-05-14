@@ -1,22 +1,22 @@
 @import './utilities.css';
 
 @font-face {
-  font-family: "Raleway";
-  src: url("/assets/fonts/Raleway-Regular.ttf") format("truetype");
+  font-family: 'Raleway';
+  src: url('/assets/fonts/Raleway-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url("/assets/fonts/Raleway-Medium.ttf") format("truetype");
+  font-family: 'Raleway';
+  src: url('/assets/fonts/Raleway-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Raleway";
-  src: url("/assets/fonts/Raleway-SemiBold.ttf") format("truetype");
+  font-family: 'Raleway';
+  src: url('/assets/fonts/Raleway-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
@@ -71,7 +71,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   background-image: linear-gradient(
     to right bottom,
     #009689,
@@ -342,10 +342,10 @@ p {
 #studio-tools-menu {
   ul {
     list-style-type: none;
-      li {
-        display: inline;
-        margin-right: 1rem;
-        padding: 0 0.5rem 0.25rem 0.5rem;
+    li {
+      display: inline;
+      margin-right: 1rem;
+      padding: 0 0.5rem 0.25rem 0.5rem;
     }
   }
 }
@@ -394,7 +394,8 @@ p {
   }
 }
 
-.sticker-option:hover {
+.sticker-option:hover,
+.filter-option:hover {
   transform: scale(1.1, 1.1);
 }
 
@@ -412,10 +413,26 @@ p {
   width: 80px;
   height: 80px;
   margin: 0 0.5rem;
+  padding: 0;
+  background-color: transparent;
   border-radius: 50%;
-  background-color: var(--primary-600); /* TODO: Use actual filter preview images */
   border: none;
   cursor: pointer;
+
+  img {
+    width: 100%;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+}
+
+.selected-filter {
+  border: 3px solid var(--secondary-400);
+}
+
+.selected-filter:hover {
+  transform: none;
 }
 
 .confirmation-message {

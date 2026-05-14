@@ -5,7 +5,7 @@
                 <button
                     type="button"
                     id="stickers-tool-btn"
-                    class="tool-active border-none bg-transparent"
+                    class="tool-active border-none bg-transparent cursor-pointer"
                     data-tool="stickers"
                     aria-controls="stickers"
                 >
@@ -17,7 +17,7 @@
                 <button
                     type="button"
                     id="text-tool-btn"
-                    class="border-none bg-transparent"
+                    class="border-none bg-transparent cursor-pointer"
                     data-tool="textTool"
                     aria-controls="textTool"
                 >
@@ -29,7 +29,7 @@
                 <button
                     type="button"
                     id="filters-tool-btn"
-                    class="border-none bg-transparent"
+                    class="border-none bg-transparent cursor-pointer"
                     data-tool="filters"
                     aria-controls="filters"
                 >

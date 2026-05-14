@@ -3,6 +3,7 @@ output.css
 
 node_modules/
 app/vendor/
+.vite/
 
 # storage for user uploads
 storage/media/
