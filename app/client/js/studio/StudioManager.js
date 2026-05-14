@@ -11,7 +11,7 @@ class StudioManager {
       inEditor: false,
       userPhoto: null,
       captureButtonDisabled: true,
-      selectedTool: "stickers",
+      selectedTool: 'stickers',
       selectedStickers: [],
     };
 
@@ -25,27 +25,27 @@ class StudioManager {
     this.stickerInitialPosX = null;
     this.stickerInitialPosY = null;
 
-    this.studioMenu = document.getElementById("studio-menu");
-    this.editorContainer = document.getElementById("studio-editor");
-    this.video = document.getElementById("webcam");
-    this.canvas = document.getElementById("studio-preview");
+    this.studioMenu = document.getElementById('studio-menu');
+    this.editorContainer = document.getElementById('studio-editor');
+    this.video = document.getElementById('webcam');
+    this.canvas = document.getElementById('studio-preview');
 
-    this.toolMenu = document.getElementById("studio-tools-menu");
-    this.stickerToolButton = document.getElementById("stickers-tool-btn");
-    this.textToolButton = document.getElementById("text-tool-btn");
-    this.filtersToolButton = document.getElementById("filters-tool-btn");
-    this.stickerTool = document.getElementById("stickers");
-    this.textTool = document.getElementById("textTool");
-    this.filtersTool = document.getElementById("filters");
+    this.toolMenu = document.getElementById('studio-tools-menu');
+    this.stickerToolButton = document.getElementById('stickers-tool-btn');
+    this.textToolButton = document.getElementById('text-tool-btn');
+    this.filtersToolButton = document.getElementById('filters-tool-btn');
+    this.stickerTool = document.getElementById('stickers');
+    this.textTool = document.getElementById('textTool');
+    this.filtersTool = document.getElementById('filters');
 
-    this.stickerList = document.getElementById("sticker-list");
-    this.scrollLeftBtn = document.querySelector(".scroll-left");
-    this.scrollRightBtn = document.querySelector(".scroll-right");
+    this.stickerList = document.getElementById('sticker-list');
+    this.scrollLeftBtn = document.querySelector('.scroll-left');
+    this.scrollRightBtn = document.querySelector('.scroll-right');
 
-    this.captureButton = document.getElementById("capture-button");
-    this.uploadButton = document.getElementById("upload-button");
-    this.shareButton = document.getElementById("share-button");
-    this.resetButton = document.getElementById("reset-button");
+    this.captureButton = document.getElementById('capture-button');
+    this.uploadButton = document.getElementById('upload-button');
+    this.shareButton = document.getElementById('share-button');
+    this.resetButton = document.getElementById('reset-button');
 
     this.initStudioMenu();
     this.initTools();
@@ -60,11 +60,11 @@ class StudioManager {
       this.video.srcObject = this.stream;
       this.videoStream = this.stream;
       this.initCanvas();
-      this.editorContainer.classList.remove("display-none");
-      this.studioMenu.classList.add("display-none");
+      this.editorContainer.classList.remove('display-none');
+      this.studioMenu.classList.add('display-none');
       this.state.inEditor = true;
     } catch (error) {
-      console.error("Error accessing webcam:", error);
+      console.error('Error accessing webcam:', error);
     }
   }
 
@@ -78,22 +78,22 @@ class StudioManager {
     this.canvasAspectRatio = cssWidth / cssHeight;
     this.stickerInitialPosX = cssWidth * 0.25;
     this.stickerInitialPosY = cssHeight * 0.25;
-    this.canvasContext = this.canvas.getContext("2d");
+    this.canvasContext = this.canvas.getContext('2d');
   }
 
   initUploadForm() {}
 
   initStudioMenu() {
-    this.studioMenu?.addEventListener("click", (e) => {
-      const actionBtn = e.target.closest("button[data-action]");
+    this.studioMenu?.addEventListener('click', (e) => {
+      const actionBtn = e.target.closest('button[data-action]');
       if (!actionBtn) {
         return;
       }
 
       const action = actionBtn.dataset.action;
-      if (action === "webcam") {
+      if (action === 'webcam') {
         this.initWebcam();
-      } else if (action === "upload") {
+      } else if (action === 'upload') {
         this.initUploadForm();
       }
     });
@@ -104,28 +104,28 @@ class StudioManager {
       {
         button: this.stickerToolButton,
         panel: this.stickerTool,
-        id: "stickers",
+        id: 'stickers',
       },
-      { button: this.textToolButton, panel: this.textTool, id: "textTool" },
+      { button: this.textToolButton, panel: this.textTool, id: 'textTool' },
       {
         button: this.filtersToolButton,
         panel: this.filtersTool,
-        id: "filters",
+        id: 'filters',
       },
     ];
 
-    this.toolMenu?.addEventListener("click", (e) => this.selectTool(e.target));
+    this.toolMenu?.addEventListener('click', (e) => this.selectTool(e.target));
 
-    this.stickerList?.addEventListener("scroll", () => {
+    this.stickerList?.addEventListener('scroll', () => {
       this.updateScrollButtons();
     });
-    this.scrollLeftBtn.addEventListener("click", () => this.scroll("left"));
-    this.scrollRightBtn.addEventListener("click", () => this.scroll("right"));
+    this.scrollLeftBtn.addEventListener('click', () => this.scroll('left'));
+    this.scrollRightBtn.addEventListener('click', () => this.scroll('right'));
   }
 
   initStickerTool() {
-    this.stickerList?.addEventListener("click", (e) => {
-      const stickerBtn = e.target.closest("button[data-sticker]");
+    this.stickerList?.addEventListener('click', (e) => {
+      const stickerBtn = e.target.closest('button[data-sticker]');
       if (!stickerBtn) {
         return;
       }
@@ -140,13 +140,13 @@ class StudioManager {
       this.state.captureButtonDisabled
     ) {
       this.state.captureButtonDisabled = false;
-      this.captureButton.removeAttribute("disabled");
+      this.captureButton.removeAttribute('disabled');
     } else if (
       this.state.selectedStickers.length === 0 &&
       !this.state.captureButtonDisabled
     ) {
       this.state.captureButtonDisabled = true;
-      this.captureButton.setAttribute("disabled", "disabled");
+      this.captureButton.setAttribute('disabled', 'disabled');
     }
   }
 
@@ -155,22 +155,22 @@ class StudioManager {
       return;
     }
 
-    const selectedTool = target.closest("button[data-tool]");
-    console.log("Selected:", selectedTool);
+    const selectedTool = target.closest('button[data-tool]');
+    console.log('Selected:', selectedTool);
     if (!selectedTool) {
       return;
     }
 
     const tool = selectedTool.dataset.tool;
-    console.log("Selected tool:", tool);
+    console.log('Selected tool:', tool);
     this.state.selectedTool = tool;
 
     this.config.toolMenuItems.forEach(({ button, panel, id }) => {
       const isActive = id === tool;
       console.log(`Updating tool: ${id}, isActive: ${isActive}`);
-      button.classList.toggle("tool-active", isActive);
-      button.setAttribute("aria-selected", isActive);
-      panel.classList.toggle("display-none", !isActive);
+      button.classList.toggle('tool-active', isActive);
+      button.setAttribute('aria-selected', isActive);
+      panel.classList.toggle('display-none', !isActive);
     });
   }
 
@@ -180,24 +180,24 @@ class StudioManager {
     const clientWidth = this.stickerList.clientWidth;
 
     scrollLeft === 0
-      ? this.scrollLeftBtn.classList.add("opacity-50", "cursor-not-allowed")
-      : this.scrollLeftBtn.classList.remove("opacity-50", "cursor-not-allowed");
+      ? this.scrollLeftBtn.classList.add('opacity-50', 'cursor-not-allowed')
+      : this.scrollLeftBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
     scrollLeft + clientWidth >= scrollWidth - 10
-      ? this.scrollRightBtn.classList.add("opacity-50", "cursor-not-allowed")
+      ? this.scrollRightBtn.classList.add('opacity-50', 'cursor-not-allowed')
       : this.scrollRightBtn.classList.remove(
-          "opacity-50",
-          "cursor-not-allowed",
-        );
+        'opacity-50',
+        'cursor-not-allowed'
+      );
   }
 
   scroll(direction) {
     const scrollAmount = 120;
 
-    if (direction === "left") {
-      this.stickerList.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-    } else if (direction === "right") {
-      this.stickerList.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    if (direction === 'left') {
+      this.stickerList.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else if (direction === 'right') {
+      this.stickerList.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
 
     setTimeout(() => this.updateScrollButtons(), 100);
@@ -225,7 +225,7 @@ class StudioManager {
         this.stickerInitialPosX,
         this.stickerInitialPosY,
         drawWidth,
-        drawHeight,
+        drawHeight
       );
       this.stickerData = {
         path: stickerPath,
@@ -240,19 +240,19 @@ class StudioManager {
     this.updateCaptureButtonState();
   }
 
-  applyFilter(filterName) {}
+  // applyFilter(filterName) {}
 
   capturePhoto() {}
 
   sharePhoto() {}
 
   resetStudio() {
-    this.shareButton.classList.add("display-none");
-    this.resetButton.classList.add("display-none");
-    this.captureButton.classList.remove("display-none");
-    this.uploadButton.classList.remove("display-none");
+    this.shareButton.classList.add('display-none');
+    this.resetButton.classList.add('display-none');
+    this.captureButton.classList.remove('display-none');
+    this.uploadButton.classList.remove('display-none');
     this.state.selectedStickers = [];
-    this.canvasContext = this.canvas.getContext("2d");
+    this.canvasContext = this.canvas.getContext('2d');
     this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 

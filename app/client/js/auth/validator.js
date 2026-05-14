@@ -25,7 +25,8 @@ class Validator {
     if (!regex.test(username)) {
       return {
         valid: false,
-        message: 'Username can only contain letters, numbers, underscore, and hyphen',
+        message:
+          'Username can only contain letters, numbers, underscore, and hyphen',
       };
     }
     return { valid: true };
@@ -70,9 +71,16 @@ class Validator {
       };
     }
     if (password.toLowerCase().includes(username.toLowerCase())) {
-      return { valid: false, message: 'Password must not contain the username' };
+      return {
+        valid: false,
+        message: 'Password must not contain the username',
+      };
     }
-    if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    if (
+      !/[a-z]/.test(password) ||
+      !/[A-Z]/.test(password) ||
+      !/[0-9]/.test(password)
+    ) {
       return {
         valid: false,
         message:

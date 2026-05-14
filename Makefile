@@ -3,6 +3,7 @@ COMPOSE_FILE_DEV = ./docker-compose.dev.yml
 COMPOSE_FILE_PROD = ./docker-compose.prod.yml
 
 APP_CONTAINER = camagru_app
+CLIENT_CONTAINER = camagru_client
 NGINX_CONTAINER = camagru_nginx
 DB_CONTAINER = camagru_database
 
@@ -44,17 +45,23 @@ dev: build-dev
 test-app:
 	docker exec $(APP_CONTAINER) npm run test
 
+lint-js:
+	docker exec $(CLIENT_CONTAINER) npm run lint
+
+format-js:
+	docker exec $(CLIENT_CONTAINER) npm run format:fix
+
 lint-php:
 	docker exec $(APP_CONTAINER) vendor/bin/phpcs --standard=phpcs.xml src
 
-fix-php:
+format-php:
 	docker exec $(APP_CONTAINER) vendor/bin/phpcbf --standard=phpcs.xml src
 
 psalm:
 	docker exec $(APP_CONTAINER) composer psalm
 
 quality-php:
-	$(MAKE) fix-php
+	$(MAKE) format-php
 	$(MAKE) psalm
 
-.PHONY: all dev up down clean fclean lint-php fix-php psalm quality-php
+.PHONY: all dev up down clean fclean lint-js format-js lint-php format-php psalm quality-php
