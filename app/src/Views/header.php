@@ -1,3 +1,6 @@
+<?php
+?>
+
 <header >
     <div class="flex align-center px-4 pt-1 gap-4 relative">
         <a href="/" class="logo-link">

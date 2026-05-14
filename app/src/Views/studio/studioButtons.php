@@ -1,3 +1,6 @@
+<?php
+?>
+
 <div class="studio-buttons flex justify-center my-4 gap-2">
     <button
       type="button"
