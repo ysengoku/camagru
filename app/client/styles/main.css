@@ -291,8 +291,6 @@ p {
 }
 
 .studio-buttons {
-  position: absolute;
-  bottom: 24px;
   display: flex;
   justify-content: center;
   margin-top: 1rem;
@@ -433,6 +431,31 @@ p {
 
 .selected-filter:hover {
   transform: none;
+}
+
+.studio-editor-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  margin: 0 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to left bottom, #006e64, #008276, #009689, #00ab9c, #00c0b0);
+  color: var(--primary-100);
+  cursor: pointer;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+#back-to-menu-button.studio-editor-button,
+#reset-button.studio-editor-button {
+  background-image: none;
+  background-color: transparent;
+  color: var(--primary-600);
 }
 
 .confirmation-message {

@@ -1,5 +1,5 @@
 <div id="studio-container">
-    <div id="studio-canvas" class="studio-section">
+    <div id="studio-canvas" class="flex-col align-center justify-center">
         <?php include __DIR__ . '/studioTools.php'; ?>
 
         <?php include __DIR__ . '/studioMenu.php'; ?>

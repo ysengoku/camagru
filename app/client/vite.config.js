@@ -19,10 +19,6 @@ export default defineConfig({
     port: 5173,
     middlewareMode: false,
     allowedHosts: ["client", "localhost", "127.0.0.1"],
-    hmr: {
-      host: "localhost",
-      port: 8080,
-      protocol: "ws",
-    },
+    hmr: false,
   },
 });

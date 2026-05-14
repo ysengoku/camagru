@@ -1,3 +1,5 @@
+import { validateUploadedFile } from './validator';
+
 class StudioManager {
   static #instance = null;
 
@@ -9,7 +11,12 @@ class StudioManager {
 
     this.state = {
       inEditor: false,
-      userPhoto: null,
+      uploadedImage: {
+        offsetX: 0,
+        offsetY: 0,
+        zoom: 1,
+        img: null,
+      },
       captureButtonDisabled: true,
       selectedTool: 'stickers',
       selectedStickers: [],
@@ -17,6 +24,7 @@ class StudioManager {
     };
 
     this.config = {
+      maxUploadFileSize: 5 * 1024 * 1024,
       toolMenuItems: [],
       filterItems: [],
       canvasAspectRatio: null,
@@ -27,6 +35,8 @@ class StudioManager {
     this.videoStream = null;
 
     this.studioMenu = document.getElementById('studio-menu');
+    this.webcamButton = document.getElementById('webcam-button');
+    this.uploadInput = document.getElementById('upload-input');
     this.editorContainer = document.getElementById('studio-editor');
     this.video = document.getElementById('webcam');
     this.canvas = document.getElementById('studio-preview');
@@ -44,15 +54,30 @@ class StudioManager {
     this.scrollRightBtn = document.querySelector('.scroll-right');
 
     this.captureButton = document.getElementById('capture-button');
-    this.uploadButton = document.getElementById('upload-button');
     this.shareButton = document.getElementById('share-button');
     this.resetButton = document.getElementById('reset-button');
 
-    // TODO: Do in initCanvas
     this.initStudioMenu();
     this.initToolMenu();
     this.initStickerTool();
     this.initFiltersTool();
+  }
+
+  initCanvas() {
+    // this.initToolMenu();
+    // this.initStickerTool();
+    // this.initFiltersTool();
+
+    const computedStyle = getComputedStyle(this.canvas);
+    const cssWidth = parseInt(computedStyle.width);
+    const cssHeight = parseInt(computedStyle.height);
+
+    this.canvas.width = cssWidth;
+    this.canvas.height = cssHeight;
+    this.config.canvasAspectRatio = cssWidth / cssHeight;
+    this.config.stickerInitialPosX = cssWidth * 0.25;
+    this.config.stickerInitialPosY = cssHeight * 0.25;
+    this.canvasContext = this.canvas.getContext('2d');
   }
 
   async initWebcam() {
@@ -71,40 +96,11 @@ class StudioManager {
     }
   }
 
-  initCanvas() {
-    // this.initStudioMenu();
-    // this.initToolMenu();
-    // this.initStickerTool();
-    // this.initFiltersTool();
-
-    const computedStyle = getComputedStyle(this.canvas);
-    const cssWidth = parseInt(computedStyle.width);
-    const cssHeight = parseInt(computedStyle.height);
-
-    this.canvas.width = cssWidth;
-    this.canvas.height = cssHeight;
-    this.config.canvasAspectRatio = cssWidth / cssHeight;
-    this.config.stickerInitialPosX = cssWidth * 0.25;
-    this.config.stickerInitialPosY = cssHeight * 0.25;
-    this.canvasContext = this.canvas.getContext('2d');
-  }
-
-  initUploadForm() {}
-
   initStudioMenu() {
-    this.studioMenu?.addEventListener('click', (e) => {
-      const actionBtn = e.target.closest('button[data-action]');
-      if (!actionBtn) {
-        return;
-      }
-
-      const action = actionBtn.dataset.action;
-      if (action === 'webcam') {
-        this.initWebcam();
-      } else if (action === 'upload') {
-        this.initUploadForm();
-      }
-    });
+    this.webcamButton?.addEventListener('click', () => this.initWebcam());
+    this.uploadInput?.addEventListener('change', async (e) =>
+      this.handleFileUpload(e.target.files[0])
+    );
   }
 
   initToolMenu() {
@@ -178,22 +174,79 @@ class StudioManager {
     });
   }
 
-  updateCaptureButtonState() {
-    if (
-      this.state.selectedStickers.length > 0 &&
-      this.state.captureButtonDisabled
-    ) {
-      this.state.captureButtonDisabled = false;
-      this.captureButton.removeAttribute('disabled');
-    } else if (
-      this.state.selectedStickers.length === 0 &&
-      !this.state.captureButtonDisabled
-    ) {
-      this.state.captureButtonDisabled = true;
-      this.captureButton.setAttribute('disabled', 'disabled');
+  // ======== File Upload Handling =========================================
+  async handleFileUpload(file) {
+    if (!file) {
+      return;
     }
+
+    const validationError = await validateUploadedFile(
+      file,
+      this.config.maxUploadFileSize
+    );
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    this.initCanvas();
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        this.state.uploadedImage.img = img;
+        this.state.uploadedImage.offsetX = 0;
+        this.state.uploadedImage.offsetY = 0;
+        this.state.uploadedImage.zoom = 1;
+
+        this.redrawUploadedImage();
+
+        this.editorContainer.classList.remove('display-none');
+        this.studioMenu.classList.add('display-none');
+        this.state.inEditor = true;
+      };
+      img.onerror = () => {
+        alert('Failed to load image');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
+  redrawUploadedImage() {
+    if (!this.state.uploadedImage.img) {
+      return;
+    }
+
+    const img = this.state.uploadedImage.img;
+    const offsetX = this.state.uploadedImage.offsetX;
+    const offsetY = this.state.uploadedImage.offsetY;
+    const zoom = this.state.uploadedImage.zoom;
+
+    this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+    const imgAspectRatio = img.naturalWidth / img.naturalHeight;
+    const canvasAspectRatio = canvasWidth / canvasHeight;
+
+    let drawWidth, drawHeight;
+    if (imgAspectRatio > canvasAspectRatio) {
+      drawWidth = canvasWidth * zoom;
+      drawHeight = (canvasWidth / imgAspectRatio) * zoom;
+    } else {
+      drawHeight = canvasHeight * zoom;
+      drawWidth = canvasHeight * imgAspectRatio * zoom;
+    }
+
+    const x = (canvasWidth - drawWidth) / 2 + offsetX;
+    const y = (canvasHeight - drawHeight) / 2 + offsetY;
+
+    this.canvasContext.drawImage(img, x, y, drawWidth, drawHeight);
+  }
+
+  // ======== Tool Handling ================================================
   selectTool(target) {
     if (!this.state.inEditor) {
       return;
@@ -218,6 +271,7 @@ class StudioManager {
     });
   }
 
+  // ----- Stickers -----
   updateScrollButtons() {
     const scrollLeft = this.stickerList.scrollLeft;
     const scrollWidth = this.stickerList.scrollWidth;
@@ -284,6 +338,7 @@ class StudioManager {
     this.updateCaptureButtonState();
   }
 
+  // ----- Filters -----
   applyFilter(filterName) {
     if (!this.state.inEditor) {
       return;
@@ -302,11 +357,28 @@ class StudioManager {
     this.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
   }
 
+  // ======== Capture, Share, Reset =======================================
+  updateCaptureButtonState() {
+    if (
+      this.state.selectedStickers.length > 0 &&
+      this.state.captureButtonDisabled
+    ) {
+      this.state.captureButtonDisabled = false;
+      this.captureButton.removeAttribute('disabled');
+    } else if (
+      this.state.selectedStickers.length === 0 &&
+      !this.state.captureButtonDisabled
+    ) {
+      this.state.captureButtonDisabled = true;
+      this.captureButton.setAttribute('disabled', 'disabled');
+    }
+  }
+
   capturePhoto() {}
 
   sharePhoto() {}
 
-  resetStudio() {
+  resetEditor() {
     this.shareButton.classList.add('display-none');
     this.resetButton.classList.add('display-none');
     this.captureButton.classList.remove('display-none');
@@ -314,6 +386,18 @@ class StudioManager {
     this.state.selectedStickers = [];
     this.canvasContext = this.canvas.getContext('2d');
     this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  resetStudio() {
+    if (this.videoStream) {
+      this.videoStream.getTracks().forEach((track) => track.stop());
+      this.video.srcObject = null;
+      this.videoStream = null;
+    }
+    this.resetEditor();
+    this.editorContainer.classList.add('display-none');
+    this.studioMenu.classList.remove('display-none');
+    this.state.inEditor = false;
   }
 
   static getInstance() {
