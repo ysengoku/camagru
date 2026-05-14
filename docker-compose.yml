@@ -19,6 +19,18 @@ services:
     volumes:
       - media_volume:/var/www/storage/media
 
+  client:
+    container_name: camagru_client
+    build:
+      context: ./app/client
+      dockerfile: Dockerfile
+    networks:
+      - camagru_network
+    env_file:
+      - .env
+    depends_on:
+      - app
+
   nginx:
     container_name: camagru_nginx
     build:
