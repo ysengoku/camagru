@@ -186,9 +186,9 @@ class StudioManager {
     scrollLeft + clientWidth >= scrollWidth - 10
       ? this.scrollRightBtn.classList.add('opacity-50', 'cursor-not-allowed')
       : this.scrollRightBtn.classList.remove(
-        'opacity-50',
-        'cursor-not-allowed'
-      );
+          'opacity-50',
+          'cursor-not-allowed'
+        );
   }
 
   scroll(direction) {
