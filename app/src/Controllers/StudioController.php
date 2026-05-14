@@ -1,7 +1,7 @@
 <?php
 
-class StudioController extends Controller {
-    public function index() {
+final class StudioController extends Controller {
+    public function index(): string {
         // If the user is not authenticated, redirect to login page
             // header('Location: /login');
             // exit();
@@ -10,7 +10,7 @@ class StudioController extends Controller {
         $stickers = [];
         $stickerDir = __DIR__ . '/../../public/assets/stickers/';
         if (is_dir($stickerDir)) {
-            $files = array_diff(scandir($stickerDir), ['.', '..']);
+            $files = array_diff(scandir($stickerDir) ?: [], ['.', '..']);
             foreach ($files as $file) {
                 if (preg_match('/\.(png|jpg|jpeg|svg)$/i', $file)) {
                     $stickers[] = '/assets/stickers/' . $file;

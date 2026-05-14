@@ -3,9 +3,9 @@ const API_BASE_URL = `${location.protocol}//${location.host}/api/`;
 export const ENDPOINTS = {
   SIGNUP: `${API_BASE_URL}signup`,
   LOGIN: `${API_BASE_URL}login`,
-}
+};
 
-export const HEADER = '{ \'Content-Type\': \'application/json\' }';
+export const HEADER = '{ "Content-Type": "application/json" }';
 
 // export async function apiRequest(method, endpoint, data = null, isFileUpload = false, needToken = true) {
 //   const url = `${endpoint}`;

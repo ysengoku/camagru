@@ -1,0 +1,53 @@
+name: Server tests
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "app/src/**"
+      - "app/public/**"
+      - "app/composer.json"
+      - ".github/workflows/server.yml"
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "app/src/**"
+      - "app/public/**"
+      - "app/composer.json"
+
+jobs:
+  phpcs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
+      - name: Install Composer dependencies
+        working-directory: ./app
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPCodeSniffer
+        working-directory: ./app
+        run: composer lint
+
+  psalm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
+      - name: Install Composer dependencies
+        working-directory: ./app
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run Psalm
+        working-directory: ./app
+        run: composer psalm

@@ -36,7 +36,7 @@
       <code><![CDATA[$currentUser]]></code>
     </UnusedVariable>
   </file>
-  <file src="src/Core/Controller.php">
+  <file src="src/core/Controller.php">
     <MissingConstructor>
       <code><![CDATA[$actionName]]></code>
     </MissingConstructor>
@@ -47,7 +47,7 @@
       <code><![CDATA[HTTPNotFoundException]]></code>
     </UndefinedClass>
   </file>
-  <file src="src/Core/Database.php">
+  <file src="src/core/Database.php">
     <ClassMustBeFinal>
       <code><![CDATA[Database]]></code>
     </ClassMustBeFinal>
@@ -73,7 +73,7 @@
       <code><![CDATA[$this->query($sql, $params) !== false]]></code>
     </RedundantCondition>
   </file>
-  <file src="src/Core/Model.php">
+  <file src="src/core/Model.php">
     <InvalidReturnStatement>
       <code><![CDATA[$queries]]></code>
     </InvalidReturnStatement>
@@ -86,12 +86,12 @@
       <code><![CDATA[getDb]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Core/Router.php">
+  <file src="src/core/Router.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[__construct]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="src/Core/View.php">
+  <file src="src/core/View.php">
     <ClassMustBeFinal>
       <code><![CDATA[View]]></code>
     </ClassMustBeFinal>

@@ -5,6 +5,11 @@ services:
     environment:
       - NODE_ENV=production
 
+  client:
+    build:
+      context: ./app/client
+      target: build
+
   nginx:
     build:
       target: production

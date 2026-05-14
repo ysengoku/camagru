@@ -1,16 +1,23 @@
 class StudioManager {
+  static #instance = null;
+
   constructor() {
-    this.state = {
-        inEditor: false,
-        userPhoto: null,
-        captureButtonDisabled : true,
-        selectedTool : 'stickers',
-        selectedStickers : [],
+    if (StudioManager.#instance) {
+      return StudioManager.#instance;
     }
+    StudioManager.#instance = this;
+
+    this.state = {
+      inEditor: false,
+      userPhoto: null,
+      captureButtonDisabled: true,
+      selectedTool: 'stickers',
+      selectedStickers: [],
+    };
 
     this.config = {
-        toolMenuItems: [],
-    }
+      toolMenuItems: [],
+    };
 
     this.videoStream = null;
 
@@ -40,7 +47,9 @@ class StudioManager {
     this.shareButton = document.getElementById('share-button');
     this.resetButton = document.getElementById('reset-button');
 
+    this.initStudioMenu();
     this.initTools();
+    this.initStickerTool();
   }
 
   async initWebcam() {
@@ -72,11 +81,37 @@ class StudioManager {
     this.canvasContext = this.canvas.getContext('2d');
   }
 
+  initUploadForm() {}
+
+  initStudioMenu() {
+    this.studioMenu?.addEventListener('click', (e) => {
+      const actionBtn = e.target.closest('button[data-action]');
+      if (!actionBtn) {
+        return;
+      }
+
+      const action = actionBtn.dataset.action;
+      if (action === 'webcam') {
+        this.initWebcam();
+      } else if (action === 'upload') {
+        this.initUploadForm();
+      }
+    });
+  }
+
   initTools() {
     this.config.toolMenuItems = [
-        { button: this.stickerToolButton, panel: this.stickerTool, id: 'stickers' },
-        { button: this.textToolButton, panel: this.textTool, id: 'textTool' },
-        { button: this.filtersToolButton, panel: this.filtersTool, id: 'filters' }
+      {
+        button: this.stickerToolButton,
+        panel: this.stickerTool,
+        id: 'stickers',
+      },
+      { button: this.textToolButton, panel: this.textTool, id: 'textTool' },
+      {
+        button: this.filtersToolButton,
+        panel: this.filtersTool,
+        id: 'filters',
+      },
     ];
 
     this.toolMenu?.addEventListener('click', (e) => this.selectTool(e.target));
@@ -86,10 +121,24 @@ class StudioManager {
     });
     this.scrollLeftBtn.addEventListener('click', () => this.scroll('left'));
     this.scrollRightBtn.addEventListener('click', () => this.scroll('right'));
-}
+  }
+
+  initStickerTool() {
+    this.stickerList?.addEventListener('click', (e) => {
+      const stickerBtn = e.target.closest('button[data-sticker]');
+      if (!stickerBtn) {
+        return;
+      }
+      const stickerPath = stickerBtn.dataset.sticker;
+      this.selectSticker(stickerPath);
+    });
+  }
 
   updateCaptureButtonState() {
-    if (this.state.selectedStickers.length > 0 && this.state.captureButtonDisabled) {
+    if (
+      this.state.selectedStickers.length > 0 &&
+      this.state.captureButtonDisabled
+    ) {
       this.state.captureButtonDisabled = false;
       this.captureButton.removeAttribute('disabled');
     } else if (
@@ -107,8 +156,9 @@ class StudioManager {
     }
 
     const selectedTool = target.closest('button[data-tool]');
+    console.log('Selected:', selectedTool);
     if (!selectedTool) {
-        return;
+      return;
     }
 
     const tool = selectedTool.dataset.tool;
@@ -116,11 +166,11 @@ class StudioManager {
     this.state.selectedTool = tool;
 
     this.config.toolMenuItems.forEach(({ button, panel, id }) => {
-        const isActive = id === tool;
-        console.log(`Updating tool: ${id}, isActive: ${isActive}`);
-        button.classList.toggle('tool-active', isActive);
-        button.setAttribute('aria-selected', isActive);
-        panel.classList.toggle('display-none', !isActive);
+      const isActive = id === tool;
+      console.log(`Updating tool: ${id}, isActive: ${isActive}`);
+      button.classList.toggle('tool-active', isActive);
+      button.setAttribute('aria-selected', isActive);
+      panel.classList.toggle('display-none', !isActive);
     });
   }
 
@@ -137,7 +187,7 @@ class StudioManager {
       ? this.scrollRightBtn.classList.add('opacity-50', 'cursor-not-allowed')
       : this.scrollRightBtn.classList.remove(
           'opacity-50',
-          'cursor-not-allowed',
+          'cursor-not-allowed'
         );
   }
 
@@ -175,7 +225,7 @@ class StudioManager {
         this.stickerInitialPosX,
         this.stickerInitialPosY,
         drawWidth,
-        drawHeight,
+        drawHeight
       );
       this.stickerData = {
         path: stickerPath,
@@ -190,13 +240,9 @@ class StudioManager {
     this.updateCaptureButtonState();
   }
 
-  applyFilter(filterName) {
-    // (removed) filter application handled elsewhere or reverted
-  }
+  // applyFilter(filterName) {}
 
   capturePhoto() {}
-
-  openUploadModal() {}
 
   sharePhoto() {}
 
@@ -209,6 +255,13 @@ class StudioManager {
     this.canvasContext = this.canvas.getContext('2d');
     this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
+
+  static getInstance() {
+    if (!StudioManager.#instance) {
+      StudioManager.#instance = new StudioManager();
+    }
+    return StudioManager.#instance;
+  }
 }
 
-this.studio = new StudioManager();
+StudioManager.getInstance();

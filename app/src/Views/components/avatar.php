@@ -1,3 +1,10 @@
+<?php
+/**
+ * @var string|null $avatarPath
+ * @var string $size
+ * @var string $displayName
+ */
+?>
 <?php if (!isSet($avatarPath) ): ?>
     <span class="letter-avatar avatar-<?php echo htmlspecialchars("$size"); ?>">
         <?php echo htmlspecialchars(strtoupper(substr($displayName, 0, 1))); ?>

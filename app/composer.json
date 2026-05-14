@@ -7,8 +7,8 @@
     "vimeo/psalm": "^6.16"
   },
   "scripts": {
-    "lint": "vendor/bin/phpcs --standard=phpcs.xml src app",
-    "fix": "vendor/bin/phpcbf --standard=phpcs.xml src app",
+    "lint": "vendor/bin/phpcs --standard=phpcs.xml src",
+    "fix": "vendor/bin/phpcbf --standard=phpcs.xml src",
     "psalm": "vendor/bin/psalm --use-baseline=psalm-baseline.xml"
   },
   "config": {

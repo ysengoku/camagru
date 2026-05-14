@@ -1,0 +1,49 @@
+name: Frontend tests
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "app/client/**"
+      - ".github/workflows/frontend.yml"
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "app/client/**"
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ./app/client
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./app/client
+        run: npm run lint
+
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ./app/client
+        run: npm ci
+
+      - name: Check code formatting
+        working-directory: ./app/client
+        run: npm run format

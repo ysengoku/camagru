@@ -3,7 +3,7 @@
         <button
           type="button"
           class="flex align-center gap-1 border-none bg-transparent p-0 cursor-pointer hover-scale"
-          onclick="toggleLike(<?php echo $postId; ?>)"
+          data-like="<?php echo $postId; ?>"
         >
             <?php $name = 'heart'; include __DIR__ . '/../components/icon.php'; ?>
             <?php if ($likesCount > 0) : ?>
@@ -18,7 +18,7 @@
         <button 
           type="button"
           class="flex align-center gap-1 border-none bg-transparent p-0 cursor-pointer hover-scale"
-          onclick="openPostModal(<?php echo $postId; ?>)"
+          data-comment="<?php echo $postId; ?>"
         >
             <?php $name = 'bubble'; include __DIR__ . '/../components/icon.php'; ?>
             <?php if ($commentsCount > 0) : ?>

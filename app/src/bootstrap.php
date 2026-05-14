@@ -3,7 +3,7 @@
 spl_autoload_register(function ($class) {
     $paths = [
         __DIR__ . '/' . $class . '.php',
-        __DIR__ . '/Core/' . $class . '.php',
+        __DIR__ . '/core/' . $class . '.php',
         __DIR__ . '/Controllers/' . $class . '.php',
         __DIR__ . '/Models/' . $class . '.php',
     ];

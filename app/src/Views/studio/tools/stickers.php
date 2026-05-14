@@ -6,7 +6,7 @@
         <?php foreach ($stickers as $sticker): ?>
         <button
             class="stickers-option"
-            onClick="studio.selectSticker('<?= $sticker ?>')"
+            data-sticker="<?= $sticker ?>"
         >
             <img
                 src="<?= $sticker ?>"

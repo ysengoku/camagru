@@ -1,3 +1,11 @@
+<?php
+/**
+ * @var string $authorName
+ * @var string|null $authorAvatar
+ * @var string $createdAt
+ */
+?>
+
 <div class="flex flex-col mb-2 px-1">
     <div class="flex align-center my-1 gap-2">
         <?php 

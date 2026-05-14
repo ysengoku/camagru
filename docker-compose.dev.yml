@@ -6,6 +6,16 @@ services:
       - ./app:/var/www/html
       - vendor_volume:/var/www/html/vendor
 
+  client:
+    build:
+      context: ./app/client
+      target: development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./app/client:/app
+      - /app/node_modules
+
   nginx:
     build:
       target: development

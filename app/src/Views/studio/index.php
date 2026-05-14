@@ -14,5 +14,3 @@
         include __DIR__ . '/gallery.php';
     ?>
 </div>
-
-<script src="/assets/js/studio/StudioManager.js"></script>
