@@ -46,6 +46,7 @@ final class StudioController extends Controller {
         ];
 
         return $this->render([
+            'pageScript' => 'studio',
             'user' => $user,
             'posts' => $posts,
             'stickers' => $stickers

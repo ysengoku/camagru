@@ -61,6 +61,7 @@ class FeedController extends Controller {
         ];
 
         return $this->render([
+            'pageScript' => 'feed',
             'user' => $user,
             'posts' => $posts
         ]);

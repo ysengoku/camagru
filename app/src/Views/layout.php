@@ -22,9 +22,15 @@
         <?php echo $footer ?? ''; ?>
         <?php if ($isProd): ?>
             <script type="module" src="/assets/main.js"></script>
+            <?php if (!empty($pageScript)): ?>
+                <script type="module" src="/assets/<?php echo htmlspecialchars($pageScript); ?>.js"></script>
+            <?php endif; ?>
         <?php else: ?>
             <script type="module" src="/@vite/client"></script>
             <script type="module" src="/js/main.js"></script>
+            <?php if (!empty($pageScript)): ?>
+                <script type="module" src="/js/<?php echo htmlspecialchars($pageScript); ?>/entry.js"></script>
+            <?php endif; ?>
         <?php endif; ?>
     </body>
 </html>

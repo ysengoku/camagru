@@ -27,6 +27,11 @@ abstract class Controller {
         $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
         $path = $controllerName . '/' . $template;
 
+        // Auto-set pageScript based on controller name if not already set
+        if (!isset($props['pageScript'])) {
+            $props['pageScript'] = $controllerName;
+        }
+
         return $view->render($path, $props);
     }
 }

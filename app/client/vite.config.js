@@ -1,24 +1,27 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: ".",
+  root: '.',
   build: {
-    outDir: "../public/assets",
+    outDir: '../public/assets',
     emptyOutDir: false,
     rollupOptions: {
       input: {
-        main: "./js/main.js",
+        main: './js/main.js',
+        studio: './js/studio/entry.js',
+        feed: './js/feed/entry.js',
+        auth: './js/auth/entry.js',
       },
       output: {
-        entryFileNames: "[name].js",
+        entryFileNames: '[name].js',
       },
     },
   },
   server: {
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     port: 5173,
     middlewareMode: false,
-    allowedHosts: ["client", "localhost", "127.0.0.1"],
+    allowedHosts: ['client', 'localhost', '127.0.0.1'],
     hmr: false,
   },
 });
