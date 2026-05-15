@@ -46,7 +46,13 @@ clean:
 	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) -f $(COMPOSE_FILE_PROD) down --rmi local --volumes --remove-orphans
 
 fclean: clean
-	docker system prune -f
+	@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
+
+build-dev: ensure-env init-ip
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development build --no-cache
+
+dev: build-dev
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up
 
 test-app:
 	docker exec $(APP_CONTAINER) npm run test
