@@ -118,3 +118,5 @@
 .hover-scale:hover { transform: scale(1.1, 1.1); }
 
 .display-none { display: none !important; }
+.invisible { visibility: hidden !important;}
+.disabled { pointer-events: none; opacity: 0.5; }

@@ -12,7 +12,7 @@
         <button
             type="button"
             id="<?= $button['id'] ?>"
-            class="studio-editor-button"
+            class="studio-editor-button invisible"
             data-studio-editor-action="<?= $button['action'] ?>"
         >
             <?php $name = $button['icon']; include __DIR__ . '/../components/icon.php'; ?>

@@ -1,4 +1,4 @@
-<div id="studio-tools">
+<div id="studio-tools" class="disabled">
     <nav id="studio-tools-menu">
         <ul>
             <li class="tool-menu-item">
