@@ -1,25 +1,39 @@
 <?php
-    $sampleImage = '/assets/img/sample-pic2.jpg';
-    $filters = ['none', 'grayscale', 'sepia', 'vintage', 'dream'];
-    $defaultFilter = 'none';
+    const SAMPLE_IMAGE  = '/assets/img/sample-pic2.jpg';
+    const FILTERS = ['none', 'grayscale', 'sepia', 'vintage', 'dream'];
+    const DEFAULT_FILTER = 'none';
 ?>
 
-<div id="filters" class="tool-container justify-center gap-4 display-none">
-    <?php foreach ($filters as $filter): ?>
-        <div class="flex-col align-center">
-            <button
-                type="button"
-                id="filter-<?= $filter ?>"
-                class="filter-option <?php if ($filter === $defaultFilter) echo 'selected-filter'; ?> "
-                data-filter="<?= $filter ?>"
-            >
-                <img
-                    src="<?= $sampleImage ?>"
-                    alt="<?= ucfirst($filter) ?>"
-                    class="filter-<?= $filter ?>"
-                />
-            </button>
-            <span class="font-size-3"><?= ucfirst($filter) ?></span>
+<?php
+if (!function_exists('render_filters_tool')) {
+    function render_filters_tool(): string {
+        $stickersHtml = '';
+        foreach (FILTERS as $filter) {
+            $filterHtml = htmlspecialchars($filter, ENT_QUOTES);
+            $stickersHtml .= <<<HTML
+            <div class="flex-col align-center">
+                <button
+                    type="button"
+                    id="filter-{$filterHtml}"
+                    class="filter-option " . ($filter === DEFAULT_FILTER ? 'selected-filter' : '')
+                    data-filter="{$filterHtml}"
+                >
+                    <img
+                        src="{SAMPLE_IMAGE}"
+                        alt="{$filterHtml}"
+                        class="filter-{$filterHtml}"
+                    />
+                </button>
+                <span class="font-size-3">{$filterHtml}</span>
+            </div>
+            HTML;
+        }
+
+        return <<<HTML
+        <div id="filters" class="tool-container justify-center gap-4 display-none">
+            {$stickersHtml}
         </div>
-    <?php endforeach; ?>
-</div>
+        HTML;
+    }
+}
+?>

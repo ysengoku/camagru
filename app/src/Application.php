@@ -42,8 +42,9 @@ class Application {
     private function getPathInfo(): string {
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
 
-        if (strpos($uri, '?') !== false) {
-            $uri = substr($uri, 0, strpos($uri, '?'));
+        $queryPos = strpos($uri, '?');
+        if ($queryPos !== false) {
+            $uri = substr($uri, 0, $queryPos);
         }
 
         return $uri === '/' ? '' : $uri;

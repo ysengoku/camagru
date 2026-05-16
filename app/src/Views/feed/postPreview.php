@@ -1,19 +1,24 @@
-<div class="post-preview-card">
-    <?php
-        $authorName = $post['author_name'];
-        $authorAvatar = $post['author_avatar'];
-        $createdAt = $post['created_at'];
-        include __DIR__ . '/postHeader.php';
-    ?>
+<?php
+    require_once __DIR__ . '/postHeader.php';
+    require_once __DIR__ . '/postReactions.php';
+?>
 
-    <img src="<?php echo $post['image_path']; ?>" alt="Post Image" class="w-full h-auto object-cover rounded">
+<?php
+if (!function_exists('render_post_preview')) {
+    function render_post_preview(array $post): string {
+        $header    = render_post_header($post['author_name'], $post['author_avatar'], $post['created_at']);
+        $reactions = render_post_reactions($post['id'], $post['likes_count'], count($post['comments']));
+        $imagePath = htmlspecialchars($post['image_path'], ENT_QUOTES);
 
-    <div class="flex flex-col">
-        <?php
-            $postId = $post['id'];
-            $likesCount = $post['likes_count'];
-            $commentsCount = count($post['comments']);
-            include __DIR__ . '/postReactions.php';
-        ?>  
-    </div>
-</div>
+        return <<<HTML
+            <div class="post-preview-card">
+                {$header}
+                <img src="{$imagePath}" alt="Post Image" class="w-full h-auto object-cover rounded">
+                <div class="flex flex-col">
+                    {$reactions}
+                </div>
+            </div>
+            HTML;
+    }
+}
+?>

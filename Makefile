@@ -34,7 +34,7 @@ clean: down
 	@docker system prune -f -a --volumes
 
 fclean: clean
-	@docker volume rm $$(docker volume ls -q)
+	@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
 
 build-dev: ensure-env init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development build --no-cache

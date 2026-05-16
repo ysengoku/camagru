@@ -1,9 +1,9 @@
 <?php
 
 class Response {
-    protected string $content;
-    protected int $statusCode;
-    protected string $statusText;
+    protected string $content = '';
+    protected int $statusCode = 200;
+    protected string $statusText = 'OK';
 
     public function send(): void {
         header(sprintf('HTTP/1.1 %d %s', $this->statusCode, $this->statusText));

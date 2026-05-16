@@ -1,4 +1,11 @@
 <?php
+/**
+ * @var array $user
+ */
+?>
+
+<?php
+    require_once __DIR__ . '/components/navLink.php';
 ?>
 
 <header >
@@ -8,7 +15,7 @@
         </a>
         <div class="navbar flex justify-between absolute bottom-0 right-0 px-4">
             <?php if ($user) : ?>
-                <?php include __DIR__ . '/components/navLink.php'; ?>
+                <?php echo render_nav_link(); ?>
             <?php endif; ?>
             <nav class="flex gap-2">
                 <?php if ($user) : ?>

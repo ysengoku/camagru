@@ -1,7 +1,7 @@
 <?php
 
 abstract class Controller {
-    protected string $actionName;
+    protected string $actionName = 'index';
     protected int $statusCode = 200;
     protected string $statusText = 'OK';
 

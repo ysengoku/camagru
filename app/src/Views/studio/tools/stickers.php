@@ -1,22 +1,42 @@
-<div id="stickers" class="tool-container justify-center">
-    <button class="scroll-left opacity-50 cursor-not-allowed">
-        <?php $name = 'left'; include __DIR__ . '/../../components/icon.php'; ?>
-    </button>
-    <div class="flex align-center" id="sticker-list">
-        <?php foreach ($stickers as $sticker): ?>
-        <button
-            class="stickers-option"
-            data-sticker="<?= $sticker ?>"
-        >
-            <img
-                src="<?= $sticker ?>"
-                alt="Sticker"
-                data-sticker="<?= $sticker ?>"
-            />
-        </button>
-        <?php endforeach; ?>
-    </div>
-    <button class="scroll-right">
-        <?php $name = 'right'; include __DIR__ . '/../../components/icon.php'; ?>
-    </button>
-</div>
+<?php
+    require_once __DIR__ . '/../../components/icon.php';
+?>
+
+<?php
+if (!function_exists('render_stickers_tool')) {
+    function render_stickers_tool(array $stickers): string {
+        $leftIcon = render_icon('left');
+        $rightIcon = render_icon('right');
+        $stickerButtons = '';
+        foreach ($stickers as $sticker) {
+            $safeSticker = htmlspecialchars($sticker, ENT_QUOTES);
+            $stickerButtons .= <<<HTML
+            <button
+                class="stickers-option"
+                data-sticker="{$safeSticker}"
+            >
+                <img
+                    src="{$safeSticker}"
+                    alt="Sticker"
+                    data-sticker="{$safeSticker}"
+                />
+            </button>
+            HTML;
+        }
+
+        return <<<HTML
+        <div id="stickers" class="tool-container justify-center">
+            <button class="scroll-left opacity-50 cursor-not-allowed">
+                {$leftIcon}
+            </button>
+            <div class="flex align-center" id="sticker-list">
+                {$stickerButtons}
+            </div>
+            <button class="scroll-right">
+                {$rightIcon}
+            </button>
+        </div>
+        HTML;
+    }
+}
+?>

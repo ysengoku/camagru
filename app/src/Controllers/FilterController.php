@@ -1,6 +1,9 @@
 <?php
 
-class FilterController extends Controller {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class FilterController extends Controller {
     final public function list(): string {
         $filters = require __DIR__ . '/../config/filters.php';
         

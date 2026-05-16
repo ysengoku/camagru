@@ -2,7 +2,8 @@
 <psalm
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:noNamespaceSchemaLocation="vendor/vimeo/psalm/config.xsd"
-    errorBaseline="psalm-baseline.xml"
+  errorBaseline="psalm-baseline.xml"
+  phpVersion="8.5"
 >
   <projectFiles>
     <directory name="src" />

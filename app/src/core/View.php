@@ -1,9 +1,9 @@
 <?php
 
 class View {
-    private const LAYOUT = 'layout';
-    private const HEADER = 'header';
-    private const FOOTER = 'footer';
+    private const string LAYOUT = 'layout';
+    private const string HEADER = 'header';
+    private const string FOOTER = 'footer';
     private string $viewsDir;
     private string $layoutPath;
     private string $headerPath;
@@ -17,6 +17,7 @@ class View {
     }
 
     public function render(string $template, array $props = []): string {
+        /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
         $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';
         if (!file_exists($templatePath)) {
             throw new HTTPNotFoundException("View template not found: " . htmlspecialchars($template));
@@ -25,19 +26,22 @@ class View {
         extract($props);
         ob_start();
         include $templatePath;
-        $content = ob_get_clean();
+        $content = (string) ob_get_clean();
 
         ob_start();
+        /** @psalm-suppress UnresolvableInclude - Path is set in constructor */
         include $this->headerPath;
-        $header = ob_get_clean();
+        $header = (string) ob_get_clean();
 
         ob_start();
+        /** @psalm-suppress UnresolvableInclude - Path is set in constructor */
         include $this->footerPath;
-        $footer = ob_get_clean();
+        $footer = (string) ob_get_clean();
 
         ob_start();
+        /** @psalm-suppress UnresolvableInclude - Path is set in constructor */
         include $this->layoutPath;
-        $layout = ob_get_clean();
+        $layout = (string) ob_get_clean();
 
         return $layout;
     }

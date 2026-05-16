@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
 final class StudioController extends Controller {
     public function index(): string {
         // If the user is not authenticated, redirect to login page
@@ -10,7 +13,8 @@ final class StudioController extends Controller {
         $stickers = [];
         $stickerDir = __DIR__ . '/../../public/assets/stickers/';
         if (is_dir($stickerDir)) {
-            $files = array_diff(scandir($stickerDir) ?: [], ['.', '..']);
+            $scanned = scandir($stickerDir);
+            $files = $scanned !== false ? array_diff($scanned, ['.', '..']) : [];
             foreach ($files as $file) {
                 if (preg_match('/\.(png|jpg|jpeg|svg)$/i', $file)) {
                     $stickers[] = '/assets/stickers/' . $file;
