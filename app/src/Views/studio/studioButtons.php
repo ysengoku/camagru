@@ -15,14 +15,15 @@ if (!function_exists('render_studio_buttons')) {
     function render_studio_buttons(): string {
         $buttonsHtml = '';
         foreach (BUTTONS as $button) {
+            $icon = render_icon($button['icon']);
             $buttonsHtml .= <<<HTML
             <button
                 type="button"
                 id="{$button['id']}"
-                class="studio-editor-button invisible"
+                class="studio-editor-button display-none"
                 data-studio-editor-action="{$button['action']}"
             >
-                {$button['icon']}
+                {$icon}
                 {$button['text']}
             </button>
             HTML;

@@ -1,4 +1,7 @@
 export async function validateUploadedFile(file, maxFileSize) {
+  if (!file) {
+    return 'No file selected.';
+  }
   if (file.size > maxFileSize) {
     return (
       'Too large file. Maximum allowed size is ' +

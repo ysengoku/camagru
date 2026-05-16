@@ -407,6 +407,19 @@ p {
   cursor: pointer;
 }
 
+.sticker-overlay {
+  position: absolute;
+  cursor: move;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 4;
+}
+
+.sticker-overlay.sticker-editing {
+  border: 2px dashed var(--primary-500);
+  border-radius: 0.5rem;
+}
+
 .filter-option {
   width: 80px;
   height: 80px;
@@ -441,7 +454,14 @@ p {
   margin: 0 0.5rem;
   border: none;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to left bottom, #006e64, #008276, #009689, #00ab9c, #00c0b0);
+  background-image: linear-gradient(
+    to left bottom,
+    #006e64,
+    #008276,
+    #009689,
+    #00ab9c,
+    #00c0b0
+  );
   color: var(--primary-100);
   cursor: pointer;
 
@@ -449,6 +469,10 @@ p {
     width: 24px;
     height: 24px;
   }
+}
+
+#studio-tools.disabled button {
+  cursor: not-allowed;
 }
 
 #back-to-menu-button.studio-editor-button,

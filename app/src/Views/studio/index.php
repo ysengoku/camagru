@@ -25,8 +25,10 @@
         <?php echo render_studio_menu(); ?>
 
         <div id="studio-editor" class="display-none m-4">
+            <div id="studio-preview-text" class="display-none"></div>
             <video id="webcam" autoplay></video>
             <canvas id="studio-preview"></canvas>
+            <img src="" id="studio-image" class="display-none" />
         </div>
 
         <?php echo render_studio_buttons(); ?>

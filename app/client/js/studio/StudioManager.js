@@ -1,3 +1,6 @@
+import { StickerManager } from './managers/StickerManager';
+import { studioStore } from '../store/studioStore';
+import { studioConfig } from './studioConfig';
 import { validateUploadedFile } from './validator';
 
 class StudioManager {
@@ -9,32 +12,41 @@ class StudioManager {
     }
     StudioManager.#instance = this;
 
-    this.state = {
-      inEditor: false,
-      webcamOn: false,
-      uploadedImage: {
-        offsetX: 0,
-        offsetY: 0,
-        zoom: 1,
-        img: null,
-      },
-      captureButtonDisabled: true,
-      selectedTool: 'stickers',
-      selectedStickers: [],
-      selectedFilter: 'none',
-    };
-
-    this.config = {
-      maxUploadFileSize: 5 * 1024 * 1024,
-      toolMenuItems: [],
-      filterItems: [],
-      canvasAspectRatio: null,
-      stickerInitialPosX: null,
-      stickerInitialPosY: null,
-    };
-
     this.videoStream = null;
 
+    this.setDomElReferences();
+    this.stickerManager = new StickerManager(this.editor, this.tool.stickers);
+
+    this.setupStoreSubscriptions();
+    this.initStudioMenu();
+    this.initCanvas();
+    this.initTools();
+    this.setEditorButtonsHandlers();
+  }
+
+  get state() {
+    return studioStore.state;
+  }
+
+  setupStoreSubscriptions() {
+    studioStore.subscribe((newState, prevState) => {
+      console.log('State changed: ', { prevState, newState });
+
+      if (newState.editorMode !== prevState.editorMode) {
+        this.updateEditorView(newState.editorMode);
+        this.updateEditorButtonsVisibility(newState);
+      }
+
+      const prevHasStickers = prevState.selectedStickers.length > 0;
+      const newHasStickers = newState.selectedStickers.length > 0;
+      if (newHasStickers !== prevHasStickers) {
+        this.updateCaptureButtonState();
+        this.updateShareButtonState();
+      }
+    });
+  }
+
+  setDomElReferences() {
     this.studioMenu = {
       container: document.getElementById('studio-menu'),
       webcamButton: document.getElementById('webcam-button'),
@@ -45,6 +57,8 @@ class StudioManager {
       container: document.getElementById('studio-editor'),
       video: document.getElementById('webcam'),
       canvas: document.getElementById('studio-preview'),
+      photo: document.getElementById('studio-image'),
+      text: document.getElementById('studio-preview-text'),
     };
 
     this.tool = {
@@ -71,10 +85,21 @@ class StudioManager {
       reset: document.getElementById('reset-button'),
       backToMenu: document.getElementById('back-to-menu-button'),
     };
+  }
 
-    this.initStudioMenu();
-    this.initCanvas();
-    this.initTools();
+  setEditorButtonsHandlers() {
+    this.editorButtons.backToMenu?.addEventListener('click', () =>
+      this.backToMenu()
+    );
+    this.editorButtons.capture?.addEventListener('click', (e) =>
+      this.capture(e)
+    );
+    this.editorButtons.share?.addEventListener('click', () =>
+      this.sharePhoto()
+    );
+    this.editorButtons.reset?.addEventListener('click', () =>
+      this.resetCapture()
+    );
   }
 
   initCanvas() {
@@ -84,9 +109,9 @@ class StudioManager {
 
     this.editor.canvas.width = cssWidth;
     this.editor.canvas.height = cssHeight;
-    this.config.canvasAspectRatio = cssWidth / cssHeight;
-    this.config.stickerInitialPosX = cssWidth * 0.25;
-    this.config.stickerInitialPosY = cssHeight * 0.25;
+    studioConfig.canvasAspectRatio = cssWidth / cssHeight;
+    studioConfig.stickerInitialPosX = cssWidth * 0.25;
+    studioConfig.stickerInitialPosY = cssHeight * 0.25;
     this.canvasContext = this.editor.canvas.getContext('2d');
   }
 
@@ -100,7 +125,7 @@ class StudioManager {
   }
 
   initToolMenu() {
-    this.config.toolMenuItems = [
+    studioConfig.toolMenuItems = [
       {
         button: this.tool.menu.stickerButton,
         panel: this.tool.stickerPanel,
@@ -123,13 +148,13 @@ class StudioManager {
     );
 
     this.tool.stickers.list?.addEventListener('scroll', () => {
-      this.updateScrollButtons();
+      this.stickerManager.updateScrollButtons();
     });
     this.tool.stickers.scrollLeftButton.addEventListener('click', () =>
-      this.scroll('left')
+      this.stickerManager.scroll('left')
     );
     this.tool.stickers.scrollRightButton.addEventListener('click', () =>
-      this.scroll('right')
+      this.stickerManager.scroll('right')
     );
   }
 
@@ -140,7 +165,28 @@ class StudioManager {
         return;
       }
       const stickerPath = stickerBtn.dataset.sticker;
-      this.selectSticker(stickerPath);
+      this.stickerManager.selectSticker(stickerPath);
+    });
+
+    let isEditing = false;
+    this.editor.container?.addEventListener('mousedown', (e) => {
+      if (e.target.className === 'sticker-overlay') {
+        isEditing = true;
+        // e.target.classList.add('sticker-editing');
+      }
+    });
+    this.editor.container?.addEventListener('mouseup', () => {
+      isEditing = false;
+      const editingSticker = document.querySelector('.sticker-editing');
+      if (editingSticker) {
+        // editingSticker.classList.remove('sticker-editing');
+      }
+    });
+
+    this.editor.container?.addEventListener('mousemove', (e) => {
+      if (isEditing) {
+        this.stickerManager.moveSticker(e);
+      }
     });
   }
 
@@ -150,7 +196,7 @@ class StudioManager {
       const response = await fetch('/api/filters');
       const filters = await response.json();
 
-      this.config.filterItems = Object.entries(filters).map(
+      studioConfig.filterItems = Object.entries(filters).map(
         ([key, config]) => ({
           button: document.getElementById(`filter-${key}`),
           filter: key,
@@ -189,24 +235,108 @@ class StudioManager {
     this.initTextTool();
   }
 
-  // ======== Switch Editor <-> Studio Menu ================================
-  toggleEditorView() {
-    if (this.state.inEditor) {
+  // ======== UI State Handling =========================================
+
+  updateEditorView(mode) {
+    if (mode === 'menu') {
       if (this.state.webcamOn) {
         this.stopWebcam();
       }
       this.editor.container.classList.add('display-none');
       this.studioMenu.container.classList.remove('display-none');
+      this.tool.menu.container.classList.add('disabled');
       this.tool.container.classList.add('disabled');
-      Object.entries(this.editorButtons).forEach(([key, btn]) => btn.classList.add('invisible'));
     } else {
       this.editor.container.classList.remove('display-none');
       this.studioMenu.container.classList.add('display-none');
+      this.tool.menu.container.classList.remove('disabled');
       this.tool.container.classList.remove('disabled');
-      Object.entries(this.editorButtons).forEach(([key, btn]) => btn.classList.remove('invisible'));
     }
-    this.state.inEditor = !this.state.inEditor;
   }
+
+  updateEditorButtonsVisibility(state = this.state) {
+    switch (state.editorMode) {
+      case 'menu':
+        Object.values(this.editorButtons).forEach((btn) =>
+          btn.classList.add('display-none')
+        );
+        break;
+      case 'webcam':
+        this.editorButtons.backToMenu?.classList.remove('display-none');
+        this.editorButtons.capture?.classList.remove('display-none');
+        this.editorButtons.reset?.classList.add('display-none');
+        this.editorButtons.share?.classList.add('display-none');
+        this.updateCaptureButtonState();
+        break;
+      case 'captured':
+        this.editorButtons.capture?.classList.add('display-none');
+        this.editorButtons.share?.classList.remove('display-none');
+        this.editorButtons.reset?.classList.remove('display-none');
+        break;
+      case 'upload':
+        this.editorButtons.backToMenu?.classList.remove('display-none');
+        this.editorButtons.capture?.classList.add('display-none');
+        this.editorButtons.reset?.classList.add('display-none');
+        this.editorButtons.share?.classList.remove('display-none');
+        this.updateShareButtonState();
+        break;
+      case 'shared':
+        this.editorButtons.backToMenu?.classList.remove('display-none');
+        this.editorButtons.capture?.classList.add('display-none');
+        this.editorButtons.reset?.classList.add('display-none');
+        this.editorButtons.share?.classList.add('display-none');
+        break;
+      default:
+      // TODO handle error: unknown editor mode
+    }
+  }
+
+  updateCaptureButtonState() {
+    if (this.state.editorMode !== 'webcam') {
+      return;
+    }
+    this.state.selectedStickers.length > 0
+      ? this.editorButtons.capture?.classList.remove('disabled')
+      : this.editorButtons.capture?.classList.add('disabled');
+  }
+
+  updateShareButtonState() {
+    if (
+      this.state.editorMode !== 'captured' &&
+      this.state.editorMode !== 'upload'
+    ) {
+      return;
+    }
+    this.state.selectedStickers.length > 0
+      ? this.editorButtons.share?.classList.remove('disabled')
+      : this.editorButtons.share?.classList.add('disabled');
+  }
+
+  clearEditor() {
+    this.stickerManager.clearStickers();
+    studioStore.setState({
+      uploadedImage: {
+        offsetX: 0,
+        offsetY: 0,
+        zoom: 1,
+        img: null,
+      },
+      selectedStickers: [],
+      selectedFilter: 'none',
+    });
+    this.editor.canvas.style.filter = 'none';
+  }
+
+  clearCanvas() {
+    this.canvasContext.clearRect(
+      0,
+      0,
+      this.editor.canvas.width,
+      this.editor.canvas.height
+    );
+  }
+
+  // ======== Webcam Handling ===========================================
 
   async initWebcam() {
     try {
@@ -219,9 +349,7 @@ class StudioManager {
       this.editor.video.srcObject = this.stream;
       this.videoStream = this.stream;
 
-      this.toggleEditorView();
-      this.state.webcamOn = true;
-      this.state.inEditor = true;
+      studioStore.setState({ webcamOn: true, editorMode: 'webcam' });
     } catch (error) {
       console.error('Error accessing webcam:', error);
       // TODO : Show error message to user
@@ -234,15 +362,12 @@ class StudioManager {
       return;
     }
     this.editor.video.srcObject = this.stream;
-    this.editor.container.classList.remove('display-none');
-    this.studioMenu.container.classList.add('display-none');
-    this.state.webcamOn = true;
-    this.state.inEditor = true;
+    studioStore.setState({ webcamOn: true, editorMode: 'webcam' });
   }
 
   stopWebcam() {
     this.editor.video.srcObject = null;
-    this.state.webcamOn = false;
+    studioStore.setState({ webcamOn: false });
   }
 
   clearWebcam() {
@@ -251,44 +376,64 @@ class StudioManager {
       this.editor.video.srcObject = null;
       this.videoStream = null;
     }
-    this.state.webcamOn = false;
+    studioStore.setState({ webcamOn: false });
   }
 
-  hideEditorButtons() {
-    this.editorButtons.forEach((btn) => btn.classList.add('invisible'));
+  capture(e) {
+    this.canvasContext.drawImage(
+      this.editor.video,
+      0,
+      0,
+      this.editor.canvas.width,
+      this.editor.canvas.height
+    );
+
+    const data = this.editor.canvas.toDataURL('image/png');
+    this.editor.photo.setAttribute('src', data);
+    e.preventDefault();
+
+    this.stopWebcam();
+    studioStore.setState({ editorMode: 'captured' });
+  }
+
+  clearPhoto() {
+    this.editor.photo.setAttribute('src', '');
+  }
+
+  resetCapture() {
+    this.clearPhoto();
+    this.stickerManager.clearStickers();
+    this.startWebcam();
+    studioStore.setState({ editorMode: 'webcam' });
   }
 
   // ======== File Upload Handling =========================================
-  async handleFileUpload(file) {
-    if (!file) {
-      return;
-    }
 
+  async handleFileUpload(file) {
     const validationError = await validateUploadedFile(
       file,
-      this.config.maxUploadFileSize
+      studioConfig.maxUploadFileSize
     );
     if (validationError) {
       alert(validationError);
       return;
     }
 
-    this.initCanvas();
-
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image();
+      const img = this.editor.photo;
       img.onload = () => {
-        this.state.uploadedImage.img = img;
-        this.state.uploadedImage.offsetX = 0;
-        this.state.uploadedImage.offsetY = 0;
-        this.state.uploadedImage.zoom = 1;
+        studioStore.setState((s) => ({
+          uploadedImage: {
+            ...s.uploadedImage,
+            img,
+            offsetX: 0,
+            offsetY: 0,
+            zoom: 1,
+          },
+        }));
 
-        this.redrawUploadedImage();
-
-        this.editor.container.classList.remove('display-none');
-        this.studioMenu.container.classList.add('display-none');
-        this.state.inEditor = true;
+        this.drawUploadedImage();
       };
       img.onerror = () => {
         alert('Failed to load image');
@@ -296,9 +441,10 @@ class StudioManager {
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+    studioStore.setState({ editorMode: 'upload' });
   }
 
-  redrawUploadedImage() {
+  drawUploadedImage() {
     if (!this.state.uploadedImage.img) {
       return;
     }
@@ -335,23 +481,22 @@ class StudioManager {
     this.canvasContext.drawImage(img, x, y, drawWidth, drawHeight);
   }
 
-  // ======== Tool Handling ================================================
+  // ======== Tool Handling =============================================
+
   selectTool(target) {
-    if (!this.state.inEditor) {
+    if (!this.inEditor) {
       return;
     }
 
     const selectedTool = target.closest('button[data-tool]');
-    console.log('Selected:', selectedTool);
     if (!selectedTool) {
       return;
     }
 
     const tool = selectedTool.dataset.tool;
-    console.log('Selected tool:', tool);
-    this.state.selectedTool = tool;
+    studioStore.setState({ selectedTool: tool });
 
-    this.config.toolMenuItems.forEach(({ button, panel, id }) => {
+    studioConfig.toolMenuItems.forEach(({ button, panel, id }) => {
       const isActive = id === tool;
       console.log(`Updating tool: ${id}, isActive: ${isActive}`);
       button.classList.toggle('tool-active', isActive);
@@ -360,130 +505,40 @@ class StudioManager {
     });
   }
 
-  // ----- Stickers -----
-  updateScrollButtons() {
-    const scrollLeft = this.tool.stickers.list.scrollLeft;
-    const scrollWidth = this.tool.stickers.list.scrollWidth;
-    const clientWidth = this.tool.stickers.list.clientWidth;
-
-    scrollLeft === 0
-      ? this.tool.stickers.scrollLeftButton.classList.add(
-          'opacity-50',
-          'cursor-not-allowed'
-        )
-      : this.tool.stickers.scrollLeftButton.classList.remove(
-          'opacity-50',
-          'cursor-not-allowed'
-        );
-
-    scrollLeft + clientWidth >= scrollWidth - 10
-      ? this.tool.stickers.scrollRightButton.classList.add(
-          'opacity-50',
-          'cursor-not-allowed'
-        )
-      : this.tool.stickers.scrollRightButton.classList.remove(
-          'opacity-50',
-          'cursor-not-allowed'
-        );
-  }
-
-  scroll(direction) {
-    const scrollAmount = 120;
-
-    if (direction === 'left') {
-      this.tool.stickers.list.scrollBy({
-        left: -scrollAmount,
-        behavior: 'smooth',
-      });
-    } else if (direction === 'right') {
-      this.tool.stickers.list.scrollBy({
-        left: scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-
-    setTimeout(() => this.updateScrollButtons(), 100);
-  }
-
-  selectSticker(stickerPath) {
-    if (!this.state.inEditor) {
-      return;
-    }
-
-    const img = new Image();
-    img.onload = () => {
-      const aspectRatio = img.naturalWidth / img.naturalHeight;
-
-      let drawWidth, drawHeight;
-      if (aspectRatio > this.config.canvasAspectRatio) {
-        drawWidth = this.editor.canvas.width * 0.5;
-        drawHeight = (this.editor.canvas.width / aspectRatio) * 0.5;
-      } else {
-        drawHeight = this.editor.canvas.height * 0.5;
-        drawWidth = this.editor.canvas.height * aspectRatio * 0.5;
-      }
-      this.canvasContext.drawImage(
-        img,
-        this.config.stickerInitialPosX,
-        this.config.stickerInitialPosY,
-        drawWidth,
-        drawHeight
-      );
-      this.stickerData = {
-        path: stickerPath,
-        x: this.config.stickerInitialPosX,
-        y: this.config.stickerInitialPosY,
-        width: drawWidth,
-        height: drawHeight,
-      };
-      this.state.selectedStickers.push(this.stickerData);
-    };
-    img.src = stickerPath;
-    this.updateCaptureButtonState();
-  }
-
   // ----- Filters -----
   applyFilter(filterName) {
-    if (!this.state.inEditor) {
+    if (!this.inEditor) {
       return;
     }
 
-    const selectedFilterObj = this.config.filterItems.find(
+    const selectedFilterObj = studioConfig.filterItems.find(
       (item) => item.filter === filterName
     );
 
-    this.config.filterItems.forEach(({ button, filter }) => {
+    studioConfig.filterItems.forEach(({ button, filter }) => {
       const isActive = filter === filterName;
       button.classList.toggle('selected-filter', isActive);
     });
 
-    this.state.selectedFilter = filterName;
+    studioStore.setState({ selectedFilter: filterName });
     this.editor.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
   }
 
-  // ======== Capture, Share, Reset =======================================
-  updateCaptureButtonState() {
-    if (
-      this.state.selectedStickers.length > 0 &&
-      this.state.captureButtonDisabled
-    ) {
-      this.state.captureButtonDisabled = false;
-      this.captureButton.removeAttribute('invisible');
-    } else if (
-      this.state.selectedStickers.length === 0 &&
-      !this.state.captureButtonDisabled
-    ) {
-      this.state.captureButtonDisabled = true;
-      this.captureButton.setAttribute('disabled', 'disabled');
-    }
+  // ======== Capture, Share, Reset =====================================
+
+  sharePhoto() {}
+
+  backToMenu() {
+    this.clearWebcam();
+    this.clearEditor();
+    this.clearCanvas();
+    studioStore.setState({ editorMode: 'menu' });
   }
 
-  capture() {
-    this.stopWebcam();
-  }
+  // ======== Computed property =========================================
 
-  sharePhoto() {
-
+  get inEditor() {
+    return this.state.editorMode !== 'menu';
   }
 
   static getInstance() {

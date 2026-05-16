@@ -7,6 +7,7 @@
 <?php
 if (!function_exists('render_filters_tool')) {
     function render_filters_tool(): string {
+        $sampleImageHtml = htmlspecialchars(SAMPLE_IMAGE, ENT_QUOTES);
         $stickersHtml = '';
         foreach (FILTERS as $filter) {
             $filterHtml = htmlspecialchars($filter, ENT_QUOTES);
@@ -19,7 +20,7 @@ if (!function_exists('render_filters_tool')) {
                     data-filter="{$filterHtml}"
                 >
                     <img
-                        src="{SAMPLE_IMAGE}"
+                        src="{$sampleImageHtml}"
                         alt="{$filterHtml}"
                         class="filter-{$filterHtml}"
                     />
