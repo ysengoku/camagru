@@ -1,45 +1,80 @@
-import { studioStore } from '../../store/studioStore.js';
-import { studioConfig } from '../studioConfig.js';
+import { ToolManager } from './ToolManager.js';
 
-export class StickerManager {
-  constructor(editor, stickerPanel) {
-    this.editor = editor;
-    this.stickerPanel = stickerPanel;
+export class StickerManager extends ToolManager {
+  constructor(editor, panel) {
+    super(editor, panel);
   }
 
-  get state() {
-    return studioStore.state;
-  }
+  init() {
+    this.panel = {
+      ...this.panel,
+      list: document.getElementById('sticker-list'),
+      scrollLeftButton: document.querySelector('.scroll-left'),
+      scrollRightButton: document.querySelector('.scroll-right')
+    };
 
-  set state(newState) {
-    studioStore.setState(newState);
-  }
+    this.panel.list?.addEventListener('scroll', () => {
+      this.updateScrollButtons();
+    });
+    this.panel.scrollLeftButton.addEventListener('click', () =>
+      this.scroll('left')
+    );
+    this.panel.scrollRightButton.addEventListener('click', () =>
+      this.scroll('right')
+    );
 
-  get inEditor() {
-    return this.state.editorMode !== 'menu';
+    this.panel.list?.addEventListener('click', (e) => {
+      const stickerBtn = e.target.closest('button[data-sticker]');
+      if (!stickerBtn) {
+        return;
+      }
+      const stickerPath = stickerBtn.dataset.sticker;
+      this.selectSticker(stickerPath);
+    });
+
+    let isEditing = false;
+    this.editor.container?.addEventListener('mousedown', (e) => {
+      if (e.target.className === 'sticker-overlay') {
+        isEditing = true;
+        // e.target.classList.add('sticker-editing');
+      }
+    });
+    this.editor.container?.addEventListener('mouseup', () => {
+      isEditing = false;
+      const editingSticker = document.querySelector('.sticker-editing');
+      // if (editingSticker) {
+        // editingSticker.classList.remove('sticker-editing');
+      // }
+    });
+
+    this.editor.container?.addEventListener('mousemove', (e) => {
+      if (isEditing) {
+        this.moveSticker(e);
+      }
+    });
   }
 
   updateScrollButtons() {
-    const scrollLeft = this.stickerPanel.list.scrollLeft;
-    const scrollWidth = this.stickerPanel.list.scrollWidth;
-    const clientWidth = this.stickerPanel.list.clientWidth;
+    const scrollLeft = this.panel.list.scrollLeft;
+    const scrollWidth = this.panel.list.scrollWidth;
+    const clientWidth = this.panel.list.clientWidth;
 
     scrollLeft === 0
-      ? this.stickerPanel.scrollLeftButton.classList.add(
+      ? this.panel.scrollLeftButton.classList.add(
           'opacity-50',
           'cursor-not-allowed'
         )
-      : this.stickerPanel.scrollLeftButton.classList.remove(
+      : this.panel.scrollLeftButton.classList.remove(
           'opacity-50',
           'cursor-not-allowed'
         );
 
     scrollLeft + clientWidth >= scrollWidth - 10
-      ? this.stickerPanel.scrollRightButton.classList.add(
+      ? this.panel.scrollRightButton.classList.add(
           'opacity-50',
           'cursor-not-allowed'
         )
-      : this.stickerPanel.scrollRightButton.classList.remove(
+      : this.panel.scrollRightButton.classList.remove(
           'opacity-50',
           'cursor-not-allowed'
         );
@@ -49,12 +84,12 @@ export class StickerManager {
     const scrollAmount = 120;
 
     if (direction === 'left') {
-      this.stickerPanel.list.scrollBy({
+      this.panel.list.scrollBy({
         left: -scrollAmount,
         behavior: 'smooth',
       });
     } else if (direction === 'right') {
-      this.stickerPanel.list.scrollBy({
+      this.panel.list.scrollBy({
         left: scrollAmount,
         behavior: 'smooth',
       });
@@ -73,7 +108,7 @@ export class StickerManager {
       const aspectRatio = img.naturalWidth / img.naturalHeight;
 
       let drawWidth, drawHeight;
-      if (aspectRatio > studioConfig.canvasAspectRatio) {
+      if (aspectRatio > this.config.canvasAspectRatio) {
         drawWidth = this.editor.canvas.width * 0.5;
         drawHeight = (this.editor.canvas.width / aspectRatio) * 0.5;
       } else {
@@ -84,8 +119,8 @@ export class StickerManager {
       const stickerData = {
         id: `sticker-${Date.now()}`,
         path: stickerPath,
-        x: studioConfig.stickerInitialPosX,
-        y: studioConfig.stickerInitialPosY,
+        x: this.config.stickerInitialPosX,
+        y: this.config.stickerInitialPosY,
         width: drawWidth,
         height: drawHeight,
       };
@@ -102,8 +137,8 @@ export class StickerManager {
     const overlay = document.createElement('div');
     overlay.className = 'sticker-overlay';
     overlay.id = stickerData.id;
-    overlay.style.left = `${studioConfig.stickerInitialPosX}px`;
-    overlay.style.top = `${studioConfig.stickerInitialPosY}px`;
+    overlay.style.left = `${this.config.stickerInitialPosX}px`;
+    overlay.style.top = `${this.config.stickerInitialPosY}px`;
     overlay.style.width = `${stickerData.width}px`;
     overlay.style.height = `${stickerData.height}px`;
     overlay.style.backgroundImage = `url(${stickerData.path})`;

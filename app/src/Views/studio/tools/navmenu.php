@@ -21,8 +21,8 @@ if (!function_exists('render_tool_menu')) {
                         type="button"
                         id="text-tool-btn"
                         class="border-none bg-transparent cursor-pointer"
-                        data-tool="textTool"
-                        aria-controls="textTool"
+                        data-tool="texttool"
+                        aria-controls="texttool"
                     >
                         Text
                     </button> 

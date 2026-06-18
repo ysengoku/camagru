@@ -18,6 +18,7 @@ $routes = [
     ['path' => '/studio', 'controller' => 'studio', 'action' => 'index'],
 
     // API routes
+    ['path' => '/api/text-config', 'controller' => 'text', 'action' => 'config'],
     ['path' => '/api/filters', 'controller' => 'filter', 'action' => 'list'],
 
     // User profile routes

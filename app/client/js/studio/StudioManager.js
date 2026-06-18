@@ -1,4 +1,6 @@
+import { FilterManager } from './managers/FilterManager';
 import { StickerManager } from './managers/StickerManager';
+import { TextManager } from './managers/TextManager';
 import { studioStore } from '../store/studioStore';
 import { studioConfig } from './studioConfig';
 import { validateUploadedFile } from './validator';
@@ -15,7 +17,9 @@ class StudioManager {
     this.videoStream = null;
 
     this.setDomElReferences();
-    this.stickerManager = new StickerManager(this.editor, this.tool.stickers);
+    this.stickerManager = new StickerManager(this.editor, this.tool.stickerPanel);
+    this.textManager = new TextManager(this.editor, this.tool.textPanel);
+    this.filterManager = new FilterManager(this.editor, this.tool.filtersPanel);
 
     this.setupStoreSubscriptions();
     this.initStudioMenu();
@@ -58,7 +62,6 @@ class StudioManager {
       video: document.getElementById('webcam'),
       canvas: document.getElementById('studio-preview'),
       photo: document.getElementById('studio-image'),
-      text: document.getElementById('studio-preview-text'),
     };
 
     this.tool = {
@@ -70,13 +73,8 @@ class StudioManager {
         filtersButton: document.getElementById('filters-tool-btn'),
       },
       stickerPanel: document.getElementById('stickers'),
-      textPanel: document.getElementById('text-tool'),
+      textPanel: document.getElementById('texttool'),
       filtersPanel: document.getElementById('filters'),
-      stickers: {
-        list: document.getElementById('sticker-list'),
-        scrollLeftButton: document.querySelector('.scroll-left'),
-        scrollRightButton: document.querySelector('.scroll-right'),
-      },
     };
 
     this.editorButtons = {
@@ -134,7 +132,7 @@ class StudioManager {
       {
         button: this.tool.menu.textButton,
         panel: this.tool.textPanel,
-        id: 'text-tool',
+        id: 'texttool',
       },
       {
         button: this.tool.menu.filtersButton,
@@ -146,93 +144,13 @@ class StudioManager {
     this.tool.menu.container?.addEventListener('click', (e) =>
       this.selectTool(e.target)
     );
-
-    this.tool.stickers.list?.addEventListener('scroll', () => {
-      this.stickerManager.updateScrollButtons();
-    });
-    this.tool.stickers.scrollLeftButton.addEventListener('click', () =>
-      this.stickerManager.scroll('left')
-    );
-    this.tool.stickers.scrollRightButton.addEventListener('click', () =>
-      this.stickerManager.scroll('right')
-    );
   }
-
-  initStickerTool() {
-    this.tool.stickers.list?.addEventListener('click', (e) => {
-      const stickerBtn = e.target.closest('button[data-sticker]');
-      if (!stickerBtn) {
-        return;
-      }
-      const stickerPath = stickerBtn.dataset.sticker;
-      this.stickerManager.selectSticker(stickerPath);
-    });
-
-    let isEditing = false;
-    this.editor.container?.addEventListener('mousedown', (e) => {
-      if (e.target.className === 'sticker-overlay') {
-        isEditing = true;
-        // e.target.classList.add('sticker-editing');
-      }
-    });
-    this.editor.container?.addEventListener('mouseup', () => {
-      isEditing = false;
-      const editingSticker = document.querySelector('.sticker-editing');
-      if (editingSticker) {
-        // editingSticker.classList.remove('sticker-editing');
-      }
-    });
-
-    this.editor.container?.addEventListener('mousemove', (e) => {
-      if (isEditing) {
-        this.stickerManager.moveSticker(e);
-      }
-    });
-  }
-
-  async initFiltersTool() {
-    // Fetch filter definitions from server config
-    try {
-      const response = await fetch('/api/filters');
-      const filters = await response.json();
-
-      studioConfig.filterItems = Object.entries(filters).map(
-        ([key, config]) => ({
-          button: document.getElementById(`filter-${key}`),
-          filter: key,
-          filterValue: config.css,
-        })
-      );
-
-      // Dynamically create CSS classes for filters
-      const styleSheet = document.createElement('style');
-      Object.entries(filters).forEach(([key, config]) => {
-        styleSheet.textContent += `.filter-${key} { filter: ${config.css}; }\n`;
-      });
-      document.head.appendChild(styleSheet);
-    } catch (error) {
-      console.error('Error loading filters:', error);
-      // TODO: Show error message to user
-      return;
-    }
-
-    this.tool.filtersPanel?.addEventListener('click', (e) => {
-      const filterBtn = e.target.closest('button[data-filter]');
-      if (!filterBtn) {
-        return;
-      }
-      const filterName = filterBtn.dataset.filter;
-      this.applyFilter(filterName);
-    });
-  }
-
-  initTextTool() {}
 
   async initTools() {
     this.initToolMenu();
-    this.initStickerTool();
-    await this.initFiltersTool();
-    this.initTextTool();
+    this.stickerManager.init();
+    await this.textManager.init();
+    await this.filterManager.init();
   }
 
   // ======== UI State Handling =========================================
@@ -322,6 +240,7 @@ class StudioManager {
         img: null,
       },
       selectedStickers: [],
+      textOverlays: [],
       selectedFilter: 'none',
     });
     this.editor.canvas.style.filter = 'none';
@@ -494,6 +413,7 @@ class StudioManager {
     }
 
     const tool = selectedTool.dataset.tool;
+    console.log(`Selecting tool: ${tool}`);
     studioStore.setState({ selectedTool: tool });
 
     studioConfig.toolMenuItems.forEach(({ button, panel, id }) => {
@@ -503,25 +423,6 @@ class StudioManager {
       button.setAttribute('aria-selected', isActive);
       panel.classList.toggle('display-none', !isActive);
     });
-  }
-
-  // ----- Filters -----
-  applyFilter(filterName) {
-    if (!this.inEditor) {
-      return;
-    }
-
-    const selectedFilterObj = studioConfig.filterItems.find(
-      (item) => item.filter === filterName
-    );
-
-    studioConfig.filterItems.forEach(({ button, filter }) => {
-      const isActive = filter === filterName;
-      button.classList.toggle('selected-filter', isActive);
-    });
-
-    studioStore.setState({ selectedFilter: filterName });
-    this.editor.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
   }
 
   // ======== Capture, Share, Reset =====================================

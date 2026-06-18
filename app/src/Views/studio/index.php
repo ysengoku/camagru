@@ -25,10 +25,19 @@
         <?php echo render_studio_menu(); ?>
 
         <div id="studio-editor" class="display-none m-4">
-            <div id="studio-preview-text" class="display-none"></div>
             <video id="webcam" autoplay></video>
             <canvas id="studio-preview"></canvas>
             <img src="" id="studio-image" class="display-none" />
+
+            <div id="text-overlay"></div>
+            <div id="text-input-overlay" class="display-none flex-col align-center justify-center gap-3">
+                <input type="text" id="text-input-field" placeholder="Type your text...">
+                <div class="text-input-actions">
+                    <button id="text-input-cancel">✕ Cancel</button>
+                    <button id="text-input-confirm">✓ Add</button>
+                </div>
+            </div>
+            <div id="overlay-mask" class="display-none"></div>
         </div>
 
         <?php echo render_studio_buttons(); ?>

@@ -21,6 +21,41 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/assets/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pacifico';
+  src: url('/assets/fonts/Pacifico-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'HomemadeApple';
+  src: url('/assets/fonts/HomemadeApple-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lexend';
+  src: url('/assets/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal; 
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    src: url('/assets/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
 :root {
   --primary-100: #f2fcfa;
   --primary-200: #b3fff4;
@@ -520,6 +555,16 @@ p {
       height: 28px;
     }
   }
+}
+
+#text-overlay {
+  position: absolute;
+  cursor: cursor;
+  z-index: 15;
+  white-space: pre-wrap;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .filter-option {

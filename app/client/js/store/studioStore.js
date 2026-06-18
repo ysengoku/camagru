@@ -12,5 +12,6 @@ export const studioStore = new State({
   captureButtonDisabled: true,
   selectedTool: 'stickers',
   selectedStickers: [],
+  textOverlay: null,
   selectedFilter: 'none',
 });
