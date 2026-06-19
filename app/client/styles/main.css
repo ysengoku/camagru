@@ -450,9 +450,20 @@ p {
   z-index: 4;
 }
 
-.sticker-overlay.sticker-editing {
-  border: 2px dashed var(--primary-500);
-  border-radius: 0.5rem;
+.sticker-delete-btn,
+.sticker-resize-handle {
+  display: none;
+}
+
+.sticker-overlay.sticker-editing .sticker-delete-btn,
+.sticker-overlay.sticker-editing .sticker-resize-handle {
+  display: block;
+}
+
+.sticker-overlay.sticker-editing,
+#text-preview-container.overlay-editing {
+  border: 2px dashed var(--primary-100);
+  padding : 0.25rem 0.5rem;
 }
 
 #text-input-overlay {
@@ -557,14 +568,54 @@ p {
   }
 }
 
-#text-overlay {
+#text-preview-container {
   position: absolute;
-  cursor: cursor;
   z-index: 15;
-  white-space: pre-wrap;
+  cursor: cursor;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+#text-preview {
+  white-space: pre-wrap;
+}
+
+.sticker-resize-handle,
+.sticker-delete-btn,
+#text-delete-btn {
+  display: none;
+  z-index: 16;
+  position: absolute;
+  border: none;
+  border-radius: 50%;
+}
+
+.sticker-resize-handle {
+  bottom: -5px;
+  right: -5px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  background-color: var(--primary-100);
+}
+
+.sticker-delete-btn,
+#text-delete-btn {
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  background-color: var(--danger);
+  color: var(--gray-100);
+  cursor: pointer;
+  font-size: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+#text-preview-container.overlay-editing #text-delete-btn {
+  display: flex;
 }
 
 .filter-option {

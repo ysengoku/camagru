@@ -5,6 +5,7 @@ export const studioConfig = {
   maxUploadFileSize: 5 * 1024 * 1024,
   toolMenuItems: [],
   filterItems: [],
-  maxOverlays: 6,
-  textToolConfig : null
+  maxStickers: 6,
+  textToolConfig : null,
+  doubleClickThreshold: 300, // milliseconds
 };

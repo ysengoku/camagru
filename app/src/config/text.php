@@ -15,6 +15,6 @@ return [
     ],
     'maxTextLength' => 20,
     'defaultFont' => 'Raleway',
-    'defaultSize' => 16,
+    'defaultSize' => 24,
     'defaultColor' => '#001919',
 ];

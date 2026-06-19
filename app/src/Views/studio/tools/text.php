@@ -24,7 +24,7 @@ if (!function_exists('render_text_tool')) {
         $textColorIcon = render_icon('textcolor');
 
         return <<<HTML
-        <div id="texttool" class="tool-container justify-around gap-4">
+        <div id="texttool" class="tool-container justify-around gap-4 display-none">
 
             <button id="text-add-btn" class="flex-col justify-center align-center border-none bg-transparent cursor-pointer">
                 {$addIcon}

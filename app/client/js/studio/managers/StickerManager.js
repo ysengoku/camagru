@@ -29,29 +29,10 @@ export class StickerManager extends ToolManager {
         return;
       }
       const stickerPath = stickerBtn.dataset.sticker;
-      this.selectSticker(stickerPath);
+      this.addSticker(stickerPath);
     });
 
-    let isEditing = false;
-    this.editor.container?.addEventListener('mousedown', (e) => {
-      if (e.target.className === 'sticker-overlay') {
-        isEditing = true;
-        // e.target.classList.add('sticker-editing');
-      }
-    });
-    this.editor.container?.addEventListener('mouseup', () => {
-      isEditing = false;
-      const editingSticker = document.querySelector('.sticker-editing');
-      // if (editingSticker) {
-        // editingSticker.classList.remove('sticker-editing');
-      // }
-    });
-
-    this.editor.container?.addEventListener('mousemove', (e) => {
-      if (isEditing) {
-        this.moveSticker(e);
-      }
-    });
+    this.bindStickerEvents();
   }
 
   updateScrollButtons() {
@@ -98,7 +79,7 @@ export class StickerManager extends ToolManager {
     setTimeout(() => this.updateScrollButtons(), 100);
   }
 
-  selectSticker(stickerPath) {
+  addSticker(stickerPath) {
     if (!this.inEditor) {
       return;
     }
@@ -123,6 +104,7 @@ export class StickerManager extends ToolManager {
         y: this.config.stickerInitialPosY,
         width: drawWidth,
         height: drawHeight,
+        aspectRatio: aspectRatio,
       };
       this.drawSticker(stickerData);
       // update immutably via the store so subscribers run
@@ -134,45 +116,38 @@ export class StickerManager extends ToolManager {
   }
 
   drawSticker(stickerData) {
-    const overlay = document.createElement('div');
-    overlay.className = 'sticker-overlay';
+    const template = document.getElementById('sticker-template');
+    const overlay = template.content.firstElementChild.cloneNode(true);
+
     overlay.id = stickerData.id;
+    overlay.dataset.aspectRatio = stickerData.aspectRatio;
     overlay.style.left = `${this.config.stickerInitialPosX}px`;
     overlay.style.top = `${this.config.stickerInitialPosY}px`;
     overlay.style.width = `${stickerData.width}px`;
     overlay.style.height = `${stickerData.height}px`;
     overlay.style.backgroundImage = `url(${stickerData.path})`;
+
     this.editor.container.appendChild(overlay);
   }
 
-  moveSticker(e) {
-    if (
-      this.state.editorMode === 'menu' ||
-      this.state.editorMode === 'shared' ||
-      e.target.className !== 'sticker-overlay'
-    ) {
-      return;
-    }
-    const stickerId = e.target.id;
-    const sticker = this.state.selectedStickers.find((s) => s.id === stickerId);
-    const stickerElement = document.getElementById(stickerId);
-    if (!sticker || !stickerElement) {
-      return;
-    }
+  selectStickerForEditing(target) {
+    this.deselectStickers();
+    target.classList.add('sticker-editing');
+  }
 
-    const newX =
-      e.clientX - this.editor.container.offsetLeft - sticker.width / 2;
-    const newY =
-      e.clientY - this.editor.container.offsetTop - sticker.height / 2;
-    stickerElement.style.left = `${newX}px`;
-    stickerElement.style.top = `${newY}px`;
-    console.log(`Moved sticker ${stickerId} to (${newX}, ${newY})`);
+  deselectStickers() {
+    document
+      .querySelectorAll('.sticker-overlay.sticker-editing')
+      .forEach((el) => el.classList.remove('sticker-editing'));
+  }
 
-    // Update the sticker's position in the state
+  removeSticker(id) {
+    const overlay = document.getElementById(id);
+    if (overlay) {
+      overlay.remove();
+    }
     this.state = (s) => ({
-      selectedStickers: s.selectedStickers.map((s) =>
-        s.id === stickerId ? { ...s, x: newX, y: newY } : s
-      ),
+      selectedStickers: s.selectedStickers.filter((sticker) => sticker.id !== id),
     });
   }
 
@@ -184,5 +159,66 @@ export class StickerManager extends ToolManager {
       }
     });
     this.state = (s) => ({ ...s, selectedStickers: [] });
+  }
+
+  bindStickerEvents() {
+    this.bindMouseInteraction(this.editor.container, '.sticker-overlay', {
+      shouldIgnore: (e) =>
+        e.target.closest('.sticker-delete-btn') || e.target.closest('.sticker-resize-handle'),
+      onDragMove: ({ target, x, y }) => {
+        target.style.left = `${x}px`;
+        target.style.top = `${y}px`;
+      },
+      onDragEnd: ({ target }) => {
+        const id = target.id;
+        this.state = (s) => ({
+          selectedStickers: s.selectedStickers.map((sticker) =>
+            sticker.id === id
+              ? { ...sticker, x: parseFloat(target.style.left), y: parseFloat(target.style.top) }
+              : sticker
+          ),
+        });
+      },
+      onSingleClick: ({ target }) => this.selectStickerForEditing(target),
+    });
+
+    // Resize handling
+    this.bindMouseInteraction(this.editor.container, '.sticker-resize-handle', {
+      onDragMove: ({ target, event }) => {
+        const overlay = target.closest('.sticker-overlay');
+        const overlayRect = overlay.getBoundingClientRect();
+        const aspectRatio = parseFloat(overlay.dataset.aspectRatio);
+        const newWidth = Math.max(20, event.clientX - overlayRect.left);
+        const newHeight = newWidth / aspectRatio;
+
+        overlay.style.width = `${newWidth}px`;
+        overlay.style.height = `${newHeight}px`;
+      },
+      onDragEnd: ({ target }) => {
+        const overlay = target.closest('.sticker-overlay');
+        this.state = (s) => ({
+          selectedStickers: s.selectedStickers.map((sticker) =>
+            sticker.id === overlay.id
+              ? { ...sticker, width: parseFloat(overlay.style.width), height: parseFloat(overlay.style.height) }
+              : sticker
+          ),
+        });
+      },
+    });
+
+    this.editor.container.addEventListener('click', (e) => {
+      const deleteBtn = e.target.closest('.sticker-delete-btn');
+      if (!deleteBtn) {
+        return;
+      }
+      const stickerEl = deleteBtn.closest('.sticker-overlay');
+      this.removeSticker(stickerEl.id);
+    });
+
+    this.editor.container.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('.sticker-overlay')) {
+        this.deselectStickers();
+      }
+    });
   }
 }

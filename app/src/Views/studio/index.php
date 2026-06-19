@@ -6,7 +6,9 @@
  */
     require_once __DIR__ . '/tools/navmenu.php';
     require_once __DIR__ . '/tools/stickers.php';
+    require_once __DIR__ . '/tools/stickerPreviewTemplate.php';
     require_once __DIR__ . '/tools/text.php';
+    require_once __DIR__ . '/tools/textPreview.php';
     require_once __DIR__ . '/tools/filters.php';
     require_once __DIR__ . '/studioMenu.php';
     require_once __DIR__ . '/studioButtons.php';
@@ -29,15 +31,8 @@
             <canvas id="studio-preview"></canvas>
             <img src="" id="studio-image" class="display-none" />
 
-            <div id="text-overlay"></div>
-            <div id="text-input-overlay" class="display-none flex-col align-center justify-center gap-3">
-                <input type="text" id="text-input-field" placeholder="Type your text...">
-                <div class="text-input-actions">
-                    <button id="text-input-cancel">✕ Cancel</button>
-                    <button id="text-input-confirm">✓ Add</button>
-                </div>
-            </div>
-            <div id="overlay-mask" class="display-none"></div>
+            <?php echo render_text_preview(); ?>
+            <?php echo render_sticker_preview_template(); ?>
         </div>
 
         <?php echo render_studio_buttons(); ?>

@@ -25,7 +25,7 @@ if (!function_exists('render_stickers_tool')) {
         }
 
         return <<<HTML
-        <div id="stickers" class="tool-container justify-center display-none">
+        <div id="stickers" class="tool-container justify-center">
             <button class="scroll-left opacity-50 cursor-not-allowed">
                 {$leftIcon}
             </button>
