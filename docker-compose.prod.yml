@@ -13,8 +13,6 @@ services:
   nginx:
     build:
       target: production
-      args:
-        ENV: prod
     ports:
       - "8443:443"
 

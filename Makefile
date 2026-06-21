@@ -21,26 +21,32 @@ ensure-env:
 init-ip:
 	bash init-ip.sh
 
+build: ENV=production
 build: ensure-env init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) build --no-cache
+	@docker image prune -f
 
+build-dev: ENV=development
+build-dev: ensure-env init-ip
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) build
+	@docker image prune -f
+
+up: ENV=production
 up: build
-	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) up
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) up --remove-orphans
+
+dev: ENV=development
+dev: build-dev
+	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) up --remove-orphans
 
 down: 
-	docker compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) -f $(COMPOSE_FILE_PROD) down --remove-orphans
 
-clean: down
-	@docker system prune -f -a --volumes
+clean:
+	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) -f $(COMPOSE_FILE_PROD) down --rmi local --volumes --remove-orphans
 
 fclean: clean
-	@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
-
-build-dev: ensure-env init-ip
-	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development build --no-cache
-
-dev: build-dev
-	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) --profile development up
+	docker system prune -f
 
 test-app:
 	docker exec $(APP_CONTAINER) npm run test
@@ -64,4 +70,4 @@ quality-php:
 	$(MAKE) format-php
 	$(MAKE) psalm
 
-.PHONY: all dev up down clean fclean lint-js format-js lint-php format-php psalm quality-php
+.PHONY: all dev up down build build-dev ensure-env init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app
