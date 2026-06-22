@@ -18,4 +18,11 @@ class Response {
         $this->statusCode = $statusCode;
         $this->statusText = $statusText;
     }
+
+    public function sendApiResponse(array $data, int $statusCode, string $statusText): void {
+        header('Content-Type: application/json');
+        $this->setStatus($statusCode, $statusText);
+        $this->setContent(json_encode($data));
+        $this->send();
+    }
 }

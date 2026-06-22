@@ -92,8 +92,8 @@ class StudioManager {
     this.editorButtons.capture?.addEventListener('click', (e) =>
       this.capture(e)
     );
-    this.editorButtons.share?.addEventListener('click', () =>
-      this.sharePhoto()
+    this.editorButtons.share?.addEventListener('click', async () =>
+      await this.sharePhoto()
     );
     this.editorButtons.reset?.addEventListener('click', () =>
       this.resetCapture()
@@ -426,7 +426,39 @@ class StudioManager {
 
   // ======== Capture, Share, Reset =====================================
 
-  sharePhoto() {}
+  async sharePhoto() {
+    const finalImageData = {
+      baseImage: this.state.uploadedImage.img ? this.editor.canvas.toDataURL('image/png') : null,
+      stickers: this.state.selectedStickers,
+      textOverlay: this.state.textOverlay,
+      filter: this.state.selectedFilter,
+    };
+    console.log('Final image data to share:', finalImageData);
+
+    const response = await fetch('/api/photos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(finalImageData),
+    })
+      .then((res) => {
+        console.log('Raw response from server:', res);
+        return res.json().then((data) => ({ ok: res.ok, status: res.status, statusText: res.statusText, data }));
+      })
+      .catch((error) => {
+        console.error('Error sharing photo:', error);
+        return null;
+      });
+
+
+    if (response?.ok) {
+      // TODO: Show success message & Update the gallery to show the new post
+      this.backToMenu();
+    } else {
+      // TODO: Show error message to user
+    }
+  }
 
   backToMenu() {
     this.clearWebcam();

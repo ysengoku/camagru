@@ -7,9 +7,9 @@ final class Router {
         $this->routes = $routes;
     }
 
-    public function resolve(string $pathInfo): ?array {
+    public function resolve(string $pathInfo, string $method): ?array {
         foreach ($this->routes as $route) {
-            if ($route['path'] === $pathInfo) {
+            if ($route['path'] === $pathInfo && (!isset($route['method']) || $route['method'] === $method)) {
 
                 return $route;
             }

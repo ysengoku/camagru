@@ -5,7 +5,7 @@ $routes = [
     ['path' => '', 'controller' => 'feed', 'action' => 'index'],
 
     // Post routes
-    ['path' => '/post/', 'controller' => 'post', 'action' => 'view'],
+    ['path' => '/post', 'controller' => 'post', 'action' => 'view'],
 
     // Auth routes
     ['path' => '/login', 'controller' => 'auth', 'action' => 'login'],
@@ -16,16 +16,16 @@ $routes = [
 
     // Camera/Studio routes (authenticated only)
     ['path' => '/studio', 'controller' => 'studio', 'action' => 'index'],
-
-    // API routes
-    // ['path' => '/api/text-config', 'controller' => 'text', 'action' => 'config'],
-    // ['path' => '/api/filters', 'controller' => 'filter', 'action' => 'list'],
-    ['path' => '/api/studio-config', 'controller' => 'studioConfig', 'action' => 'config'],
-
+    
     // User profile routes
     ['path' => '/profile', 'controller' => 'profile', 'action' => 'index'],
     ['path' => '/profile/edit', 'controller' => 'profile', 'action' => 'edit'],
     ['path' => '/profile/settings', 'controller' => 'profile', 'action' => 'settings'],
+
+    // API routes
+    ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config'],
+    ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create'],
+    ['path' => '/api/photos', 'method' => 'DELETE', 'controller' => 'photoApi', 'action' => 'delete'],
 ];
 
 return $routes;

@@ -11,7 +11,7 @@ class Application {
 
     public function run(): void {
         try {
-            $params = $this->router->resolve($this->getPathInfo());
+            $params = $this->router->resolve($this->getPathInfo(), $_SERVER['REQUEST_METHOD'] ?? 'GET');
             if ($params === null) {
                 throw new HTTPNotFoundException();
             }
