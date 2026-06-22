@@ -1,11 +1,25 @@
+async function fetchStudioConfig() {
+  try {
+    const response = await fetch('/api/studio-config');
+    const config = await response.json();
+    return config;
+  } catch (error) {
+    console.error('Error loading studio config:', error);
+  }
+}
+
+const config = await fetchStudioConfig();
+
+console.log('Loaded studio config:', config);
+
 export const studioConfig = {
+  ...config,
   canvasAspectRatio: null,
   stickerInitialPosX: null,
   stickerInitialPosY: null,
   maxUploadFileSize: 5 * 1024 * 1024,
   toolMenuItems: [],
   filterItems: [],
-  maxStickers: 6,
   textToolConfig : null,
   doubleClickThreshold: 300, // milliseconds
 };

@@ -5,7 +5,8 @@
 <?php
 if (!function_exists('render_text_tool')) {
     function render_text_tool(): string {
-        $config = require __DIR__ . '/../../../config/text.php';
+        $studioConfig = require __DIR__ . '/../../../config/studio.php';
+        $config = $studioConfig['text'];
         $fontList = '';
         foreach ($config['fonts'] as $font) {
             $safeFont = htmlspecialchars($font, ENT_QUOTES);

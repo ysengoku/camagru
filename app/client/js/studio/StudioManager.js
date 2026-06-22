@@ -146,11 +146,11 @@ class StudioManager {
     );
   }
 
-  async initTools() {
+  initTools() {
     this.initToolMenu();
     this.stickerManager.init();
-    await this.textManager.init();
-    await this.filterManager.init();
+    this.textManager.init();
+    this.filterManager.init();
   }
 
   // ======== UI State Handling =========================================
@@ -413,7 +413,6 @@ class StudioManager {
     }
 
     const tool = selectedTool.dataset.tool;
-    console.log(`Selecting tool: ${tool}`);
     studioStore.setState({ selectedTool: tool });
 
     studioConfig.toolMenuItems.forEach(({ button, panel, id }) => {

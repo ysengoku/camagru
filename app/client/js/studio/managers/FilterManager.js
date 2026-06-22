@@ -5,31 +5,21 @@ export class FilterManager extends ToolManager {
     super(editor, panel);
   }
 
-  async init() {
-    // Fetch filter definitions from server config
-    try {
-      const response = await fetch('/api/filters');
-      const filters = await response.json();
+  init() {
+    this.config.filterItems = Object.entries(this.config.filters).map(
+      ([key, config]) => ({
+        button: document.getElementById(`filter-${key}`),
+        filter: key,
+        filterValue: config.css,
+      })
+    );
 
-      this.config.filterItems = Object.entries(filters).map(
-        ([key, config]) => ({
-          button: document.getElementById(`filter-${key}`),
-          filter: key,
-          filterValue: config.css,
-        })
-      );
-
-      // Dynamically create CSS classes for filters
-      const styleSheet = document.createElement('style');
-      Object.entries(filters).forEach(([key, config]) => {
-        styleSheet.textContent += `.filter-${key} { filter: ${config.css}; }\n`;
-      });
-      document.head.appendChild(styleSheet);
-    } catch (error) {
-      console.error('Error loading filters:', error);
-      // TODO: Show error message to user
-      return;
-    }
+    // Dynamically create CSS classes for filter buttons
+    const styleSheet = document.createElement('style');
+    Object.entries(this.config.filters).forEach(([key, config]) => {
+      styleSheet.textContent += `.filter-${key} { filter: ${config.css}; }\n`;
+    });
+    document.head.appendChild(styleSheet);
 
     this.panel?.addEventListener('click', (e) => {
       const filterBtn = e.target.closest('button[data-filter]');

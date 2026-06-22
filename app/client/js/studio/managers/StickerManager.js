@@ -33,6 +33,7 @@ export class StickerManager extends ToolManager {
     });
 
     this.bindStickerEvents();
+    this.setupStoreSubscriptions();
   }
 
   updateScrollButtons() {
@@ -107,7 +108,7 @@ export class StickerManager extends ToolManager {
         aspectRatio: aspectRatio,
       };
       this.drawSticker(stickerData);
-      // update immutably via the store so subscribers run
+
       this.state = (s) => ({
         selectedStickers: [...s.selectedStickers, stickerData],
       });
@@ -219,6 +220,32 @@ export class StickerManager extends ToolManager {
       if (!e.target.closest('.sticker-overlay')) {
         this.deselectStickers();
       }
+    });
+  }
+
+  // ====== Store subscription methods ========================================
+
+  setupStoreSubscriptions() {
+    this.store.subscribe((newState) => {
+      if (newState.selectedStickers.length >= this.config.maxStickerCount) {
+        this.disableStickerSelection();
+        return;
+      }
+      this.enableStickerSelection();
+    });
+  }
+
+  disableStickerSelection() {
+    this.panel.list.querySelectorAll('button[data-sticker]').forEach((btn) => {
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+    });
+  }
+
+  enableStickerSelection() {
+    this.panel.list.querySelectorAll('button[data-sticker]').forEach((btn) => {
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
     });
   }
 }

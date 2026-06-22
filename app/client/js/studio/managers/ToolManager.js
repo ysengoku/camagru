@@ -7,6 +7,10 @@ export class ToolManager {
     this.panel = panel;
   }
 
+  get store() {
+    return studioStore;
+  }
+
   get state() {
     return studioStore.state;
   }

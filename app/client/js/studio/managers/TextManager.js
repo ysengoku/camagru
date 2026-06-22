@@ -1,4 +1,3 @@
-import { studioStore } from '../../store/studioStore';
 import { ToolManager } from './ToolManager.js';
 
 export class TextManager extends ToolManager {
@@ -10,16 +9,7 @@ export class TextManager extends ToolManager {
     return this.state.textOverlay !== null;
   }
 
-  async init() {
-    try {
-      const response = await fetch('/api/text-config');
-      const textConfig = await response.json();
-
-      this.config.textToolConfig = textConfig;
-    } catch (error) {
-      console.error('Error fetching text configuration:', error);
-    }
-    
+  init() {
     this.overlayMask = document.getElementById('overlay-mask');
     this.textPreviewContainer = document.getElementById('text-preview-container');
     this.textPreview = document.getElementById('text-preview');
@@ -34,8 +24,7 @@ export class TextManager extends ToolManager {
     this.colorSelectButton = document.querySelector('.color-icon-btn');
     this.deleteTextButton = document.getElementById('text-delete-btn');
 
-    this.applyFontsToOptions();
-    this.applyColorToButton();
+    this.applyStylesToToolMenu();
 
     this.addTextButton?.addEventListener('click', () => {
       this.showTextInput();
@@ -51,15 +40,17 @@ export class TextManager extends ToolManager {
     });
 
     this.fontSelect.addEventListener('change', () => {
-      this.applyStylesToInput();
+      this.textInputField.style.fontFamily = this.fontSelect.value;
+      this.fontSelect.style.fontFamily = this.fontSelect.value;
     });
 
     this.fontSizeSelect.addEventListener('change', () => {
-      this.applyStylesToInput();
+      this.textInputField.style.fontSize = `${this.fontSizeSelect.value}px`;
     });
 
     this.colorInput.addEventListener('input', () => {
-      this.applyStylesToInput();
+      this.textInputField.style.color = this.colorInput.value;
+      this.colorSelectButton.style.color = this.colorInput.value;
     });
 
     this.deleteTextButton.addEventListener('click', (e) => {
@@ -73,23 +64,10 @@ export class TextManager extends ToolManager {
 
   // ====== Text tools handling ===============================================
 
-  applyFontsToOptions() {
-    if (!this.config.textToolConfig?.fonts) {
-      return;
-    }
-
+  applyStylesToToolMenu() {
     this.fontSelect.querySelectorAll('option').forEach(option => option.style.fontFamily = option.value);
     this.fontSelect.style.fontFamily = this.fontSelect.value;
-    this.fontSelect.addEventListener('change', () => {
-      this.fontSelect.style.fontFamily = this.fontSelect.value;
-    });
-  }
-
-  applyColorToButton() {
-    this.colorSelectButton.style.color = this.config.textToolConfig.defaultColor || '#001919';
-    this.colorInput.addEventListener('input', (e) => {
-      this.colorSelectButton.style.color = e.target.value;
-    });
+    this.colorSelectButton.style.color = this.config.text.defaultColor || '#001919';
   }
 
   applyStylesToInput() {
@@ -176,12 +154,21 @@ export class TextManager extends ToolManager {
           textOverlay: { ...s.textOverlay, x: elRect.left - containerRect.left, y: elRect.top - containerRect.top },
         });
       },
-      onSingleClick: ({ target }) => target.classList.add('overlay-editing'),
+      onSingleClick: ({ target }) => {
+        target.classList.add('overlay-editing')
+      },
       onDoubleClick: ({ target }) => {
         this.isEditing = true;
         this.editTextOverlay();
         target.classList.add('overlay-editing');
       },
+    });
+
+    this.editor.container.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('#text-preview')) {
+        this.isEditing = false;
+        this.textPreviewContainer.classList.remove('overlay-editing');
+      }
     });
   }
 
@@ -221,16 +208,11 @@ export class TextManager extends ToolManager {
     this.confirmButton.addEventListener('click', onConfirm);
   }
 
-  onContainerPointerDown(e) {
-    if (!e.target.closest('#text-preview')) {
-      this.textPreviewContainer.classList.add('overlay-editing');
-    }
-  }
 
   // ====== Store subscription methods ========================================
 
   setupStoreSubscriptions() {
-    studioStore.subscribe((newState, prevState) => {
+    this.store.subscribe((newState, prevState) => {
       const prevHasText = !!prevState.textOverlay;
       const newHasText = !!newState.textOverlay;
       if (prevHasText !== newHasText) {
