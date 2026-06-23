@@ -11,7 +11,9 @@ export class TextManager extends ToolManager {
 
   init() {
     this.overlayMask = document.getElementById('overlay-mask');
-    this.textPreviewContainer = document.getElementById('text-preview-container');
+    this.textPreviewContainer = document.getElementById(
+      'text-preview-container'
+    );
     this.textPreview = document.getElementById('text-preview');
     this.addTextButton = document.getElementById('text-add-btn');
     this.textInputOverlay = document.getElementById('text-input-overlay');
@@ -33,7 +35,7 @@ export class TextManager extends ToolManager {
     this.confirmButton.addEventListener('click', () => {
       this.isEditing ? this.editTextOverlay() : this.addText();
     });
-    
+
     this.cancelButton.addEventListener('click', () => {
       this.hideTextInput();
       this.isEditing = false;
@@ -58,16 +60,19 @@ export class TextManager extends ToolManager {
       e.stopPropagation();
       this.removeText();
     });
-    
+
     this.setupStoreSubscriptions();
   }
 
   // ====== Text tools handling ===============================================
 
   applyStylesToToolMenu() {
-    this.fontSelect.querySelectorAll('option').forEach(option => option.style.fontFamily = option.value);
+    this.fontSelect
+      .querySelectorAll('option')
+      .forEach((option) => (option.style.fontFamily = option.value));
     this.fontSelect.style.fontFamily = this.fontSelect.value;
-    this.colorSelectButton.style.color = this.config.text.defaultColor || '#001919';
+    this.colorSelectButton.style.color =
+      this.config.text.defaultColor || '#001919';
   }
 
   applyStylesToInput() {
@@ -97,8 +102,12 @@ export class TextManager extends ToolManager {
   // ====== Text overlay handling =============================================
 
   addText() {
-    if (!this.inEditor || this.hasTextOverlay || !this.textInputField.value.trim()) {
-        return;
+    if (
+      !this.inEditor ||
+      this.hasTextOverlay ||
+      !this.textInputField.value.trim()
+    ) {
+      return;
     }
 
     const textData = {
@@ -106,7 +115,7 @@ export class TextManager extends ToolManager {
       fontFamily: this.fontSelect.value,
       fontSize: this.fontSizeSelect.value,
       color: this.colorInput.value,
-    }
+    };
 
     this.updateTextPreviewElement(textData);
 
@@ -140,29 +149,37 @@ export class TextManager extends ToolManager {
   // ====== Edit text methods =================================================
 
   bindTextOverlayEvents() {
-    this.bindMouseInteraction(this.editor.container, this.textPreviewContainer, {
-      shouldIgnore: (e) => e.target.closest('#text-delete-btn'),
-      onDragMove: ({ target, x, y }) => {
-        target.style.left = `${x}px`;
-        target.style.top = `${y}px`;
-      },
-      onDragEnd: ({ target }) => {
-        const containerRect = this.editor.container.getBoundingClientRect();
-        const elRect = target.getBoundingClientRect();
-        this.state = (s) => ({
-          ...s,
-          textOverlay: { ...s.textOverlay, x: elRect.left - containerRect.left, y: elRect.top - containerRect.top },
-        });
-      },
-      onSingleClick: ({ target }) => {
-        target.classList.add('overlay-editing')
-      },
-      onDoubleClick: ({ target }) => {
-        this.isEditing = true;
-        this.editTextOverlay();
-        target.classList.add('overlay-editing');
-      },
-    });
+    this.bindMouseInteraction(
+      this.editor.container,
+      this.textPreviewContainer,
+      {
+        shouldIgnore: (e) => e.target.closest('#text-delete-btn'),
+        onDragMove: ({ target, x, y }) => {
+          target.style.left = `${x}px`;
+          target.style.top = `${y}px`;
+        },
+        onDragEnd: ({ target }) => {
+          const containerRect = this.editor.container.getBoundingClientRect();
+          const elRect = target.getBoundingClientRect();
+          this.state = (s) => ({
+            ...s,
+            textOverlay: {
+              ...s.textOverlay,
+              x: elRect.left - containerRect.left,
+              y: elRect.top - containerRect.top,
+            },
+          });
+        },
+        onSingleClick: ({ target }) => {
+          target.classList.add('overlay-editing');
+        },
+        onDoubleClick: ({ target }) => {
+          this.isEditing = true;
+          this.editTextOverlay();
+          target.classList.add('overlay-editing');
+        },
+      }
+    );
 
     this.editor.container.addEventListener('pointerdown', (e) => {
       if (!e.target.closest('#text-preview')) {
@@ -187,16 +204,16 @@ export class TextManager extends ToolManager {
         fontFamily: this.fontSelect.value,
         fontSize: this.fontSizeSelect.value,
         color: this.colorInput.value,
-      }
+      };
       this.confirmButton.removeEventListener('click', onConfirm);
       this.hideTextInput();
-      
+
       if (!newTextData.content) {
         this.removeText();
         return;
       }
       this.updateTextPreviewElement(newTextData);
-      
+
       this.textPreview.textContent = newTextData.content;
       this.state = (s) => ({
         ...s,
@@ -207,7 +224,6 @@ export class TextManager extends ToolManager {
 
     this.confirmButton.addEventListener('click', onConfirm);
   }
-
 
   // ====== Store subscription methods ========================================
 

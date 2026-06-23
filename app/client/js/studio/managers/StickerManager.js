@@ -10,7 +10,7 @@ export class StickerManager extends ToolManager {
       ...this.panel,
       list: document.getElementById('sticker-list'),
       scrollLeftButton: document.querySelector('.scroll-left'),
-      scrollRightButton: document.querySelector('.scroll-right')
+      scrollRightButton: document.querySelector('.scroll-right'),
     };
 
     this.panel.list?.addEventListener('scroll', () => {
@@ -148,7 +148,9 @@ export class StickerManager extends ToolManager {
       overlay.remove();
     }
     this.state = (s) => ({
-      selectedStickers: s.selectedStickers.filter((sticker) => sticker.id !== id),
+      selectedStickers: s.selectedStickers.filter(
+        (sticker) => sticker.id !== id
+      ),
     });
   }
 
@@ -165,7 +167,8 @@ export class StickerManager extends ToolManager {
   bindStickerEvents() {
     this.bindMouseInteraction(this.editor.container, '.sticker-overlay', {
       shouldIgnore: (e) =>
-        e.target.closest('.sticker-delete-btn') || e.target.closest('.sticker-resize-handle'),
+        e.target.closest('.sticker-delete-btn') ||
+        e.target.closest('.sticker-resize-handle'),
       onDragMove: ({ target, x, y }) => {
         target.style.left = `${x}px`;
         target.style.top = `${y}px`;
@@ -175,7 +178,11 @@ export class StickerManager extends ToolManager {
         this.state = (s) => ({
           selectedStickers: s.selectedStickers.map((sticker) =>
             sticker.id === id
-              ? { ...sticker, x: parseFloat(target.style.left), y: parseFloat(target.style.top) }
+              ? {
+                  ...sticker,
+                  x: parseFloat(target.style.left).toFixed(2),
+                  y: parseFloat(target.style.top).toFixed(2),
+                }
               : sticker
           ),
         });
@@ -200,7 +207,11 @@ export class StickerManager extends ToolManager {
         this.state = (s) => ({
           selectedStickers: s.selectedStickers.map((sticker) =>
             sticker.id === overlay.id
-              ? { ...sticker, width: parseFloat(overlay.style.width), height: parseFloat(overlay.style.height) }
+              ? {
+                  ...sticker,
+                  width: parseFloat(overlay.style.width).toFixed(2),
+                  height: parseFloat(overlay.style.height).toFixed(2),
+                }
               : sticker
           ),
         });

@@ -28,26 +28,24 @@ export class ToolManager {
   }
 
   /**
-  * Binds mouse interaction events to a given element, allowing for drag and click detection.
-  * @param {HTMLDivElement} container - The container element that holds the target element.
-  * @param {HTMLElement|String} target - The DOM element or selector to bind the events to OR selector.
-  * @param {Object} handlers - An object containing handler functions for various events.
-  * @param {Function} handlers.shouldIgnore - A function that determines if the event should be ignored.
-  * @param {Function} handlers.onDragMove - A function called when the element is being dragged.
-  * @param {Function} handlers.onDragEnd - A function called when the drag operation ends.
-  * @param {Function} handlers.onSingleClick - A function called on a single click event.
-  * @param {Function} handlers.onDoubleClick - A function called on a double click event.
-  * 
-  * @returns {Function} A cleanup function to remove the event listeners.
-  **/
+   * Binds mouse interaction events to a given element, allowing for drag and click detection.
+   * @param {HTMLDivElement} container - The container element that holds the target element.
+   * @param {HTMLElement|String} target - The DOM element or selector to bind the events to OR selector.
+   * @param {Object} handlers - An object containing handler functions for various events.
+   * @param {Function} handlers.shouldIgnore - A function that determines if the event should be ignored.
+   * @param {Function} handlers.onDragMove - A function called when the element is being dragged.
+   * @param {Function} handlers.onDragEnd - A function called when the drag operation ends.
+   * @param {Function} handlers.onSingleClick - A function called on a single click event.
+   * @param {Function} handlers.onDoubleClick - A function called on a double click event.
+   *
+   * @returns {Function} A cleanup function to remove the event listeners.
+   **/
   bindMouseInteraction(container, target, handlers = {}) {
     const resolveTarget = (e) => {
       if (typeof target === 'string') {
         return e.target.closest(target);
       }
-      return e.target === target || target.contains(e.target)
-        ? target
-        : null;
+      return e.target === target || target.contains(e.target) ? target : null;
     };
 
     const drag = {

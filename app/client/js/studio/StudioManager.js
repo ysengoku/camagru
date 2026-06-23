@@ -17,7 +17,10 @@ class StudioManager {
     this.videoStream = null;
 
     this.setDomElReferences();
-    this.stickerManager = new StickerManager(this.editor, this.tool.stickerPanel);
+    this.stickerManager = new StickerManager(
+      this.editor,
+      this.tool.stickerPanel
+    );
     this.textManager = new TextManager(this.editor, this.tool.textPanel);
     this.filterManager = new FilterManager(this.editor, this.tool.filtersPanel);
 
@@ -92,8 +95,9 @@ class StudioManager {
     this.editorButtons.capture?.addEventListener('click', (e) =>
       this.capture(e)
     );
-    this.editorButtons.share?.addEventListener('click', async () =>
-      await this.sharePhoto()
+    this.editorButtons.share?.addEventListener(
+      'click',
+      async () => await this.sharePhoto()
     );
     this.editorButtons.reset?.addEventListener('click', () =>
       this.resetCapture()
@@ -428,7 +432,9 @@ class StudioManager {
 
   async sharePhoto() {
     const finalImageData = {
-      baseImage: this.state.uploadedImage.img ? this.editor.canvas.toDataURL('image/png') : null,
+      baseImage: this.state.uploadedImage.img
+        ? this.editor.canvas.toDataURL('image/png')
+        : null,
       stickers: this.state.selectedStickers,
       textOverlay: this.state.textOverlay,
       filter: this.state.selectedFilter,
@@ -444,13 +450,19 @@ class StudioManager {
     })
       .then((res) => {
         console.log('Raw response from server:', res);
-        return res.json().then((data) => ({ ok: res.ok, status: res.status, statusText: res.statusText, data }));
+        return res
+          .json()
+          .then((data) => ({
+            ok: res.ok,
+            status: res.status,
+            statusText: res.statusText,
+            data,
+          }));
       })
       .catch((error) => {
         console.error('Error sharing photo:', error);
         return null;
       });
-
 
     if (response?.ok) {
       // TODO: Show success message & Update the gallery to show the new post
