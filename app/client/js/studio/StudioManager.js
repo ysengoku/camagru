@@ -433,13 +433,12 @@ class StudioManager {
   async sharePhoto() {
     const finalImageData = {
       baseImage: this.state.uploadedImage.img
-        ? this.editor.canvas.toDataURL('image/png')
+        ? this.editor.canvas.toDataURL('image/jpeg')
         : null,
       stickers: this.state.selectedStickers,
       textOverlay: this.state.textOverlay,
       filter: this.state.selectedFilter,
     };
-    console.log('Final image data to share:', finalImageData);
 
     const response = await fetch('/api/photos', {
       method: 'POST',
@@ -450,14 +449,12 @@ class StudioManager {
     })
       .then((res) => {
         console.log('Raw response from server:', res);
-        return res
-          .json()
-          .then((data) => ({
-            ok: res.ok,
-            status: res.status,
-            statusText: res.statusText,
-            data,
-          }));
+        return res.json().then((data) => ({
+          ok: res.ok,
+          status: res.status,
+          statusText: res.statusText,
+          data,
+        }));
       })
       .catch((error) => {
         console.error('Error sharing photo:', error);

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/helper/Path.php';
+
 class Application {
     private Router $router;
     protected Response $response;

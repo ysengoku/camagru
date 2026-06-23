@@ -6,7 +6,7 @@ if (!function_exists('render_sticker_preview_template')) {
      * @param array $sticker The sticker data.
      * @return string The HTML content for the sticker preview template.
      */
-    function render_sticker_preview_template(): string{
+    function render_sticker_preview_template(): string {
         return <<<HTML
         <template id="sticker-template">
           <div class="sticker-overlay">

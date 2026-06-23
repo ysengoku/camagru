@@ -8,7 +8,7 @@ PUBLIC_MEDIA=${PUBLIC_DIR}/media
 
 mkdir -p "$STORAGE_DIR"
 chown -R www-data:www-data "$STORAGE_DIR" || true
-chmod -R 750 "$STORAGE_DIR" || true
+chmod -R 755 "$STORAGE_DIR" || true
 
 mkdir -p "$PUBLIC_DIR"
 # create symlink if missing or broken

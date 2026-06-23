@@ -118,14 +118,27 @@ export class TextManager extends ToolManager {
     };
 
     this.updateTextPreviewElement(textData);
+    this.hideTextInput();
+
+    const containerRect = this.editor.container.getBoundingClientRect();
+    const previewRect = this.textPreviewContainer.getBoundingClientRect();
+    const x = previewRect.left - containerRect.left;
+    const y = previewRect.top - containerRect.top;
+
+    this.textPreviewContainer.style.left = `${x}px`;
+    this.textPreviewContainer.style.top = `${y}px`;
+    this.textPreviewContainer.style.transform = 'none';
 
     this.state = (s) => ({
       ...s,
-      textOverlay: textData,
+      textOverlay: {
+        ...textData,
+        x,
+        y,
+      },
     });
 
     this.bindTextOverlayEvents();
-    this.hideTextInput();
   }
 
   updateTextPreviewElement(textData) {

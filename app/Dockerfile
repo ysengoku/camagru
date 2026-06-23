@@ -5,12 +5,23 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	default-mysql-client \
 	ca-certificates \
-	&& docker-php-ext-install pdo pdo_mysql \
+	# --- GD Extension Dependencies ---
+    # libpng-dev: Required for processing PNG images
+    libpng-dev \
+    # libjpeg-dev: Required for processing JPEG images
+    libjpeg-dev \
+    # libfreetype6-dev: Required for rendering TrueType fonts (imagettftext)
+    libfreetype6-dev \
+	# Configure the GD extension to compile with FreeType and JPEG support enabled
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
+	# Install pdo, pdo_mysql, and the configured gd extension into PHP
+	&& docker-php-ext-install pdo pdo_mysql gd\
 	&& rm -rf /var/lib/apt/lists/*
 
 COPY . .
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+RUM
 
 FROM base AS development
 

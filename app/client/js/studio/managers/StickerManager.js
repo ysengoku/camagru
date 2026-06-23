@@ -180,8 +180,8 @@ export class StickerManager extends ToolManager {
             sticker.id === id
               ? {
                   ...sticker,
-                  x: parseFloat(target.style.left).toFixed(2),
-                  y: parseFloat(target.style.top).toFixed(2),
+                  x: parseFloat(target.style.left),
+                  y: parseFloat(target.style.top),
                 }
               : sticker
           ),
@@ -209,8 +209,8 @@ export class StickerManager extends ToolManager {
             sticker.id === overlay.id
               ? {
                   ...sticker,
-                  width: parseFloat(overlay.style.width).toFixed(2),
-                  height: parseFloat(overlay.style.height).toFixed(2),
+                  width: parseFloat(overlay.style.width),
+                  height: parseFloat(overlay.style.height),
                 }
               : sticker
           ),

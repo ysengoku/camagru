@@ -6,7 +6,9 @@ class Response {
     protected string $statusText = 'OK';
 
     public function send(): void {
-        header(sprintf('HTTP/1.1 %d %s', $this->statusCode, $this->statusText));
+        http_response_code($this->statusCode);
+        header(sprintf('HTTP/1.1 %d %s', $this->statusCode, $this->statusText), true, $this->statusCode);
+        error_log("Sending response with status {$this->statusCode}: {$this->statusText}");
         echo $this->content;
     }
 
@@ -20,9 +22,10 @@ class Response {
     }
 
     public function sendApiResponse(array $data, int $statusCode, string $statusText): void {
-        header('Content-Type: application/json');
         $this->setStatus($statusCode, $statusText);
         $this->setContent(json_encode($data));
+        error_log("Sending API response with status $statusCode: " . json_encode($data));
+        header('Content-Type: application/json', true, $statusCode);
         $this->send();
     }
 }
