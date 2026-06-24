@@ -4,6 +4,7 @@
  */
 
 require_once __DIR__ . '/../helper/ImageComposer.php';
+require_once __DIR__ . '/../Models/Post.php';
 
 final class PhotoApiController extends Controller {
     final public function create(): void {
@@ -55,9 +56,9 @@ final class PhotoApiController extends Controller {
             $imageComposer = new ImageComposer($baseImage);
             $saved = $imageComposer->compose($stickers, $text ?? [], $filter, $imagePath);
         } catch (\Throwable $e) {
-            error_log('Photo creation failed: ' . $e->getMessage());
+            error_log('Image creation failed: ' . $e->getMessage());
             $response->sendApiResponse(
-                ['error' => 'Photo creation failed'],
+                ['error' => 'Image creation failed'],
                 500,
                 'Internal Server Error'
             );
@@ -74,11 +75,19 @@ final class PhotoApiController extends Controller {
             exit;
         }
 
-        // TODO: Save the image path to the database via Model
+        $post = new Post($publicImagePath, 1); // TODO Replace 1 with the actual user ID from session or auth context
+        if (!$post->save()) {
+            $response->sendApiResponse(
+                ['error' => 'Post could not be saved', 'details' => $post->getErrors()],
+                422,
+                'Unprocessable Entity'
+            );
+            exit;
+        }
 
         $responseContent = [ 
             'message' => 'Post created successfully',
-            'data' => ['path' => $publicImagePath],
+            'data' => $post->toArray(),
         ];
         $response->sendApiResponse($responseContent, 201, 'Created');
         exit;

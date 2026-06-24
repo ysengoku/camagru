@@ -7,7 +7,7 @@ class User extends Model {
         'username'           => 'VARCHAR(255) UNIQUE NOT NULL',
         'email'              => 'VARCHAR(255) UNIQUE NOT NULL',
         'password_hash'      => 'VARCHAR(255) NOT NULL',
-        'email_varified'     => 'TINYINT(1) DEFAULT 0 NOT NULL',
+        'email_verified'     => 'TINYINT(1) DEFAULT 0 NOT NULL',
         'verification_token' => 'VARCHAR(64) DEFAULT NULL',
         'created_at'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
@@ -16,7 +16,7 @@ class User extends Model {
     public string $username           = '';
     public string $email              = '';
     public string $password_hash      = '';
-    public bool $email_varified       = false;
+    public bool $email_verified       = false;
     public string $verification_token = '';
     public ?string $created_at        = '';
 
@@ -32,5 +32,13 @@ class User extends Model {
         $userId = $_SESSION['user_id'];
 
         return $this->findById($userId);
+    }
+
+    public function find(int $id): ?self {
+        if ($id <= 0) {
+            return null;
+        }
+
+        return self::findById((string) $id);
     }
 }

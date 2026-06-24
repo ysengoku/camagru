@@ -29,6 +29,7 @@ class Database {
         if (self::$instance === null) {
             self::$instance = new Database();
         }
+
         return self::$instance;
     }
 
@@ -39,12 +40,14 @@ class Database {
     public function query(string $sql, array $params = []): PDOStatement {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute($params);
+    
         return $stmt;
     }
 
     public function fetch(string $sql, array $params = []): ?array {
         $res = $this->query($sql, $params)->fetch(PDO::FETCH_ASSOC);
-        return $res ?: null;
+
+        return is_array($res) ? $res : null;
     }
 
     public function fetchAll(string $sql, array $params = []): array {
@@ -52,7 +55,9 @@ class Database {
     }
 
     public function execute(string $sql, array $params = []): bool {
-        return $this->query($sql, $params) !== false;
+        $stmt = $this->query($sql, $params);
+
+        return $stmt->rowCount() > 0;
     }
 
     public function close(): void {

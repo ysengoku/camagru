@@ -8,6 +8,10 @@ class Like extends Model {
         'author_id' => 'INT',
         'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
+    protected static array $relations = [
+        'post_id' => ['posts', 'id', 'CASCADE'],
+        'author_id' => ['users', 'id', 'CASCADE'],
+    ];
 
     public int $id = 0;
     public int $post_id = 0;
@@ -15,5 +19,13 @@ class Like extends Model {
     public ?string $created_at = '';
 
     public function __construct() {
+    }
+
+    public function find(int $id): ?self {
+        if ($id <= 0) {
+            return null;
+        }
+
+        return self::findById((string) $id);
     }
 }
