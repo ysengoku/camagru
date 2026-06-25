@@ -1,6 +1,6 @@
 <?php
 
-class Response {
+final class Response {
     protected string $content = '';
     protected int $statusCode = 200;
     protected string $statusText = 'OK';
@@ -23,8 +23,15 @@ class Response {
 
     public function sendApiResponse(array $data, int $statusCode, string $statusText): void {
         $this->setStatus($statusCode, $statusText);
-        $this->setContent(json_encode($data));
-        error_log("Sending API response with status $statusCode: " . json_encode($data));
+
+        $contentJson = json_encode($data);
+        if ($contentJson === false) {
+            error_log('Failed to encode response data to JSON: ' . json_last_error_msg());
+            $contentJson = '{"error":"Internal Server Error","message":"Failed to encode JSON"}';
+            $this->setStatus(500, 'Internal Server Error');
+        }
+        $this->setContent($contentJson);
+        error_log("Sending API response with status $statusCode: " . $contentJson);
         header('Content-Type: application/json', true, $statusCode);
         $this->send();
     }

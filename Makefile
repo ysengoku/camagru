@@ -63,10 +63,13 @@ format-php:
 	docker exec $(APP_CONTAINER) vendor/bin/phpcbf --standard=phpcs.xml src
 
 psalm:
-	docker exec $(APP_CONTAINER) composer psalm
+	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
 quality-php:
 	$(MAKE) format-php
 	$(MAKE) psalm
+
+psalm-baseline:
+	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
 .PHONY: all dev up down build build-dev ensure-env init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app

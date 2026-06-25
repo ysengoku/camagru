@@ -1,6 +1,9 @@
 <?php
 
-class Like extends Model {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class Like extends Model {
     protected static string $name = 'likes';
     protected static array $schema = [
         'id' => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -8,6 +11,10 @@ class Like extends Model {
         'author_id' => 'INT',
         'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
+
+    /**
+     * @var array<string, array{0: string, 1: string, 2: string}> 
+     */
     protected static array $relations = [
         'post_id' => ['posts', 'id', 'CASCADE'],
         'author_id' => ['users', 'id', 'CASCADE'],

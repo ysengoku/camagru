@@ -1,6 +1,6 @@
 <?php
 
-class Path {
+final class Path {
     private static string $ds = DIRECTORY_SEPARATOR;
 
     public static function getPublicPath(): string {

@@ -1,13 +1,23 @@
 <?php
 
+/**
+ * @psalm-consistent-constructor
+ */
 abstract class Model {
+    public int $id = 0;
     protected static ?Database $db = null;
     protected static string $name;
     protected static array $schema    = [];
-    /** @var list<array{0: string, 1: string, 2: string}> */
+
+    /** * @var array<string, array{0: string, 1: string, 2: string}> 
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     protected static array $relations = [];
+
     /** @var list<string> */
     protected array $errors = [];
+
+    public function __construct() {}
 
     protected static function getDb(): Database {
         if (self::$db === null) {
@@ -18,10 +28,10 @@ abstract class Model {
 
     /**
      * Map array data to instance properties based on schema.
-     * * @param array<string, mixed> $data
+     * @param array<string, mixed> $data
      * @return static
      */
-    protected static function fromRow(array $data): self {
+    public static function fromRow(array $data): self {
         $instance = new static();
         foreach ($data as $key => $value) {
             if (property_exists($instance, $key)) {
@@ -41,9 +51,10 @@ abstract class Model {
         $table = static::$name;
         $sql = "SELECT * FROM `$table` WHERE id = :id LIMIT 1";
 
+        /** @var array<string, mixed>|false $data */
         $data = $db->fetch($sql, ['id' => $id]);
 
-        return $data ? self::fromRow($data) : null;
+        return $data !== false ? self::fromRow($data) : null;
     }
 
     /**
@@ -57,7 +68,10 @@ abstract class Model {
         
         $rows = $db->fetchAll($sql);
 
-        return array_map([static::class, 'fromRow'], $rows);
+        return array_values(array_map(
+            fn(array $row): self => static::fromRow($row),
+            $rows
+        ));
     }
 
     /**
@@ -145,14 +159,15 @@ abstract class Model {
      * @return list<string>
      */
     private function getPersistableFields(): array {
-        return array_filter(
+        return array_values(array_filter(
             array_keys(static::$schema),
             fn($field) => $field !== 'id' && $field !== 'created_at'
-        );
+        ));
     }
 
     /**
      * Delete the current instance from the database.
+     * * @psalm-suppress PossiblyUnusedProperty
      * @return bool
      */
     public function delete(): bool {

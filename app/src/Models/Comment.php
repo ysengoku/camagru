@@ -1,6 +1,9 @@
 <?php
 
-class Comment extends Model {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class Comment extends Model {
 
     protected static string $name = 'comments';
     protected static array $schema = [

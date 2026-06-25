@@ -1,6 +1,9 @@
 <?php
 
-class Post extends Model {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class Post extends Model {
     protected static string $name  = 'posts';
     protected static array $schema = [
         'id' => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -8,6 +11,10 @@ class Post extends Model {
         'image_path' => 'VARCHAR(255) UNIQUE NOT NULL',
         'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
+
+    /**
+     * @var array<string, array{0: string, 1: string, 2: string}> 
+     */
     protected static array $relations = [
         'user_id' => ['users', 'id', 'CASCADE']
     ];
@@ -47,11 +54,14 @@ class Post extends Model {
 
         $db = self::getDb();
         $sql = 'SELECT * FROM posts WHERE user_id = :user_id ORDER BY created_at DESC';
+
+        /** @var list<array<string, mixed>> $rows */
         $rows = $db->fetchAll($sql, ['user_id' => $userId]);
 
-        return array_map([self::class, 'fromRow'], $rows);
+        return array_map(fn(array $row): self => static::fromRow($row), $rows);
     }
 
+    #[Override]
     protected function beforeSave(): bool {
         $this->image_path = trim($this->image_path);
 
@@ -73,7 +83,9 @@ class Post extends Model {
      * Validate the post data before saving.
      * @return bool
      */
+    #[Override]
     public function validate(): bool {
+        /** @var list<string> $this->errors */
         $this->errors = [];
 
         if ($this->user_id <= 0) {

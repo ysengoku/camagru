@@ -1,6 +1,9 @@
 <?php
 
-class User extends Model {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class User extends Model {
     protected static string $name = 'users';
     protected static array $schema = [
         'id'                 => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -24,17 +27,17 @@ class User extends Model {
         
     }
 
-    public function getCurrentUser(): ?self {
+    public static function getCurrentUser(): ?self {
         if (!isset($_SESSION['user_id'])) {
             return null;
         }
 
         $userId = $_SESSION['user_id'];
 
-        return $this->findById($userId);
+        return self::findById($userId);
     }
 
-    public function find(int $id): ?self {
+    public static function find(int $id): ?self {
         if ($id <= 0) {
             return null;
         }

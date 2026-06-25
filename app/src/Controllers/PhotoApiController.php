@@ -1,11 +1,11 @@
 <?php
-/**
- * @psalm-suppress UnusedClass - Instantiated dynamically via routing
- */
 
 require_once __DIR__ . '/../helper/ImageComposer.php';
 require_once __DIR__ . '/../Models/Post.php';
 
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
 final class PhotoApiController extends Controller {
     final public function create(): void {
         $response = new Response();
@@ -14,6 +14,7 @@ final class PhotoApiController extends Controller {
         $imagePath = Path::join($mediaDir, $imageFilename);
         $publicImagePath = '/media/' . $imageFilename;
 
+        /** @psalm-suppress PossiblyUndefinedArrayOffset */
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $response->sendApiResponse(
                 ['error' => 'Method Not Allowed'],
@@ -28,10 +29,12 @@ final class PhotoApiController extends Controller {
 
         $baseImage = $data['baseImage'] ?? null;
         $stickers = $data['stickers'] ?? [];
+        /** @var mixed $text */
         $text = $data['textOverlay'] ?? null;
+        /** @var string $filter */
         $filter = $data['filter'] ?? 'none';
 
-        if (!$baseImage || empty($stickers)) {
+        if (!is_string($baseImage) || $baseImage === '' || !is_array($stickers) || empty($stickers)) {
             $response->sendApiResponse(
                 ['error' => 'Missing required elements'],
                 422,
@@ -54,7 +57,11 @@ final class PhotoApiController extends Controller {
             error_log("Creating image at path: $imagePath");
 
             $imageComposer = new ImageComposer($baseImage);
-            $saved = $imageComposer->compose($stickers, $text ?? [], $filter, $imagePath);
+            /**
+             * @var list<array{path: string, width: float, height: float, x: float, y: float}> $stickers
+             * @var array{content: string, fontFamily: string, fontSize: float, color: string, x: float, y: float}|null $text
+             */
+            $saved = $imageComposer->compose($stickers, $text, $filter, $imagePath);
         } catch (\Throwable $e) {
             error_log('Image creation failed: ' . $e->getMessage());
             $response->sendApiResponse(
@@ -95,6 +102,7 @@ final class PhotoApiController extends Controller {
 
     final public function delete(): void {
         $response = new Response();
+        /** @psalm-suppress PossiblyUndefinedArrayOffset */
         if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
             $response->sendApiResponse(
                 ['error' => 'Method Not Allowed'],

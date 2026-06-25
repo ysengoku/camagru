@@ -8,29 +8,58 @@ const FONT_MAP = [
     'Playfair Display' => 'PlayfairDisplay-VariableFont_wght.ttf'
 ];
 
-class ImageComposer {
+final class ImageComposer {
     private \GdImage $canvas;
-    private int $width;
-    private int $height;
 
     private string $publicPath;
     private string $fontsDirPath;
 
+    /**
+     * @param string $base64Image The base64-encoded image data.
+     * @throws \InvalidArgumentException If the base64 image data is invalid.
+     * @throws \RuntimeException If the public path cannot be resolved.
+     */
     public function __construct(string $base64Image) {
-        $imageData = base64_decode(preg_replace('/^data:image\/\w+;base64,/i', '', $base64Image));
-        $this->canvas = imagecreatefromstring($imageData);
+        $replaced = preg_replace('/^data:image\/\w+;base64,/i', '', $base64Image);
+        $imageData = base64_decode($replaced ?? '');
 
-        if (!$this->canvas) {
+        $canvas = imagecreatefromstring($imageData);
+        if (!$canvas) {
             throw new \InvalidArgumentException("Invalid base64 image data.");
         }
+        $this->canvas = $canvas;
 
-        $this->width = imagesx($this->canvas);
-        $this->height = imagesy($this->canvas);
-
-        $this->publicPath = realpath(Path::getPublicPath());
+        $publicPath = realpath(Path::getPublicPath());
+        if ($publicPath === false) {
+            throw new \RuntimeException("Public path could not be resolved.");
+        }
+        $this->publicPath = $publicPath;
         $this->fontsDirPath = Path::join($this->publicPath, 'assets', 'fonts');
     }
 
+    /**
+         * Composes the final image by applying stickers, text overlay, and filter, then saves it to the specified file path.
+         * @param list<array{
+         * path: string,
+         * width: float,
+         * height: float,
+         * x: float,
+         * y: float
+         * }> $stickers An array of stickers to apply.
+         * @param array{
+         * content: string,
+         * fontFamily: string,
+         * fontSize: float,
+         * color: string,
+         * x: float,
+         * y: float
+         * }|null $textOverlay An associative array containing text overlay properties.
+         * @param string $filterName The name of the filter to apply (e.g., 'grayscale', 'sepia', 'vintage', 'dream', or 'none').
+         * @param string $filePath The file path where the composed image will be saved.
+         * @return bool Returns true on success, false on failure.
+         * @throws \InvalidArgumentException If any of the sticker paths are invalid.
+         * @throws \RuntimeException If the sticker image cannot be resized.
+         */
     public function compose(array $stickers, ?array $textOverlay, string $filterName, string $filePath): bool {
         $this->applyFilter($filterName);
         $this->applyStickers($stickers);
@@ -39,6 +68,18 @@ class ImageComposer {
         return imagejpeg($this->canvas, $filePath);
     }
 
+    /**
+     * Applies the stickers to the canvas image.
+     * @param list<array{
+     * path: string,
+     * width: float,
+     * height: float,
+     * x: float,
+     * y: float
+     * }> $stickers An array of stickers to apply.
+     * @throws \InvalidArgumentException If any of the sticker paths are invalid.
+     * @throws \RuntimeException If the sticker image cannot be resized.
+     */
     private function applyStickers(array $stickers): void {
         foreach ($stickers as $sticker) {
             $stickerSource = $sticker['path'] ?? null;
@@ -56,6 +97,9 @@ class ImageComposer {
             $roundedHeight = (int) round((float) ($sticker['height'] ?? 0));
 
             $resizedSticker = imagescale($stickerImage, $roundedWidth, $roundedHeight);
+            if ($resizedSticker === false) {
+                throw new \RuntimeException("Failed to resize sticker image.");
+            }
 
             imagecopy(
                 $this->canvas,
@@ -70,8 +114,14 @@ class ImageComposer {
         }
     }
 
-    private function applyTextOverlay(?array $textOverlay): void {
-        if (empty($textOverlay)) {
+    /**
+     * Applies the text overlay to the canvas image.
+     * /**
+     * @param array{content: string, fontFamily: string, fontSize: float, color: string, x: float, y: float}|null $textOverlay
+     * @throws \InvalidArgumentException If the font path is invalid.
+     */
+    private function applyTextOverlay(?array $textOverlay = null): void {
+        if ($textOverlay === null) {
             return;
         }
 
@@ -85,6 +135,9 @@ class ImageComposer {
             hexdec(substr($hexColor, 2, 2)),
             hexdec(substr($hexColor, 4, 2))
         );
+        if ($color === false) {
+            $color = (int)hexdec('009689'); // Fallback
+        }
 
         imagefttext(
             $this->canvas,

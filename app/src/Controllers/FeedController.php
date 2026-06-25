@@ -1,7 +1,10 @@
 <?php
 
-class FeedController extends Controller {
-    public function index() {
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
+final class FeedController extends Controller {
+    public function index(): string {
         // $userModel = new User();
         // $currentUser = $userModel->getCurrentUser();
         // $users = $userModel->getAllUsers();

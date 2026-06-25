@@ -2,15 +2,19 @@
 
 require_once __DIR__ . '/helper/Path.php';
 
-class Application {
+final class Application {
     private Router $router;
     protected Response $response;
+    public const string APP_NAME = 'Camagru';
 
     public function __construct() {
         $this->router   = new Router(require __DIR__ . '/config/routes.php');
         $this->response = new Response();
     }
 
+    /**
+     * Runs the application by resolving the current request and executing the corresponding controller action.
+     */
     public function run(): void {
         try {
             $params = $this->router->resolve($this->getPathInfo(), $_SERVER['REQUEST_METHOD'] ?? 'GET');
@@ -34,9 +38,15 @@ class Application {
             throw new HTTPNotFoundException();
         }
 
+        /** @psalm-suppress MixedMethodCall */
         $controllerInstance = new $controllerClass();
+
+        /** @var Controller $controllerInstance */
         $content = $controllerInstance->run($action);
+
+        /** @var array{code: int, text?: string} $status */
         $status = $controllerInstance->getStatus();
+        
         $this->response->setStatus($status['code'], $status['text'] ?? '');
         $this->response->setContent($content);
     }
