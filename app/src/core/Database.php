@@ -55,9 +55,9 @@ class Database {
     }
 
     public function execute(string $sql, array $params = []): bool {
-        $stmt = $this->query($sql, $params);
+        $this->query($sql, $params);
 
-        return $stmt->rowCount() > 0;
+        return true;
     }
 
     public function close(): void {

@@ -46,14 +46,15 @@
   font-family: 'Lexend';
   src: url('/assets/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
   font-weight: 400;
-  font-style: normal; 
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Playfair Display';
-    src: url('/assets/fonts/PlayfairDisplay-VariableFont_wght.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
+  font-family: 'Playfair Display';
+  src: url('/assets/fonts/PlayfairDisplay-VariableFont_wght.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
 :root {
@@ -221,6 +222,54 @@ p {
     width: 36px;
     height: 36px;
   }
+}
+
+.button-primary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+
+  border: none;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(
+    to left bottom,
+    #006e64,
+    #008276,
+    #009689,
+    #00ab9c,
+    #00c0b0
+  );
+  color: var(--primary-100);
+  cursor: pointer;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 3rem;
+  border-radius: 0.5rem;
+  background-color: rgba(var(--primary-100-rgb), 0.5);
+  width: 30%;
+  margin: 2rem auto;
+}
+
+.form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: var(--primary-100);
+  color: var(--gray-800);
 }
 
 /* -------- Feed & Posts -------- */
@@ -463,7 +512,7 @@ p {
 .sticker-overlay.sticker-editing,
 #text-preview-container.overlay-editing {
   border: 2px dashed var(--primary-100);
-  padding : 0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
 }
 
 #text-input-overlay {
@@ -644,37 +693,12 @@ p {
   transform: none;
 }
 
-.studio-editor-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem 0.5rem 0.5rem;
-  margin: 0 0.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-image: linear-gradient(
-    to left bottom,
-    #006e64,
-    #008276,
-    #009689,
-    #00ab9c,
-    #00c0b0
-  );
-  color: var(--primary-100);
-  cursor: pointer;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-}
-
 #studio-tools.disabled button {
   cursor: not-allowed;
 }
 
-#back-to-menu-button.studio-editor-button,
-#reset-button.studio-editor-button {
+#back-to-menu-button.button-primary,
+#reset-button.button-primary {
   background-image: none;
   background-color: transparent;
   color: var(--primary-600);

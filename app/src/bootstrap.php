@@ -6,6 +6,7 @@ spl_autoload_register(function ($class) {
         __DIR__ . '/core/' . $class . '.php',
         __DIR__ . '/Controllers/' . $class . '.php',
         __DIR__ . '/Models/' . $class . '.php',
+        __DIR__ . '/DTO/' . $class . '.php',
     ];
 
     foreach ($paths as $path) {
@@ -14,4 +15,9 @@ spl_autoload_register(function ($class) {
             return;
         }
     }
-});
+
+    });
+    
+$sessionHandler = new SessionHandler();
+session_set_save_handler($sessionHandler, true);
+session_start();

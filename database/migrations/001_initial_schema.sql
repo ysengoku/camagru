@@ -5,14 +5,16 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   email_verified TINYINT(1) DEFAULT 0 NOT NULL,
   verification_token VARCHAR(64) DEFAULT NULL,
+	email_notifications_enabled TINYINT(1) DEFAULT 1 NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id INT NULL,
   session_token CHAR(64) NOT NULL UNIQUE,
-	csrf_token CHAR(64) NOT NULL,
+  csrf_token CHAR(64) NOT NULL DEFAULT '',
+  data TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   expired_at TIMESTAMP NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

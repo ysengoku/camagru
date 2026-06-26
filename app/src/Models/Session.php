@@ -6,9 +6,13 @@
 final class Session extends Model {
     protected static string $name = 'sessions';
     protected static array $schema = [
-        'id'         => 'INT AUTO_INCREMENT PRIMARY KEY',
-        'user_id'    => 'INT',
-        'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'id'            => 'INT AUTO_INCREMENT PRIMARY KEY',
+        'user_id'       => 'INT',
+        'session_token' => 'CHAR(64) NOT NULL UNIQUE',
+        'csrf_token'    => 'CHAR(64) NOT NULL DEFAULT ""',
+        'data'          => 'TEXT NOT NULL',
+        'created_at'    => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'expired_at'    => 'TIMESTAMP NOT NULL'
     ];
 
     /**
@@ -18,7 +22,11 @@ final class Session extends Model {
         'user_id' => ['users', 'id', 'CASCADE']
     ];
 
-    public int $id = 0;
-    public int $user_id = 0;
-    public ?string $created_at = '';
+    public int $id                = 0;
+    public ?int $user_id          = null;
+    public ?string $session_token = '';
+    public ?string $csrf_token    = '';
+    public ?string $data          = '';
+    public ?string $created_at    = '';
+    public ?string $expired_at    = '';
 }

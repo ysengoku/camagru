@@ -20,7 +20,7 @@ if (!function_exists('render_studio_buttons')) {
             <button
                 type="button"
                 id="{$button['id']}"
-                class="studio-editor-button display-none"
+                class="button-primary mx-2 display-none"
                 data-studio-editor-action="{$button['action']}"
             >
                 {$icon}

@@ -16,7 +16,7 @@ if (!function_exists('render_studio_menu')) {
                 data-action="webcam"
             >
                 {$webcamIcon}
-                <span class="text-sm">Activate Webcam</span>
+                <span>Activate Webcam</span>
             </button>
             <label
                 for="upload-input"
@@ -29,7 +29,7 @@ if (!function_exists('render_studio_menu')) {
                     class="display-none"
                     accept="image/png, image/jpeg"
                 />
-                <span class="text-sm">Upload Image</span>
+                <span>Upload Image</span>
           </label>
         </div>
         HTML;
