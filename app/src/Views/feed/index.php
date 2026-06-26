@@ -1,5 +1,5 @@
 <?php
-    require_once __DIR__ . '/postPreview.php';
+require_once __DIR__ . '/postPreview.php';
 ?>
 
 <div class="p-4">

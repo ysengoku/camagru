@@ -20,47 +20,46 @@ final class FeedController extends Controller {
         ];
 
         $posts = [
-            [
-                'id' => 1,
-                'author_name' => 'john_doe',
-                'author_id' => 1,
-                'author_avatar' => null,
-                'image_path' => '/assets/img/sample-pic.jpg',
-                'created_at' => '2024-06-01 18:30:00',
-                'likes_count' => 10,
-                'comments_count' => 2,
-                'comments' => [
-                    ['author_name' => 'jane_smith', 'text' => 'Amazing view!'],
-                    ['author_name' => 'alice_wonder', 'text' => 'Love this!']
+            new PostData(
+                id: 1,
+                author_name: 'john_doe',
+                author_id: 1,
+                author_avatar: null,
+                image_path: '/assets/img/sample-pic.jpg',
+                created_at: '2024-06-01 18:30:00',
+                likes_count: 10,
+                comments_count: 2,
+                comments: [
+                    new PostCommentData(author_name: 'jane_smith', text: 'Amazing view!'),
+                    new PostCommentData(author_name: 'alice_wonder', text: 'Love this!')
                 ]
-            ],
-            [
-                'id' => 2,
-                'author_name' => 'jane_smith',
-                'author_id' => 2,
-                'author_avatar' => '/assets/img/sample-pic2.jpg',
-                'image_path' => '/assets/img/sample-pic2.jpg',
-                'created_at' => '2024-06-02 14:15:00',
-                'likes_count' => 5,
-                'comments_count' => 0,
-                'comments' => []
-            ],
-            [
-                'id' => 3,
-                'author_name' => 'alice_wonder',
-                'author_id' => 3,
-                'author_avatar' => '/assets/img/sample-pic3.jpg',
-                'image_path' => '/assets/img/sample-pic3.jpg',
-                'created_at' => '2024-06-03 10:00:00',
-                'likes_count' => 20,
-                'comments_count' => 3,
-                'comments' => [
-                    ['author_name' => 'john_doe', 'text' => 'Yummy!'],
-                    ['author_name' => 'jane_smith', 'text' => 'Recipe, please!'],
-                    ['author_name' => 'bob_builder', 'text' => 'Looks great!']
+            ),
+            new PostData(
+                id: 2,
+                author_name: 'jane_smith',
+                author_id: 2,
+                author_avatar: '/assets/img/sample-pic2.jpg',
+                image_path: '/assets/img/sample-pic2.jpg',
+                created_at: '2024-06-02 14:15:00',
+                likes_count: 5,
+                comments_count: 0,
+                comments: []
+            ),
+            new PostData(
+                id: 3,
+                author_name: 'alice_wonder',
+                author_id: 3,
+                author_avatar: '/assets/img/sample-pic3.jpg',
+                image_path: '/assets/img/sample-pic3.jpg',
+                created_at: '2024-06-03 10:00:00',
+                likes_count: 20,
+                comments_count: 3,
+                comments: [
+                    new PostCommentData(author_name: 'john_doe', text: 'Yummy!'),
+                    new PostCommentData(author_name: 'jane_smith', text: 'Recipe, please!'),
+                    new PostCommentData(author_name: 'bob_builder', text: 'Looks great!')
                 ]
-            ]
-
+            )
         ];
 
         return $this->render([

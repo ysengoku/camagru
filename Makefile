@@ -63,7 +63,7 @@ format-php:
 	docker exec $(APP_CONTAINER) vendor/bin/phpcbf --standard=phpcs.xml src
 
 psalm:
-	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
+	docker exec $(APP_CONTAINER) vendor/bin/psalm
 
 quality-php:
 	$(MAKE) format-php
