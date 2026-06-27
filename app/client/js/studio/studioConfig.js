@@ -1,8 +1,9 @@
+import { api, ENDPOINTS } from '../api.js';
+
 async function fetchStudioConfig() {
   try {
-    const response = await fetch('/api/studio-config');
-    const config = await response.json();
-    return config;
+    const response = await api.get(ENDPOINTS.STUDIO_CONFIG);
+    return response;
   } catch (error) {
     console.error('Error loading studio config:', error);
   }

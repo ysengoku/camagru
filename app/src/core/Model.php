@@ -57,6 +57,22 @@ abstract class Model {
         return $data !== false ? self::fromRow($data) : null;
     }
 
+    /** Find a record by a specific field.
+     * @param string $field
+     * @param mixed $value
+     * @return static|null
+     */
+    protected static function findOneByField(string $field, mixed $value) {
+        $db = self::getDb();
+        $table = static::$name;
+        $sql = "SELECT * FROM `$table` WHERE `$field` = :value LIMIT 1";
+
+        /** @var array<string, mixed>|false $data */
+        $data = $db->fetch($sql, ['value' => $value]);
+
+        return $data !== false ? self::fromRow($data) : null;
+    }
+
     /**
      * Find all records in the table.
      * @return list<static>

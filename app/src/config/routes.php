@@ -23,6 +23,7 @@ $routes = [
     ['path' => '/profile/settings', 'controller' => 'profile', 'action' => 'settings', 'auth' => true],
 
     // API routes
+    ['path' => '/api/validation-rules', 'method' => 'GET', 'controller' => 'validationRules', 'action' => 'getRules'],
     ['path' => '/api/signup', 'method' => 'POST', 'controller' => 'auth', 'action' => 'signup'],
     ['path' => '/api/login', 'method' => 'POST', 'controller' => 'auth', 'action' => 'login'],
     ['path' => '/api/logout', 'method' => 'POST', 'controller' => 'auth', 'action' => 'logout'],

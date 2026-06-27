@@ -97,6 +97,13 @@
 .color-primary-800 { color: var(--primary-800); }
 .color-gray-500 { color: var(--gray-500); }
 
+.color-success { color: var(--success); }
+.color-success-dark { color: var(--success-dark); }
+.color-danger { color: var(--danger); }
+.color-danger-dark { color: var(--danger-dark); }
+.color-info { color: var(--info); }
+.color-info-dark { color: var(--info-dark); }
+
 .font-size-1 { font-size: 0.25rem; }
 .font-size-2 { font-size: 0.5rem; }
 .font-size-3 { font-size: 0.75rem; }
@@ -105,6 +112,8 @@
 .font-size-6 { font-size: 1.5rem; }
 .font-size-7 { font-size: 1.75rem; }
 .font-size-8 { font-size: 2rem; }
+
+.font-bold { font-weight: bold; }
 
 .opacity-50 { opacity: 0.5; }
 

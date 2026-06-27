@@ -1,48 +1,66 @@
 const API_BASE_URL = `${location.protocol}//${location.host}/api/`;
 
+/** @type {Record<string, string>} */
 export const ENDPOINTS = {
   SIGNUP: `${API_BASE_URL}signup`,
   LOGIN: `${API_BASE_URL}login`,
+  LOGOUT: `${API_BASE_URL}logout`,
+  VERIFY_EMAIL: `${API_BASE_URL}verify-email`,
+  PASSWORD_RESET_REQUEST: `${API_BASE_URL}password-reset-request`,
+  PASSWORD_RESET: `${API_BASE_URL}password-reset`,
+  VALIDATION_RULES: `${API_BASE_URL}validation-rules`,
+  PHOTOS: `${API_BASE_URL}photos`,
+  STUDIO_CONFIG: `${API_BASE_URL}studio-config`,
 };
 
-export const HEADER = '{ "Content-Type": "application/json" }';
+/**
+ * @typedef {Object} ApiError
+ * @property {number} status - HTTP status code
+ * @property {unknown} data  - Parsed response body
+ */
 
-// export async function apiRequest(method, endpoint, data = null, isFileUpload = false, needToken = true) {
-//   const url = `${endpoint}`;
-//   const csrfToken = getCSRFTokenfromCookies();
-//   const options = {
-//     method,
-//     headers: {
-//       ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
-//       ...(isFileUpload ? {} : { 'Content-Type': 'application/json' }),
-//     },
-//     credentials: 'include',
-//   };
+/**
+ * @typedef {Object} ApiClient
+ * @property {(path: string) => Promise<unknown>}              get
+ * @property {(path: string, body: unknown) => Promise<unknown>} post
+ * @property {(path: string, body: unknown) => Promise<unknown>} put
+ * @property {(path: string) => Promise<unknown>}              delete
+ */
 
-//   if (data) {
-//     if (isFileUpload) {
-//       options.body = data;
-//     } else {
-//       options.body = JSON.stringify(data);
-//     }
-//   }
-//   log.info('Sending API request:', method, url);
+/**
+ * Creates an API client bound to the given base URL.
+ * All methods resolve with the parsed JSON body on 2xx Status codes,
+ * or throw an ApiError on non-2xx or network failure.
+ *
+ * @param {string} baseURL
+ * @returns {ApiClient}
+ */
+function createApiClient() {
+  /**
+   * @param {string}  method
+   * @param {string}  url
+   * @param {unknown} [body]
+   * @returns {Promise<unknown>}
+   * @throws {ApiError}
+   */
+  async function request(method, url, body = null) {
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) options.body = JSON.stringify(body);
 
-//   try {
-//     const response = await fetch(url, options);
+    const res = await fetch(url, options);
+    const data = await res.json();
+    if (!res.ok) {
+      throw { status: res.status, data };
+    }
+    return data;
+  }
 
-// export function getCSRFTokenfromCookies() {
-//   const name = 'csrftoken';
-//   let token = null;
-//   if (document.cookie && document.cookie !== '') {
-//     const cookies = document.cookie.split(';');
-//     for (let i = 0; i < cookies.length; i++) {
-//       const cookie = cookies[i].trim();
-//       if (cookie.startsWith(name)) {
-//         token = decodeURIComponent(cookie.substring(name.length + 1));
-//         break;
-//       }
-//     }
-//   }
-//   return token;
-// }
+  return {
+    get: (path) => request('GET', path),
+    post: (path, body) => request('POST', path, body),
+    put: (path, body) => request('PUT', path, body),
+    delete: (path) => request('DELETE', path),
+  };
+}
+
+export const api = createApiClient(API_BASE_URL);

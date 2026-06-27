@@ -47,7 +47,7 @@ final class Application {
         /** @var array{code: int, text?: string} $status */
         $status = $controllerInstance->getStatus();
         
-        $this->response->setStatus($status['code'], $status['text'] ?? '');
+        $this->response->setStatus($status['code']);
         $this->response->setContent($content);
     }
 
@@ -63,7 +63,7 @@ final class Application {
     }
 
     private function renderNotFound(): void {
-        $this->response->setStatus(404, 'Not Found');
+        $this->response->setStatus(Response::NOT_FOUND);
         $this->response->setContent('404 Not Found'); // TODO
     }
 }

@@ -18,6 +18,14 @@ abstract class Controller {
         return ['code' => $this->statusCode, 'text' => $this->statusText];
     }
 
+    protected function json(array $data, int $statusCode): string {
+        $this->statusCode = $statusCode;
+        $this->statusText = Response::STATUS_TEXTS[$statusCode] ?? 'Unknown Status';
+        header('Content-Type: application/json');
+
+        return json_encode($data) ?: '{"error":"Internal Server Error"}';
+    }
+
     protected function render(array $props = [], ?string $template = null): string {
         $view = new View(__DIR__ . '/../Views');
         if ($template === null) {

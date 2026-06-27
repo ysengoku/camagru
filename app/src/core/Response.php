@@ -1,9 +1,33 @@
 <?php
 
 final class Response {
+    public const int OK                  = 200;
+    public const int CREATED             = 201;
+    public const int BAD_REQUEST         = 400;
+    public const int UNAUTHORIZED        = 401;
+    public const int FORBIDDEN           = 403;
+    public const int NOT_FOUND           = 404;
+    public const int METHOD_NOT_ALLOWED  = 405;
+    public const int CONFLICT            = 409;
+    public const int UNPROCESSABLE       = 422;
+    public const int INTERNAL_ERROR      = 500;
+
+    public const array STATUS_TEXTS = [
+        200 => 'OK',
+        201 => 'Created',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        409 => 'Conflict',
+        422 => 'Unprocessable Entity',
+        500 => 'Internal Server Error',
+    ];
+    
     protected string $content = '';
-    protected int $statusCode = 200;
-    protected string $statusText = 'OK';
+    protected int $statusCode = self::OK;
+    protected string $statusText = self::STATUS_TEXTS[self::OK];
 
     public function send(): void {
         http_response_code($this->statusCode);
@@ -16,23 +40,13 @@ final class Response {
         $this->content = $content;
     }
 
-    public function setStatus(int $statusCode, string $statusText): void {
+    public function setStatus(int $statusCode): void {
         $this->statusCode = $statusCode;
-        $this->statusText = $statusText;
+        $this->statusText = self::STATUS_TEXTS[$statusCode] ?? 'Unknown Status';
     }
 
-    public function sendApiResponse(array $data, int $statusCode, string $statusText): void {
-        $this->setStatus($statusCode, $statusText);
-
-        $contentJson = json_encode($data);
-        if ($contentJson === false) {
-            error_log('Failed to encode response data to JSON: ' . json_last_error_msg());
-            $contentJson = '{"error":"Internal Server Error","message":"Failed to encode JSON"}';
-            $this->setStatus(500, 'Internal Server Error');
-        }
-        $this->setContent($contentJson);
-        error_log("Sending API response with status $statusCode: " . $contentJson);
-        header('Content-Type: application/json', true, $statusCode);
-        $this->send();
+    public function redirect(string $url): void {
+        header('Location: ' . $url);
+        exit;
     }
 }

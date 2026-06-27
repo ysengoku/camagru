@@ -4,6 +4,7 @@ import { TextManager } from './managers/TextManager';
 import { studioStore } from '../store/studioStore';
 import { studioConfig } from './studioConfig';
 import { validateUploadedFile } from './validator';
+import { api, ENDPOINTS } from '../api';
 
 class StudioManager {
   static #instance = null;
@@ -440,32 +441,13 @@ class StudioManager {
       filter: this.state.selectedFilter,
     };
 
-    const response = await fetch('/api/photos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(finalImageData),
-    })
-      .then((res) => {
-        console.log('Raw response from server:', res);
-        return res.json().then((data) => ({
-          ok: res.ok,
-          status: res.status,
-          statusText: res.statusText,
-          data,
-        }));
-      })
-      .catch((error) => {
-        console.error('Error sharing photo:', error);
-        return null;
-      });
-
-    if (response?.ok) {
-      // TODO: Show success message & Update the gallery to show the new post
+    try {
+      const response = await api.post(ENDPOINTS.PHOTOS, finalImageData);
+      // TODO: Success flow
       this.backToMenu();
-    } else {
+    } catch (error) {
       // TODO: Show error message to user
+      console.error('Error sharing photo:', error);
     }
   }
 

@@ -2,6 +2,8 @@ services:
   app:
     build:
       target: development
+    env_file:
+      - .env.dev
     volumes:
       - ./app:/var/www/html
       - vendor_volume:/var/www/html/vendor

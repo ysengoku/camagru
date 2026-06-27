@@ -1,3 +1,5 @@
+import { rules } from './validationRules.js';
+
 class Validator {
   constructor() {
     this.validateUsername = this.validateUsername.bind(this);
@@ -6,9 +8,9 @@ class Validator {
   }
 
   validateUsername(username) {
-    const minLength = 3;
-    const maxLength = 20;
-    const regex = /^[a-zA-Z0-9_-]+$/;
+    const minLength = rules.username.minLength;
+    const maxLength = rules.username.maxLength;
+    const regex = new RegExp(rules.username.pattern);
 
     if (username.length < minLength) {
       return {
@@ -33,8 +35,8 @@ class Validator {
   }
 
   validateEmail(email) {
-    const maxLength = 254;
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const maxLength = rules.email.maxLength;
+    const regex = new RegExp(rules.email.pattern);
 
     if (email.length > maxLength) {
       return {
@@ -49,8 +51,8 @@ class Validator {
   }
 
   validatePassword(username, password, passwordRepeat) {
-    const minLength = 12;
-    const maxLength = 72;
+    const minLength = rules.password.minLength;
+    const maxLength = rules.password.maxLength;
 
     if (password !== passwordRepeat) {
       return {

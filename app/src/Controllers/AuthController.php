@@ -2,25 +2,25 @@
 
 final class AuthController extends Controller {
     public function signup(): string {
-        $method = $_SERVER['REQUEST_METHOD'];
-        switch ($method) {
+        switch (Request::getMethod()) {
             case 'GET':
-                // If authenticated, redirect to feed page
                 if (isset($_SESSION['user_id'])) {
-                    $response = new Response();
-                    $response->redirect('/feed');
+                    (new Response())->redirect('/feed');
                 }
                 return $this->render(['pageTitle' => 'Sign Up', 'user' => null], 'signup');
             case 'POST':
-                // Handle signup logic here
-                break;
+                $input = Request::getPostData();
+                $signupData = new SignupData($input['username'] ?? '', $input['email'] ?? '', $input['password'] ?? '');
+                $result = SignupService::getInstance()->processSignup($signupData);
+                if ($result['success']) {
+                    return $this->json(
+                        ['message' => 'User created successfully', 'username' => $result['user']->username, 'email' => $result['user']->email],
+                        Response::CREATED
+                    );
+                }
+                return $this->json(['errors' => $result['errors']], Response::BAD_REQUEST);
             default:
-                $response = new Response();
-                $response->sendApiResponse(
-                    ['error' => 'Method Not Allowed'],
-                    405,
-                    'Method Not Allowed'
-                );
+                return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
         }
     }
 

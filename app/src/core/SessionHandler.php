@@ -47,7 +47,7 @@ final class SessionHandler implements SessionHandlerInterface {
                 expired_at = VALUES(expired_at)
         ";
       
-      return $this->db->execute($sql, [$session_id, $data, $expired_at]);
+        return $this->db->execute($sql, [$session_id, $data, $expired_at]);
     }
 
     // Execute when session_destroy() is called (logout)
