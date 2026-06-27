@@ -57,8 +57,7 @@
 ### 4. EmailService (raw SMTP via `fsockopen()`)
 
 - [ ] Implement `EmailService` class using `fsockopen()` + STARTTLS via `stream_socket_enable_crypto()`
-- [ ] Add MailHog container to `docker-compose.dev.yml` for local email testing
-- [ ] Configure SMTP credentials via `.env` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`)
+- [X] Configure SMTP credentials via `.env` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`)
 
 ### 5. ProfileController
 
