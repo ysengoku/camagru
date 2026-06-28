@@ -10,18 +10,24 @@ final class EmailService {
     private string $mailFrom;
 
     /** @var resource $socket */
-    private $socket;
+    private $socket = null;
 
     private function __construct() {
         // Private constructor to prevent direct instantiation
-        $this->smtpHost = $_ENV['SMTP_HOST'];
-        $this->smtpPort = (int)($_ENV['SMTP_PORT']);
-        $this->smtpUser = $_ENV['SMTP_USER'];
-        $this->smtpPass = $_ENV['SMTP_PASS'];
-        $this->mailFrom = $_ENV['MAIL_FROM'];
+        $this->smtpHost = $_ENV['SMTP_HOST'] ?? '';
+        $this->smtpPort = (int)($_ENV['SMTP_PORT'] ?? 0);
+        $this->smtpUser = $_ENV['SMTP_USER'] ?? '';
+        $this->smtpPass = $_ENV['SMTP_PASS'] ?? '';
+        $this->mailFrom = $_ENV['MAIL_FROM'] ?? '';
 
-        if (empty($this->smtpHost) || empty($this->smtpPort) || empty($this->smtpUser) || empty($this->smtpPass) || empty($this->mailFrom)) {
-            throw new RuntimeException('SMTP configuration is incomplete. Please check your environment variables.');
+        if (
+            empty($this->smtpHost)
+            || $this->smtpPort === 0
+            || empty($this->smtpUser)
+            || empty($this->smtpPass)
+            || empty($this->mailFrom)
+        ) {
+            throw new RuntimeException('SMTP configuration is incomplete.');
         }
     }
 
@@ -41,6 +47,8 @@ final class EmailService {
             $this->expect(220); // Server welcome
 
             $this->handshake();
+            $this->write("STARTTLS");
+            $this->expect(220);
             if (!stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
                 throw new RuntimeException("Failed to enable TLS encryption for SMTP connection.");
             }
@@ -54,24 +62,26 @@ final class EmailService {
         } finally {
             if (isset($this->socket) && is_resource($this->socket)) {
                 fclose($this->socket);
+                $this->socket = null;
             }
         }
-    }
-
-    private function read(): string {
-        $response = '';
-        while ($line = fgets($this->socket, 512)) {
-            $response .= $line;
-            if (isset($line[3]) && $line[3] === ' ') {
-                break;
-            }
-        }
-
-        return $response;
     }
 
     private function write(string $data): void {
         fwrite($this->socket, $data . "\r\n");
+    }
+
+    private function expect(int $code): void {
+        $response = '';
+        while ($line = fgets($this->socket, 515)) {
+            $response .= $line;
+            if (substr($line, 3, 1) == ' ') {
+                break;
+            }
+        }
+        if (substr($response, 0, 3) !== (string)$code) {
+            throw new Exception("SMTP Error: Expected $code, got: " . $response);
+        }
     }
 
     private function handshake(): void {
@@ -96,27 +106,19 @@ final class EmailService {
         $this->expect(250);
         $this->write("DATA");
         $this->expect(354);
-        $this->write("From: {$this->mailFrom}");
-        $this->write("To: {$to}");
-        $this->write("Subject: {$subject}");
-        $this->write("");        // blank line — body separator
-        $this->write($body);
-        $this->read();             // 354 — server waiting for data
-        $this->write(".");       // end of DATA
-        $this->expect(250);           // 250 — accepted
-    }
 
-    private function expect(int $code) {
-        $response = '';
-        while ($line = fgets($this->socket, 515)) {
-            $response .= $line;
-            if (substr($line, 3, 1) == ' ') {
-                break;
-            }
-        }
-        if (substr($response, 0, 3) !== (string)$code) {
-            throw new Exception("SMTP Error: Expected $code, got: " . $response);
-        }
-        return $response;
+        $headers = [
+            "From: <$this->mailFrom>",
+            "To: <$to>",
+            "Subject: " . str_replace(["\r", "\n"], '', $subject),
+            "MIME-Version: 1.0",
+            "Content-Type: text/html; charset=UTF-8",
+            "Content-Transfer-Encoding: 8bit",
+            "" // Empty line separating headers and body
+        ];
+        $emailData = implode("\r\n", $headers) . "\r\n" . preg_replace('/^\./m', '..', $body);
+        $this->write($emailData);
+        $this->write(".");
+        $this->expect(250);
     }
 }

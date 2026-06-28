@@ -21,17 +21,25 @@ final class SignupService {
         $this->userData = $data;
         $validationErrors = $this->validateSignupData($data);
 
-        if (!empty($validationErrors)) {
-            return ['success' => false, 'errors' => $validationErrors];
-        }
+        // if (!empty($validationErrors)) {
+        //     return ['success' => false, 'errors' => $validationErrors];
+        // }
 
-        $availabilityErrors = $this->checkAvailability();
-        if (!empty($availabilityErrors)) {
-            return ['success' => false, 'errors' => $availabilityErrors];
-        }
+        // $availabilityErrors = $this->checkAvailability();
+        // if (!empty($availabilityErrors)) {
+        //     return ['success' => false, 'errors' => $availabilityErrors];
+        // }
 
-        $createdUser = $this->createUser();
-        $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
+        // $createdUser = $this->createUser();
+
+        // TEST
+        $createdUser = [
+            'username' => $this->userData->username,
+            'email' => $this->userData->email,
+            'verification_token' => bin2hex(random_bytes(32))
+        ];
+        $this->sendVerificationEmail($createdUser['email'], $createdUser['verification_token']);
+        // $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
 
         return ['success' => true, 'user' => $createdUser];
     }
@@ -94,7 +102,14 @@ final class SignupService {
     }
 
     private function sendVerificationEmail(string $email, string $token) {
-        // Implementation for sending verification email
-        // This could use a mailer library or PHP's mail() function
+        $verificationLink = "https://{$_SERVER['HTTP_HOST']}/verify-email?token={$token}";
+        $subject = "Verify Your Email Address";
+        $body = renderEmailTemplate('verification', ['verificationLink' => $verificationLink]);
+
+        try {
+            EmailService::getInstance()->send($email, $subject, $body);
+        } catch (Exception $e) {
+            error_log("Failed to send verification email: " . $e->getMessage());
+        }
     }
 }
