@@ -23,19 +23,45 @@ final class AuthController extends Controller {
                 return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
         }
     }
-
-    public function login(): void {
-    }
-
-    public function logout(): void {
-    }
-
-    public function forgotPassword(): string {
-    }
-
-    public function resetPassword(): string {
-    }
-
+    
     public function verifyEmail(): string {
+        $method = Request::getMethod();
+        if ($method !== 'GET') {
+            return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
+        }
+
+        $token = Request::getQueryParam('token');
+        if (empty($token)) {
+            return $this->json(['error' => 'Verification token is required'], Response::BAD_REQUEST);
+        }
+
+        $user = User::findByVerificationToken($token);
+        if ($user === null) {
+            return $this->json(['error' => 'Invalid verification token'], Response::NOT_FOUND);
+        }
+
+        if ($user->email_verified) {
+            return $this->json(['message' => 'Email is already verified'], Response::OK);
+        }
+
+        $user->email_verified = 1;
+        if (!$user->save()) {
+            return $this->json(['error' => 'Failed to verify email'], Response::INTERNAL_ERROR);
+        }
+            
+        return $this->json(['message' => 'Email verified successfully'], Response::OK);
     }
+
+    // public function login(): void {
+    // }
+
+    // public function logout(): void {
+    // }
+
+    // public function forgotPassword(): string {
+    // }
+
+    // public function resetPassword(): string {
+    // }
+
 }

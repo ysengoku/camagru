@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN composer install --no-interaction --prefer-dist
+RUN DISABLE_HTTP2=1 composer install --no-interaction --prefer-dist
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD [ "php-fpm" ]

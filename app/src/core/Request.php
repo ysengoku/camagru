@@ -9,8 +9,16 @@ final class Request {
         return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 
-    public static function getQueryParams(): string {
-        return $_SERVER['QUERY_STRING'] ?? '';
+    public static function getQueryParams(): array {
+        $url = $_SERVER['REQUEST_URI'] ?? '';
+        $queryString = parse_url($url, PHP_URL_QUERY);
+        parse_str($queryString, $queryParams);
+
+        return $queryParams;
+    }
+
+    public static function getQueryParam(string $key): string|null {
+        return self::getQueryParams()[$key] ?? null;
     }
 
     public static function getPostData(): array {

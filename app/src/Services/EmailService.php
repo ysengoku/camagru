@@ -46,15 +46,9 @@ final class EmailService {
             }
             $this->expect(220); // Server welcome
 
-            $this->handshake();
-            $this->write("STARTTLS");
-            $this->expect(220);
-            if (!stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-                throw new RuntimeException("Failed to enable TLS encryption for SMTP connection.");
-            }
-
-            $this->handshake();
+            $this->startTls();
             $this->authenticate();
+
             $this->sendMail($to, $subject, $body);
 
             $this->write("QUIT");
@@ -84,8 +78,17 @@ final class EmailService {
         }
     }
 
-    private function handshake(): void {
-        $host = $_SERVER['HTTP_HOST'] ?? gethostname() ?: 'localhost';
+    private function startTls(): void {
+        $host = gethostname() ?: 'localhost';
+        $this->write("EHLO {$host}");
+        $this->expect(250);
+
+        $this->write("STARTTLS");
+        $this->expect(220);
+        if (!stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            throw new RuntimeException("Failed to enable TLS encryption for SMTP connection.");
+        }
+
         $this->write("EHLO {$host}");
         $this->expect(250);
     }

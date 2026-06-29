@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 
-if [ ! -f .env ]; then
-    echo "No .env detected!"
+DEV=false
+if [[ "$1" == "--dev" ]]; then
+    DEV=true
+fi
+
+ENV_FILE=".env"
+if $DEV; then
+    ENV_FILE=".env.dev"
+fi
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "No $ENV_FILE detected!"
     exit 1
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    # Mac
     HOST_IP=$(ifconfig en0 | awk '/inet / {print $2; exit}')
 else
-    # Linux
     HOST_IP=$(ip route get 8.8.8.8 | awk '{print $7; exit}')
 fi
 
@@ -18,16 +26,30 @@ if [ -z "$HOST_IP" ]; then
     exit 1
 fi
 
-if grep -qE "^HOST_IP=" .env; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      # Mac
-      sed -i '' -E "s/^HOST_IP=.*/HOST_IP=$HOST_IP/" .env
-    else
-      # Linux
-      sed -i -E "s/^HOST_IP=.*/HOST_IP=$HOST_IP/" .env
-    fi
-    echo "Host IP was updated in the .env with $HOST_IP"
+if $DEV; then
+    BASE_URL="http://$HOST_IP:8080"
 else
-    printf "\n# IP of the host machine\nHOST_IP=$HOST_IP" >> .env
-    echo "Host IP $HOST_IP was added to the .env"
+    BASE_URL="https://$HOST_IP:8443"
 fi
+
+update_or_append() {
+    local key="$1"
+    local value="$2"
+    local file="$3"
+    if grep -qE "^${key}=" "$file"; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' -E "s|^${key}=.*|${key}=${value}|" "$file"
+        else
+            sed -i -E "s|^${key}=.*|${key}=${value}|" "$file"
+        fi
+    else
+        printf "\n%s=%s" "$key" "$value" >> "$file"
+    fi
+}
+
+update_or_append "HOST_IP" "$HOST_IP" "$ENV_FILE"
+update_or_append "APP_BASE_URL" "$BASE_URL" "$ENV_FILE"
+
+echo "Updated $ENV_FILE:"
+echo "  HOST_IP=$HOST_IP"
+echo "  APP_BASE_URL=$BASE_URL"

@@ -6,29 +6,32 @@
 final class User extends Model {
     protected static string $name = 'users';
     protected static array $schema = [
-        'id'                 => 'INT AUTO_INCREMENT PRIMARY KEY',
-        'username'           => 'VARCHAR(255) UNIQUE NOT NULL',
-        'email'              => 'VARCHAR(255) UNIQUE NOT NULL',
-        'password_hash'      => 'VARCHAR(255) NOT NULL',
-        'verification_token' => 'VARCHAR(64) DEFAULT NULL',
-        'email_verified'     => 'TINYINT(1) DEFAULT 0 NOT NULL',
-        'created_at'         => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'id'                          => 'INT AUTO_INCREMENT PRIMARY KEY',
+        'username'                    => 'VARCHAR(255) UNIQUE NOT NULL',
+        'email'                       => 'VARCHAR(255) UNIQUE NOT NULL',
+        'password_hash'               => 'VARCHAR(255) NOT NULL',
+        'verification_token'          => 'VARCHAR(64) DEFAULT NULL',
+        'email_verified'              => 'TINYINT(1) DEFAULT 0 NOT NULL',
+        'email_notifications_enabled' => 'TINYINT(1) DEFAULT 1 NOT NULL',
+        'created_at'                  => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
 
-    public int    $id                 = 0;
-    public string $username           = '';
-    public string $email              = '';
-    public string $password_hash      = '';
-    public string $verification_token = '';
-    public bool   $email_verified     = false;
-    public ?string $created_at        = '';
+    public int     $id                          = 0;
+    public string  $username                    = '';
+    public string  $email                       = '';
+    public string  $password_hash               = '';
+    public string  $verification_token          = '';
+    public int     $email_verified              = 0;
+    public int     $email_notifications_enabled = 1;
+    public ?string $created_at                  = '';
 
-    public function __construct(string $username, string $email, string $passwordHash, string $verificationToken, bool $emailVerified = false) {
-        $this->username           = $username;
-        $this->email              = $email;
-        $this->password_hash      = $passwordHash;
-        $this->verification_token = $verificationToken;
-        $this->email_verified     = $emailVerified;
+    public function __construct(string $username, string $email, string $passwordHash, string $verificationToken, int $emailVerified = 0, int $emailNotificationsEnabled = 1) {
+        $this->username                    = $username;
+        $this->email                       = $email;
+        $this->password_hash               = $passwordHash;
+        $this->verification_token          = $verificationToken;
+        $this->email_verified              = (int) $emailVerified;
+        $this->email_notifications_enabled = (int) $emailNotificationsEnabled;
     }
 
     public static function getCurrentUser(): ?self {
@@ -65,8 +68,15 @@ final class User extends Model {
         return self::findOneByField('email', $email);
     }
 
-    public function createNewUser(): self {
-        $this->save();
-        return $this;
+    public static function findByVerificationToken(string $token): ?self {
+        if (empty($token)) {
+            return null;
+        }
+
+        return self::findOneByField('verification_token', $token);
+    }
+
+    public function createNewUser(): bool {
+        return $this->save();
     }
 }

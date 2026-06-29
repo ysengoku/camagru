@@ -29,10 +29,12 @@ abstract class Model {
     /**
      * Map array data to instance properties based on schema.
      * @param array<string, mixed> $data
-     * @return static
+     * @return self
      */
     public static function fromRow(array $data): self {
-        $instance = new static();
+        // Create a new instance without calling the constructor that requires parameters,
+        // then populate properties from the data array.
+        $instance = (new \ReflectionClass(static::class))->newInstanceWithoutConstructor();
         foreach ($data as $key => $value) {
             if (property_exists($instance, $key)) {
                 $instance->$key = $value;
@@ -44,38 +46,36 @@ abstract class Model {
     /**
      * Find an record by its ID.
      * @param string $id
-     * @return static|null
+     * @return self|null
      */
     protected static function findById(string $id) {
         $db = self::getDb();
         $table = static::$name;
         $sql = "SELECT * FROM `$table` WHERE id = :id LIMIT 1";
 
-        /** @var array<string, mixed>|false $data */
         $data = $db->fetch($sql, ['id' => $id]);
 
-        return $data !== false ? self::fromRow($data) : null;
+        return is_array($data) ? self::fromRow($data) : null;
     }
 
     /** Find a record by a specific field.
      * @param string $field
      * @param mixed $value
-     * @return static|null
+     * @return self|null
      */
     protected static function findOneByField(string $field, mixed $value) {
         $db = self::getDb();
         $table = static::$name;
         $sql = "SELECT * FROM `$table` WHERE `$field` = :value LIMIT 1";
 
-        /** @var array<string, mixed>|false $data */
         $data = $db->fetch($sql, ['value' => $value]);
 
-        return $data !== false ? self::fromRow($data) : null;
+        return is_array($data) ? self::fromRow($data) : null;
     }
 
     /**
      * Find all records in the table.
-     * @return list<static>
+     * @return list<self>
      */
     protected static function findAll(): array {
         $db = self::getDb();
@@ -243,4 +243,3 @@ abstract class Model {
         return $this->errors;
     }
 }
-

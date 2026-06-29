@@ -12,22 +12,20 @@ ENV = development
 all: ENV=production
 all: up
 
-ensure-env:
-	@if [ ! -f .env ]; then \
-		echo ".env file not found, copying from .env.example"; \
-		cp .env.example .env; \
+init-ip:
+	@if [ "$(ENV)" = "development" ]; then \
+		bash init-ip.sh --dev; \
+	else \
+		bash init-ip.sh; \
 	fi
 
-init-ip:
-	bash init-ip.sh
-
 build: ENV=production
-build: ensure-env init-ip
+build: init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PROD) build --no-cache
 	@docker image prune -f
 
 build-dev: ENV=development
-build-dev: ensure-env init-ip
+build-dev: init-ip
 	ENV=$(ENV) docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) build
 	@docker image prune -f
 
@@ -72,4 +70,4 @@ quality-php:
 psalm-baseline:
 	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
-.PHONY: all dev up down build build-dev ensure-env init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app
+.PHONY: all dev up down build build-dev init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app

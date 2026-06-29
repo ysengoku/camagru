@@ -19,26 +19,23 @@ final class SignupService {
 
     public function processSignup(SignupData $data): array {
         $this->userData = $data;
-        $validationErrors = $this->validateSignupData($data);
+        // $validationErrors = $this->validateSignupData($data);
 
         // if (!empty($validationErrors)) {
         //     return ['success' => false, 'errors' => $validationErrors];
         // }
 
-        // $availabilityErrors = $this->checkAvailability();
-        // if (!empty($availabilityErrors)) {
-        //     return ['success' => false, 'errors' => $availabilityErrors];
-        // }
+        $availabilityErrors = $this->checkAvailability();
+        if (!empty($availabilityErrors)) {
+            return ['success' => false, 'errors' => $availabilityErrors];
+        }
 
-        // $createdUser = $this->createUser();
+        $createdUser = $this->createUser();
 
-        // TEST
-        $createdUser = [
-            'username' => $this->userData->username,
-            'email' => $this->userData->email,
-            'verification_token' => bin2hex(random_bytes(32))
-        ];
-        $this->sendVerificationEmail($createdUser['email'], $createdUser['verification_token']);
+        if ($createdUser === null) {
+            return ['success' => false, 'errors' => ['general' => 'Failed to create user.']];
+        }
+
         // $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
 
         return ['success' => true, 'user' => $createdUser];
@@ -92,19 +89,20 @@ final class SignupService {
         return $errors;
     }
 
-    private function createUser(): User {
+    private function createUser(): ?User {
         $passwordHash = password_hash($this->userData->password, PASSWORD_DEFAULT);
         $verificationToken = bin2hex(random_bytes(32));
 
         $newUser = new User($this->userData->username, $this->userData->email, $passwordHash, $verificationToken);
 
-        return $newUser->createNewUser();
+        return $newUser->createNewUser() ? $newUser : null;
     }
 
     private function sendVerificationEmail(string $email, string $token) {
         $verificationLink = "https://{$_SERVER['HTTP_HOST']}/verify-email?token={$token}";
+        $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
         $subject = "Verify Your Email Address";
-        $body = renderEmailTemplate('verification', ['verificationLink' => $verificationLink]);
+        $body = renderEmailTemplate('verification', ['logoUrl' => $logoUrl, 'verificationLink' => $verificationLink]);
 
         try {
             EmailService::getInstance()->send($email, $subject, $body);
