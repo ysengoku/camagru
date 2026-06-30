@@ -1,4 +1,4 @@
-import { api, ENDPOINTS } from '../api';
+import { api, ENDPOINTS } from '../../api';
 
 let rules;
 

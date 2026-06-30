@@ -7,4 +7,4 @@ import './password.js';
 import './self.js';
 import './settings.js';
 import './signup.js';
-import './validator.js';
+import './helpers/validator.js';

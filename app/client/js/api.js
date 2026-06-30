@@ -50,7 +50,7 @@ function createApiClient() {
     const res = await fetch(url, options);
     const data = await res.json();
     if (!res.ok) {
-      throw { status: res.status, data };
+      throw { status: res.status, data: data };
     }
     return data;
   }

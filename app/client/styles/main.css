@@ -287,6 +287,16 @@ p {
   color: var(--gray-800);
 }
 
+.form-input.input-error {
+  border: 1px solid var(--danger);
+}
+
+.error-feedback {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
 .auth-form {
   h2 {
     color: var(--primary-600);

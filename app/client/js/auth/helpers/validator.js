@@ -12,23 +12,22 @@ class Validator {
     const maxLength = rules.username.maxLength;
     const regex = new RegExp(rules.username.pattern);
 
-    if (username.length < minLength) {
+    if (!username) {
       return {
         valid: false,
-        message: `Username must be at least ${minLength} characters long`,
+        message: rules.username.messages.required,
       };
     }
-    if (username.length > maxLength) {
+    if (username.length < minLength || username.length > maxLength) {
       return {
         valid: false,
-        message: `Username must not exceed ${maxLength} characters`,
+        message: `Username must be between ${minLength} and ${maxLength} characters long`,
       };
     }
     if (!regex.test(username)) {
       return {
         valid: false,
-        message:
-          'Username can only contain letters, numbers, underscore, and hyphen',
+        message: rules.username.messages.pattern,
       };
     }
     return { valid: true };
@@ -38,6 +37,12 @@ class Validator {
     const maxLength = rules.email.maxLength;
     const regex = new RegExp(rules.email.pattern);
 
+    if (!email) {
+      return {
+        valid: false,
+        message: rules.email.messages.required,
+      };
+    }
     if (email.length > maxLength) {
       return {
         valid: false,
@@ -45,7 +50,7 @@ class Validator {
       };
     }
     if (!regex.test(email)) {
-      return { valid: false, message: 'Email format is invalid' };
+      return { valid: false, message: rules.email.messages.pattern };
     }
     return { valid: true };
   }
@@ -53,23 +58,27 @@ class Validator {
   validatePassword(username, password, passwordRepeat) {
     const minLength = rules.password.minLength;
     const maxLength = rules.password.maxLength;
+    const requireLower = rules.password.requireLower;
+    const requireUpper = rules.password.requireUpper;
+    const requireDigit = rules.password.requireDigit;
+    const specialCharRegex = new RegExp(rules.password.specialCharPattern);
 
+    if (!password || !passwordRepeat) {
+      return {
+        valid: false,
+        message: rules.password.messages.required,
+      };
+    }
     if (password !== passwordRepeat) {
       return {
         valid: false,
-        message: 'The password and password confirmation do not match',
+        message: rules.password.messages.match,
       };
     }
-    if (password.length < minLength) {
+    if (password.length < minLength || password.length > maxLength) {
       return {
         valid: false,
-        message: `Password must be at least ${minLength} characters long`,
-      };
-    }
-    if (password.length > maxLength) {
-      return {
-        valid: false,
-        message: `Password must not exceed ${maxLength} characters`,
+        message: `Password must be between ${minLength} and ${maxLength} characters long`,
       };
     }
     if (password.toLowerCase().includes(username.toLowerCase())) {
@@ -79,20 +88,14 @@ class Validator {
       };
     }
     if (
-      !/[a-z]/.test(password) ||
-      !/[A-Z]/.test(password) ||
-      !/[0-9]/.test(password)
+      (requireLower && !/[a-z]/.test(password)) ||
+      (requireUpper && !/[A-Z]/.test(password)) ||
+      (requireDigit && !/[0-9]/.test(password)) ||
+      !specialCharRegex.test(password)
     ) {
       return {
         valid: false,
-        message:
-          'Password must contain at least one lowercase, one uppercase, and one digit',
-      };
-    }
-    if (/[^a-zA-Z0-9]/.test(password)) {
-      return {
-        valid: false,
-        message: 'Password may contain only alphanumeric characters',
+        message: rules.password.messages.requireCharPattern,
       };
     }
     return { valid: true };
