@@ -12,7 +12,10 @@ export function initPasswordToggles() {
       input.type = show ? 'text' : 'password';
       visibleIcon.hidden = show;
       invisibleIcon.hidden = !show;
-      button.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      button.setAttribute(
+        'aria-label',
+        show ? 'Hide password' : 'Show password'
+      );
     });
   });
 }

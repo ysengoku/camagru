@@ -50,13 +50,13 @@
 
 ### 3. Route auth guard
 
-- [ ] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
+- [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
 - [ ] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
 - [ ] Add CSRF validation in `Application::run()` for POST requests
 
 ### 4. EmailService (raw SMTP via `fsockopen()`)
 
-- [ ] Implement `EmailService` class using `fsockopen()` + STARTTLS via `stream_socket_enable_crypto()`
+- [X] Implement `EmailService` class using `fsockopen()` + STARTTLS via `stream_socket_enable_crypto()`
 - [X] Configure SMTP credentials via `.env` (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`)
 
 ### 5. ProfileController
@@ -64,6 +64,12 @@
 - [ ] Create `ProfileController` with actions: `index`, `edit`, `settings`
 - [ ] Implement profile edit: allow changing username, email (re-verify on change), password
 - [ ] Implement settings: toggle `email_notifications` preference
+
+### 6. Verification hardening
+
+- [ ] Resend verification email endpoint (`POST /api/resend-verification`) — rate-limit per email/IP, return a generic response regardless of whether the email exists or is already verified (avoid enumeration)
+- [ ] Cleanup job for abandoned unverified accounts — delete `email_verified=0` users older than ~24h (decide request-driven cleanup-on-signup vs cron)
+- [ ] `verify-email` page: handle the expired-token response and surface a "resend verification email" action to the user
 
 ## Quality & Ops
 

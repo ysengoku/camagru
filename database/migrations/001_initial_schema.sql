@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash VARCHAR(255) NOT NULL,
   email_verified TINYINT(1) DEFAULT 0 NOT NULL,
   verification_token VARCHAR(64) DEFAULT NULL,
+  verification_token_expires_at TIMESTAMP NULL DEFAULT NULL,
   email_notifications_enabled TINYINT(1) DEFAULT 1 NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -29,6 +29,7 @@
               <h1 style="margin:0 0 16px; font-size:22px; color:#202121;">Verify your email address</h1>
               <p style="margin:0 0 28px; font-size:15px; color:#5f6161; line-height:1.6;">
                 Thank you for signing up! Click the button below to verify your email address and activate your account.
+                This link will expire in <strong>1 hour</strong>.
               </p>
 
               <!-- CTA Button -->

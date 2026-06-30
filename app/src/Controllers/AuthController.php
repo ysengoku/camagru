@@ -44,6 +44,12 @@ final class AuthController extends Controller {
             return $this->json(['message' => 'Email is already verified'], Response::OK);
         }
 
+        $expiresAt = $user->verification_token_expires_at;
+        if ($expiresAt === null || new DateTime($expiresAt) < new DateTime()) {
+            $user->delete();
+            return $this->json(['error' => 'Verification link has expired'], Response::BAD_REQUEST);
+        }
+
         $user->email_verified = 1;
         if (!$user->save()) {
             return $this->json(['error' => 'Failed to verify email'], Response::INTERNAL_ERROR);

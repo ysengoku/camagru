@@ -6,9 +6,10 @@ const ToastType = Object.freeze({
 
 export const ToastMessage = Object.freeze({
   'signup-success': {
-    message: 'Signup successful! Please check your email to verify your account.',
+    message:
+      'Signup successful! Please check your email to verify your account.',
     type: ToastType.SUCCESS,
-  }
+  },
 });
 
 export function showToast(message) {
@@ -27,9 +28,13 @@ export function showToast(message) {
 
   setTimeout(() => {
     toast.classList.remove('toast-visible');
-    toast.addEventListener('transitionend', () => {
-      toast.hidePopover();
-      toast.remove();
-    }, { once: true });
+    toast.addEventListener(
+      'transitionend',
+      () => {
+        toast.hidePopover();
+        toast.remove();
+      },
+      { once: true }
+    );
   }, 4000);
 }

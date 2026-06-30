@@ -5,6 +5,18 @@ services:
     environment:
       - NODE_ENV=production
 
+  cron:
+    container_name: camagru_cron
+    build:
+      context: ./app
+      dockerfile: ./cron/Dockerfile
+    networks:
+      - camagru_network
+    env_file:
+      - .env
+    depends_on:
+      - database
+
   client:
     build:
       context: ./app/client

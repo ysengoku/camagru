@@ -1,0 +1,1 @@
+0 * * * * php /var/www/html/cron/cleanup_unverified_users.php >> /proc/1/fd/1 2>&1

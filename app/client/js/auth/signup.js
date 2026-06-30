@@ -19,7 +19,11 @@ function validateSignupForm(username, email, password, confirmPassword) {
     isValid = false;
   }
 
-  const isPasswordValid = validator.validatePassword(username, password, confirmPassword);
+  const isPasswordValid = validator.validatePassword(
+    username,
+    password,
+    confirmPassword
+  );
   if (!isPasswordValid.valid) {
     showFieldError('password', isPasswordValid.message);
     showFieldError('confirm-password', isPasswordValid.message);

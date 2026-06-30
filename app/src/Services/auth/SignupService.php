@@ -25,13 +25,12 @@ final class SignupService {
             return ['success' => false, 'errors' => $validationErrors];
         }
 
-        $availabilityErrors = $this->checkAvailability();
-        if (!empty($availabilityErrors)) {
-            return ['success' => false, 'errors' => $availabilityErrors];
+        $availability = $this->checkAvailability();
+        if (!empty($availability['errors'])) {
+            return ['success' => false, 'errors' => $availability['errors']];
         }
 
-        $createdUser = $this->createUser();
-
+        $createdUser = $this->createUser($availability['existingUnverifiedUser']);
         if ($createdUser === null) {
             return ['success' => false, 'errors' => ['general' => 'Failed to create user.']];
         }
@@ -107,22 +106,37 @@ final class SignupService {
     private function checkAvailability(): array {
         $errors = [];
 
-        if (User::findByUsername($this->userData->username)) {
-            $errors['username'] = 'Username is already taken.';
+        $existingByEmail = User::findByEmail($this->userData->email);
+        $isRetry = $existingByEmail !== null && !$existingByEmail->email_verified;
+
+        $existingByUsername = User::findByUsername($this->userData->username);
+        if ($existingByUsername !== null) {
+            $isSameUnverifiedRetry = $existingByUsername->email === $this->userData->email
+                && !$existingByUsername->email_verified;
+
+            if (!$isSameUnverifiedRetry) {
+                $errors['username'] = 'Username is already taken.';
+            }
         }
 
-        if (User::findByEmail($this->userData->email)) {
+        if ($existingByEmail !== null && $existingByEmail->email_verified) {
             $errors['email'] = 'Email is already registered.';
         }
 
-        return $errors;
+        return [
+            'errors' => $errors,
+            'existingUnverifiedUser' => $isRetry ? $existingByEmail : null,
+        ];
     }
 
-    private function createUser(): ?User {
+    private function createUser(?User $existingUnverifiedUser): ?User {
+        $existingUnverifiedUser?->delete();
+
         $passwordHash = password_hash($this->userData->password, PASSWORD_DEFAULT);
         $verificationToken = bin2hex(random_bytes(32));
+        $verificationTokenExpiresAt = (new DateTime('+1 hour'))->format('Y-m-d H:i:s');
 
-        $newUser = new User($this->userData->username, $this->userData->email, $passwordHash, $verificationToken);
+        $newUser = new User($this->userData->username, $this->userData->email, $passwordHash, $verificationToken, $verificationTokenExpiresAt);
 
         return $newUser->createNewUser() ? $newUser : null;
     }

@@ -20,7 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY . .
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY ./wait-for-db.sh /usr/local/bin/wait-for-db.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/wait-for-db.sh
 
 FROM base AS development
 
