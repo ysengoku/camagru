@@ -20,14 +20,14 @@ final class AuthController extends Controller {
                 }
                 return $this->json(['errors' => $result['errors']], Response::BAD_REQUEST);
             default:
-                return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
+                return $this->methodNotAllowed();
         }
     }
     
     public function verifyEmail(): string {
         $method = Request::getMethod();
         if ($method !== 'GET') {
-            return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
+            return $this->methodNotAllowed();
         }
 
         $token = Request::getQueryParam('token');
@@ -52,8 +52,21 @@ final class AuthController extends Controller {
         return $this->json(['message' => 'Email verified successfully'], Response::OK);
     }
 
-    // public function login(): void {
-    // }
+    public function login(): string {
+        switch (Request::getMethod()) {
+            case 'GET':
+                // TODO: Check session
+                return $this->render(['pageTitle' => 'Login', 'user' => null], 'login');
+            case 'POST':
+                $input = Request::getPostData();
+                $username = $input['username'] ?? '';
+                $password = $input['password'] ?? '';
+
+                // TODO: Implement actual authentication logic
+            default:
+                return $this->methodNotAllowed();
+        }
+    }
 
     // public function logout(): void {
     // }

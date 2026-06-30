@@ -1,9 +1,10 @@
-import { api, ENDPOINTS } from '../../api';
+import { api, endpoints } from '../../api';
 
 let rules;
 
 try {
-  rules = await api.get(ENDPOINTS.VALIDATION_RULES);
+  const response = await api.get(endpoints.VALIDATION_RULES);
+  rules = response.data;
 } catch (error) {
   console.error('Failed to fetch validation rules:', error);
   // Fallback to default rules if fetching fails
