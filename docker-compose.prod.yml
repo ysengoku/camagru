@@ -21,12 +21,17 @@ services:
     build:
       context: ./app/client
       target: build
+    entrypoint: ["sh", "-c", "cp -r /public/assets/. /output/"]
+    volumes:
+      - ./app/public/assets:/output
 
   nginx:
     build:
       target: production
     ports:
       - "8443:443"
+    volumes:
+      - ./app/public:/var/www/html/public:ro
 
   database:
     build:

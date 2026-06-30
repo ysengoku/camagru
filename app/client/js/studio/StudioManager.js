@@ -4,7 +4,7 @@ import { TextManager } from './managers/TextManager';
 import { studioStore } from '../store/studioStore';
 import { studioConfig } from './studioConfig';
 import { validateUploadedFile } from './validator';
-import { api, ENDPOINTS } from '../api';
+import { api, endpoints } from '../api';
 
 class StudioManager {
   static #instance = null;
@@ -442,7 +442,7 @@ class StudioManager {
     };
 
     try {
-      const response = await api.post(ENDPOINTS.PHOTOS, finalImageData);
+      const response = await api.post(endpoints.PHOTOS, finalImageData);
       // TODO: Success flow
       this.backToMenu();
     } catch (error) {

@@ -1,0 +1,1 @@
+import"./assets/main-C2ipV1EN.js";
