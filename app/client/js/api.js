@@ -1,7 +1,7 @@
 const API_BASE_URL = `${location.protocol}//${location.host}/api/`;
 
 /** @type {Record<string, string>} */
-export const ENDPOINTS = {
+export const endpoints = {
   SIGNUP: `${API_BASE_URL}signup`,
   LOGIN: `${API_BASE_URL}login`,
   LOGOUT: `${API_BASE_URL}logout`,
@@ -52,7 +52,7 @@ function createApiClient() {
     if (!res.ok) {
       throw { status: res.status, data: data };
     }
-    return data;
+    return { ok: res.ok, data: data };
   }
 
   return {

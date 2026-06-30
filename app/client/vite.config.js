@@ -23,5 +23,8 @@ export default defineConfig({
     middlewareMode: false,
     allowedHosts: ['client', 'localhost', '127.0.0.1'],
     hmr: false,
+    watch: {
+      usePolling: true,
+    },
   },
 });

@@ -2,8 +2,7 @@
 import '../main.js'; // Common dependencies
 
 import './login.js';
-import './logout.js';
-import './password.js';
+import './forgotPassword.js';
 import './self.js';
 import './settings.js';
 import './signup.js';

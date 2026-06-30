@@ -251,6 +251,31 @@ p {
   }
 }
 
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  margin: 1rem auto;
+  border: none;
+  background: var(--gray-800);
+  color: var(--gray-100);
+  padding: 12px 20px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-success { background: var(--success); }
+.toast-danger  { background: var(--danger); }
+.toast-info    { background: var(--primary-600); }
+
+
 .auth-form-container {
   display: flex;
   flex-direction: column;
@@ -289,6 +314,38 @@ p {
 
 .form-input.input-error {
   border: 1px solid var(--danger);
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field .form-input {
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0.25rem 0 0 0;
+  cursor: pointer;
+  color: var(--gray-400);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.password-toggle:hover {
+  color: var(--gray-600);
 }
 
 .error-feedback {

@@ -3,7 +3,7 @@ import { api, ENDPOINTS } from '../api.js';
 async function fetchStudioConfig() {
   try {
     const response = await api.get(ENDPOINTS.STUDIO_CONFIG);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Error loading studio config:', error);
   }
