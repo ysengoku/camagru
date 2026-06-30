@@ -19,17 +19,16 @@ $routes = [
     
     // User profile routes
     ['path' => '/profile', 'controller' => 'profile', 'action' => 'index', 'auth' => true],
-    ['path' => '/profile/edit', 'controller' => 'profile', 'action' => 'edit', 'auth' => true],
-    ['path' => '/profile/settings', 'controller' => 'profile', 'action' => 'settings', 'auth' => true],
 
     // API routes
     ['path' => '/api/validation-rules', 'method' => 'GET', 'controller' => 'validationRules', 'action' => 'getRules'],
     ['path' => '/api/signup', 'method' => 'POST', 'controller' => 'auth', 'action' => 'signup'],
     ['path' => '/api/login', 'method' => 'POST', 'controller' => 'auth', 'action' => 'login'],
-    ['path' => '/api/logout', 'method' => 'POST', 'controller' => 'auth', 'action' => 'logout'],
+    ['path' => '/api/logout', 'method' => 'POST', 'controller' => 'auth', 'action' => 'logout', 'auth' => true],
     ['path' => '/api/forgot-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'forgotPassword'],
     ['path' => '/api/reset-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resetPassword'],
     ['path' => '/api/verify-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'verifyEmail'],
+    ['path' => '/api/profile', 'method' => 'POST', 'controller' => 'profile', 'action' => 'update', 'auth' => true],
 
     ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create', 'auth' => true],

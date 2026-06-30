@@ -5,6 +5,10 @@
  */
 final class PhotoApiController extends Controller {
     final public function create(): string {
+        if (Request::getMethod() !== 'POST') {
+            return $this->methodNotAllowed();
+        }
+
         $mediaDir = Path::getMediaDirPath();
         $imageFilename = uniqid('', true) . '.jpg';
         $imagePath = Path::join($mediaDir, $imageFilename);

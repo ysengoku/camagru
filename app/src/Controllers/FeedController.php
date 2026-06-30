@@ -5,6 +5,9 @@
  */
 final class FeedController extends Controller {
     public function index(): string {
+        if (Request::getMethod() !== 'GET') {
+            return $this->methodNotAllowed();
+        }
         // $userModel = new User();
         // $currentUser = $userModel->getCurrentUser();
         // $users = $userModel->getAllUsers();

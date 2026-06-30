@@ -5,6 +5,9 @@
  */
 final class StudioController extends Controller {
     public function index(): string {
+        if (Request::getMethod() !== 'GET') {
+            return $this->methodNotAllowed();
+        }
         // If the user is not authenticated, redirect to login page
             // header('Location: /login');
             // exit();

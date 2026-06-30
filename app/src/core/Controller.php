@@ -46,4 +46,8 @@ abstract class Controller {
 
         return $view->render($path, $props);
     }
+
+    protected function methodNotAllowed(): string {
+        return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
+    }
 }
