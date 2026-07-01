@@ -17,7 +17,7 @@ if ($lastEmailSentTime !== null) {
     <h2>Verify your Email</h2>
     <p class="color-gray-600">
         An email has been sent to 
-        <span class="color-secondary-400">
+        <span class="color-primary-600">
             <?= htmlspecialchars($email) ?>
         </span>.
     </p>

@@ -84,7 +84,12 @@ final class AuthController extends Controller {
                 // TODO: Check session
                 return $this->render(['pageTitle' => 'Forgot Password', 'user' => null], 'forgotPassword');
             case 'POST':
-                // TODO
+                $result = ForgotPasswordService::getInstance()->processForgotPassword(Request::getPostData()['email'] ?? '');
+                if ($result['success']) {
+                    return $this->json(['message' => 'Password reset email sent'], Response::OK);
+                }
+
+                return $this->json(['errors' => $result['errors']], Response::BAD_REQUEST);
             default:
                 return $this->methodNotAllowed();
         }

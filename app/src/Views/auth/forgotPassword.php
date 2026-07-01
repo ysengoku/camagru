@@ -4,7 +4,7 @@
         <div class="flex-col gap-1 mb-4">
             <span id="form-error" class="error-feedback"></span>
         </div>
-        <div class="flex-col gap-1 mb-4">
+        <div class="flex-col gap-1 mb-4 pb-4">
             <p class="color-primary-600">
                 Enter your email address to receive a link to reset your password.
             </p>

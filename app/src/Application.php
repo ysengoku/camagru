@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/helper/Path.php';
 require_once __DIR__ . '/helper/renderer.php';
+require_once __DIR__ . '/helper/token.php';
 
 final class Application {
     private Router $router;
