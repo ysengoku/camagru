@@ -4,7 +4,7 @@
 
 <div class="auth-form-container">
     <form method="POST" action="/api/login" id="login-form" class="auth-form" novalidate>
-        <h2>Login</h2>
+        <h2>Welcome Back!</h2>
         <div class="flex-col gap-1 mb-4">
             <span id="form-error" class="error-feedback"></span>
         </div>
@@ -25,18 +25,18 @@
             <span id="password-error" class="error-feedback"></span>
         </div>
 
-        <div class="my-4 pt-4">
+        <div class="my-4 pt-4 flex-col gap-2">
             <button type="submit" class="button-primary font-bold w-100">
                 Login
             </button>
-            <p class="mt-4 pt-4 text-center">
-                Don't have an account? &nbsp;
-                <a href="/signup" class="color-info-dark">
+            <p class="mt-4 pt-4 text-center color-gray-600">
+                Don't have account yet?&nbsp;
+                <a href="/signup" class="font-bold text-decoration-none color-primary-600">
                     Sign up
                 </a>
             </p>
             <p class="mt-4 text-center">
-                <a href="/forgot-password" class="color-info-dark">
+                <a href="/forgot-password" class="color-primary-600">
                 Forgot your password?
                 </a>
             </p>

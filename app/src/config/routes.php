@@ -13,6 +13,7 @@ $routes = [
     ['path' => '/forgot-password', 'method' => 'GET', 'controller' => 'auth', 'action' => 'forgotPassword'],
     ['path' => '/reset-password', 'method' => 'GET', 'controller' => 'auth', 'action' => 'resetPassword'],
     ['path' => '/verify-email', 'method' => 'GET', 'controller' => 'auth', 'action' => 'verifyEmail'],
+    ['path' => '/email-sent', 'method' => 'GET', 'controller' => 'auth', 'action' => 'emailSent'],
 
     // Camera/Studio routes (authenticated only)
     ['path' => '/studio', 'controller' => 'studio', 'action' => 'index', 'auth' => true],
@@ -28,6 +29,7 @@ $routes = [
     ['path' => '/api/forgot-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'forgotPassword'],
     ['path' => '/api/reset-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resetPassword'],
     ['path' => '/api/verify-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'verifyEmail'],
+    ['path' => '/api/resend-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resendEmail'],
     ['path' => '/api/profile', 'method' => 'POST', 'controller' => 'profile', 'action' => 'update', 'auth' => true],
 
     ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config', 'auth' => true],

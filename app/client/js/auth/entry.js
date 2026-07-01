@@ -6,4 +6,5 @@ import './forgotPassword.js';
 import './self.js';
 import './settings.js';
 import './signup.js';
+import './resendEmail.js';
 import './helpers/validator.js';

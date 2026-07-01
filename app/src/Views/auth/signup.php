@@ -47,7 +47,9 @@
             </button>
             <p class="mt-4 pt-4 text-center">
                 Already have an account? &nbsp;
-            <a href="/login" class="color-info-dark">Login</a>
+                <a href="/login" class="font-bold text-decoration-none color-primary-600">
+                    Login
+                </a>
           </p>
         </div>
     </form>

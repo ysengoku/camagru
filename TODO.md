@@ -67,9 +67,9 @@
 
 ### 6. Verification hardening
 
-- [ ] Resend verification email endpoint (`POST /api/resend-verification`) — rate-limit per email/IP, return a generic response regardless of whether the email exists or is already verified (avoid enumeration)
-- [ ] Cleanup job for abandoned unverified accounts — delete `email_verified=0` users older than ~24h (decide request-driven cleanup-on-signup vs cron)
-- [ ] `verify-email` page: handle the expired-token response and surface a "resend verification email" action to the user
+- [X] Resend verification email endpoint (`POST /api/resend-email`) — rate-limit per email/IP, return a generic response regardless of whether the email exists or is already verified (avoid enumeration)
+- [X] Cleanup job for abandoned unverified accounts — delete `email_verified=0` users older than ~24h (decide request-driven cleanup-on-signup vs cron)
+- [X] `verify-email` page: handle the expired-token response and surface a "resend verification email" action to the user
 
 ## Quality & Ops
 

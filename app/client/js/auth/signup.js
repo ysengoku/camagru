@@ -2,7 +2,6 @@ import { api, endpoints } from '../api.js';
 import { validator } from './helpers/validator.js';
 import { initPasswordToggles } from './helpers/passwordVisibility.js';
 import { showFieldError } from './helpers/formFeedback.js';
-import { showToast, ToastMessage } from '../toast.js';
 
 function validateSignupForm(username, email, password, confirmPassword) {
   let isValid = true;
@@ -95,7 +94,7 @@ function init() {
         password,
       });
       if (response.ok) {
-        window.location.href = `/login?toast=signup-success`;
+        window.location.href = `/email-sent`;
       }
     } catch (error) {
       console.error('Signup error:', error.data);

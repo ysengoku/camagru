@@ -93,9 +93,13 @@
 
 .color-primary-100 { color: var(--primary-100); }
 .color-primary-500 { color: var(--primary-500); }
+.color-primary-600 { color: var(--primary-600); }
 .color-primary-700 { color: var(--primary-700); }
 .color-primary-800 { color: var(--primary-800); }
+.color-secondary-400 { color: var(--secondary-400); }
 .color-gray-500 { color: var(--gray-500); }
+.color-gray-600 { color: var(--gray-600); }
+.color-gray-700 { color: var(--gray-700); }
 
 .color-success { color: var(--success); }
 .color-success-dark { color: var(--success-dark); }

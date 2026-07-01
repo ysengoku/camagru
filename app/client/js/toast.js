@@ -1,25 +1,21 @@
-const ToastType = Object.freeze({
+export const ToastType = Object.freeze({
   SUCCESS: 'success',
-  DANGER: 'danger',
+  ERROR: 'danger',
   INFO: 'info',
 });
 
 export const ToastMessage = Object.freeze({
-  'signup-success': {
-    message:
-      'Signup successful! Please check your email to verify your account.',
-    type: ToastType.SUCCESS,
-  },
+  'email-resent': 'Email resent. Please check your inbox.',
 });
 
-export function showToast(message) {
-  if (typeof message !== 'object' || !message.message || !message.type) {
+export function showToast(type, message) {
+  if (!message) {
     return;
   }
 
   const toast = document.createElement('div');
-  toast.className = `toast toast-${message.type}`;
-  toast.textContent = message.message;
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
   toast.popover = 'manual';
   document.body.appendChild(toast);
 

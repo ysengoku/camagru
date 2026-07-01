@@ -251,6 +251,13 @@ p {
   }
 }
 
+.button-no-border {
+  border: none;
+  background-color: transparent;
+  color: var(--primary-600);
+  cursor: pointer;
+}
+
 .toast {
   position: fixed;
   bottom: 24px;
@@ -286,6 +293,11 @@ p {
   background-color: rgba(var(--primary-100-rgb), 0.5);
   width: 30%;
   margin: 2rem auto;
+
+  h2 {
+    color: var(--secondary-400) !important;
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -360,6 +372,11 @@ p {
     text-align: center;
     margin-bottom: 2rem;
   }
+}
+
+.button-no-border:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* -------- Feed & Posts -------- */

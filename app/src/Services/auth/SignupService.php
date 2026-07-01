@@ -35,7 +35,10 @@ final class SignupService {
             return ['success' => false, 'errors' => ['general' => 'Failed to create user.']];
         }
 
-        // $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
+        $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
+
+        SessionStore::set(SessionKey::PendingEmail, $createdUser->email);
+        SessionStore::set(SessionKey::ResendEmailAction, 'verify');
 
         return ['success' => true, 'user' => $createdUser];
     }
@@ -141,14 +144,15 @@ final class SignupService {
         return $newUser->createNewUser() ? $newUser : null;
     }
 
-    private function sendVerificationEmail(string $email, string $token) {
+    public function sendVerificationEmail(string $email, string $token) {
         $verificationLink = "https://{$_SERVER['HTTP_HOST']}/verify-email?token={$token}";
         $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
         $subject = "Verify Your Email Address";
         $body = renderEmailTemplate('verification', ['logoUrl' => $logoUrl, 'verificationLink' => $verificationLink]);
 
         try {
-            EmailService::getInstance()->send($email, $subject, $body);
+            // EmailService::getInstance()->send($email, $subject, $body);
+            SessionStore::set(SessionKey::LastEmailSentTime, time());
         } catch (Exception $e) {
             error_log("Failed to send verification email: " . $e->getMessage());
         }

@@ -8,6 +8,7 @@ export const endpoints = {
   VERIFY_EMAIL: `${API_BASE_URL}verify-email`,
   PASSWORD_RESET_REQUEST: `${API_BASE_URL}password-reset-request`,
   PASSWORD_RESET: `${API_BASE_URL}password-reset`,
+  RESEND_EMAIL: `${API_BASE_URL}resend-email`,
   VALIDATION_RULES: `${API_BASE_URL}validation-rules`,
   PHOTOS: `${API_BASE_URL}photos`,
   STUDIO_CONFIG: `${API_BASE_URL}studio-config`,
@@ -45,7 +46,9 @@ function createApiClient() {
    */
   async function request(method, url, body = null) {
     const options = { method, headers: { 'Content-Type': 'application/json' } };
-    if (body) options.body = JSON.stringify(body);
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
 
     const res = await fetch(url, options);
     const data = await res.json();

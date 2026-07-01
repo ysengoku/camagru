@@ -10,6 +10,7 @@ final class Response {
     public const int METHOD_NOT_ALLOWED  = 405;
     public const int CONFLICT            = 409;
     public const int UNPROCESSABLE       = 422;
+    public const int TOO_MANY_REQUESTS   = 429;
     public const int INTERNAL_ERROR      = 500;
 
     public const array STATUS_TEXTS = [
@@ -22,6 +23,7 @@ final class Response {
         405 => 'Method Not Allowed',
         409 => 'Conflict',
         422 => 'Unprocessable Entity',
+        429 => 'Too Many Requests',
         500 => 'Internal Server Error',
     ];
     
