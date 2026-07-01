@@ -5,6 +5,7 @@ export default defineConfig({
   build: {
     outDir: '../public/assets',
     emptyOutDir: false,
+    manifest : true,
     rollupOptions: {
       input: {
         main: './js/main.js',
@@ -14,6 +15,7 @@ export default defineConfig({
       },
       output: {
         entryFileNames: '[name].js',
+        assetFileNames: '[name]-[hash][extname]',
       },
     },
   },

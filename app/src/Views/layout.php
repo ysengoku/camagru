@@ -8,8 +8,11 @@
  */
 ?>
 
+<?php
+    $isProd = getenv('NODE_ENV') === 'production';
+    $css = $isProd ? viteEntryCSS('js/main.js') : null;
+?>
 <!doctype html>
-<?php $isProd = getenv('NODE_ENV') === 'production'; ?>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -17,8 +20,8 @@
         <title>
             <?php echo htmlspecialchars($pageTitle); ?>
         </title>
-        <?php if ($isProd): ?>
-            <link rel="stylesheet" href="/assets/main.css">
+        <?php if ($css): ?>
+            <link rel="stylesheet" href="<?php echo $css; ?>">
         <?php endif; ?>
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
     </head>

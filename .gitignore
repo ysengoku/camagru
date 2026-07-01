@@ -4,7 +4,10 @@ output.css
 
 node_modules/
 app/vendor/
-.vite/
+app/public/assets/.vite/
+app/public/assets/assets/
+app/public/assets/*.js
+app/public/assets/*.css
 
 # storage for user uploads
 storage/media/
