@@ -70,4 +70,10 @@ quality-php:
 psalm-baseline:
 	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
-.PHONY: all dev up down build build-dev init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app
+populate-db:
+	docker exec $(APP_CONTAINER) php scripts/populateDb.php
+
+clean-db:
+	docker exec $(APP_CONTAINER) php scripts/cleanDb.php
+
+.PHONY: all dev up down build build-dev init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app clean-db populate-db

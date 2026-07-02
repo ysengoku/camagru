@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) UNIQUE NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
+  avatar VARCHAR(255) DEFAULT NULL,
   email_verified TINYINT(1) DEFAULT 0 NOT NULL,
   verification_token VARCHAR(64) DEFAULT NULL,
   verification_token_expires_at TIMESTAMP NULL DEFAULT NULL,

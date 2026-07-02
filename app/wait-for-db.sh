@@ -2,8 +2,8 @@
 set -e
 
 # Wait for database (use mysqladmin or nc if available)
-if [ -n "$MYSQL_DATABASE" ]; then
-  HOST="$MYSQL_DATABASE"
+if [ -n "$DB_HOST" ]; then
+  HOST="$DB_HOST"
   PORT="${DB_PORT:-3306}"
   echo "Waiting for database ${HOST}:${PORT}..."
   if command -v mysqladmin >/dev/null 2>&1; then

@@ -10,6 +10,7 @@ final class User extends Model {
         'username'                        => 'VARCHAR(255) UNIQUE NOT NULL',
         'email'                           => 'VARCHAR(255) UNIQUE NOT NULL',
         'password_hash'                   => 'VARCHAR(255) NOT NULL',
+        'avatar'                          => 'VARCHAR(255) DEFAULT NULL',
         'verification_token'              => 'VARCHAR(64) DEFAULT NULL',
         'verification_token_expires_at'   => 'TIMESTAMP NULL DEFAULT NULL',
         'email_verified'                  => 'TINYINT(1) DEFAULT 0 NOT NULL',
@@ -23,6 +24,7 @@ final class User extends Model {
     public string  $username                        = '';
     public string  $email                           = '';
     public string  $password_hash                   = '';
+    public ?string $avatar                          = null;
     public string  $verification_token              = '';
     public ?string $verification_token_expires_at   = null;
     public int     $email_verified                  = 0;
@@ -41,10 +43,12 @@ final class User extends Model {
         int $emailNotificationsEnabled = 1,
         ?string $passwordResetToken = null,
         ?string $passwordResetTokenExpiresAt = null,
+        ?string $avatar = null,
     ) {
         $this->username                        = $username;
         $this->email                           = $email;
         $this->password_hash                   = $passwordHash;
+        $this->avatar                          = $avatar;
         $this->verification_token              = $verificationToken;
         $this->verification_token_expires_at   = $verificationTokenExpiresAt;
         $this->email_verified                  = (int) $emailVerified;
