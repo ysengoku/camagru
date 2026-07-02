@@ -1,6 +1,6 @@
 import { rules } from './validationRules.js';
 
-class Validator {
+export class Validator {
   constructor() {
     this.validateUsername = this.validateUsername.bind(this);
     this.validateEmail = this.validateEmail.bind(this);
@@ -55,7 +55,7 @@ class Validator {
     return { valid: true };
   }
 
-  validatePassword(username, password, passwordRepeat) {
+  validatePassword(password, passwordRepeat) {
     const minLength = rules.password.minLength;
     const maxLength = rules.password.maxLength;
     const requireLower = rules.password.requireLower;
@@ -69,24 +69,21 @@ class Validator {
         message: rules.password.messages.required,
       };
     }
+
     if (password !== passwordRepeat) {
       return {
         valid: false,
         message: rules.password.messages.match,
       };
     }
+
     if (password.length < minLength || password.length > maxLength) {
       return {
         valid: false,
         message: `Password must be between ${minLength} and ${maxLength} characters long`,
       };
     }
-    if (password.toLowerCase().includes(username.toLowerCase())) {
-      return {
-        valid: false,
-        message: 'Password must not contain the username',
-      };
-    }
+
     if (
       (requireLower && !/[a-z]/.test(password)) ||
       (requireUpper && !/[A-Z]/.test(password)) ||

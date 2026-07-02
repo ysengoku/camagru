@@ -1,53 +1,54 @@
 <?php
 
 final class ForgotPasswordService {
-    private static ?ForgotPasswordService $instance = null;
+    use SingletonTrait;
 
     // Private constructor to prevent direct instantiation
     private function __construct() {}
 
-    public static function getInstance(): ForgotPasswordService {
-        if (self::$instance === null) {
-            self::$instance = new ForgotPasswordService();
-        }
-        return self::$instance; 
-    }
-
-    public function processForgotPassword(string $email): array {
+    public function processForgotPassword(string $email): ServiceResult {
         $validationErrors = AuthInputValidator::validateEmail($email);
 
         if (!empty($validationErrors)) {
-            return ['success' => false, 'errors' => $validationErrors];
+            return ServiceResult::failure(['email' => $validationErrors]);
         }
 
+        // Always report success regardless of whether the account exists or is
+        // verified, so this endpoint can't be used to enumerate registered emails.
         $user = User::findByEmail($email);
-        if ($user === null || !$user->isEmailVerified()) {
-            return ['success' => false, 'errors' => ['User not found or email not verified.']];
+        if ($user !== null && $user->isEmailVerified()) {
+            $token = $this->issueResetToken($user);
+            $this->sendPasswordResetEmail($email, $token);
         }
 
-        $tokenData = generateToken(32);
+        return ServiceResult::success();
+    }
+
+    private function issueResetToken(User $user): string {
+        $tokenData = generateToken(32, 15);
         $resetToken = $tokenData['token'];
         $resetTokenExpiresAt = $tokenData['expiresAt'];
 
         $user->password_reset_token = $resetToken;
         $user->password_reset_token_expires_at = $resetTokenExpiresAt;
         if (!$user->save()) {
-            return ['success' => false, 'errors' => ['Failed to generate password reset token.']];
+            error_log("Failed to save password reset token for user id {$user->id}");
+            return '';
         }
 
-        // Send password reset email
-        $this->sendPasswordResetEmail($user->email, $resetToken);
+        SessionStore::set(SessionKey::PendingEmail, $user->email);
+        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::ResetPassword->value);
 
-        return ['success' => true];
+        return $resetToken;
     }
 
-    private function sendPasswordResetEmail(string $email, string $token): void {
+    public function sendPasswordResetEmail(string $email, string $token): void {
         $resetLink = "https://{$_SERVER['HTTP_HOST']}/reset-password?token=$token";
         $subject = "Password Reset";
         $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
         $body = renderEmailTemplate('forgotPassword', ['logoUrl' => $logoUrl, 'resetLink' => $resetLink]);
 
-        EmailService::getInstance()->send($email, $subject, $body);
+        // EmailService::getInstance()->send($email, $subject, $body);
+        SessionStore::set(SessionKey::LastEmailSentTime, time());
     }
-
 }

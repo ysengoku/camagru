@@ -25,7 +25,7 @@ final class User extends Model {
     public string  $email                           = '';
     public string  $password_hash                   = '';
     public ?string $avatar                          = null;
-    public string  $verification_token              = '';
+    public ?string $verification_token              = null;
     public ?string $verification_token_expires_at   = null;
     public int     $email_verified                  = 0;
     public int     $email_notifications_enabled     = 1;
@@ -37,7 +37,7 @@ final class User extends Model {
         string $username,
         string $email,
         string $passwordHash,
-        string $verificationToken,
+        ?string $verificationToken = null,
         ?string $verificationTokenExpiresAt = null,
         int $emailVerified = 0,
         int $emailNotificationsEnabled = 1,

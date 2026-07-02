@@ -1,7 +1,8 @@
 <?php
 
 final class EmailService {
-    private static ?EmailService $instance = null;
+    use SingletonTrait;
+    // private static ?EmailService $instance = null;
 
     private string $smtpHost;
     private int    $smtpPort;
@@ -31,12 +32,12 @@ final class EmailService {
         }
     }
 
-    public static function getInstance(): EmailService {
-        if (self::$instance === null) {
-            self::$instance = new EmailService();
-        }
-        return self::$instance;
-    }
+    // public static function getInstance(): EmailService {
+    //     if (self::$instance === null) {
+    //         self::$instance = new EmailService();
+    //     }
+    //     return self::$instance;
+    // }
 
     public function send(string $to, string $subject, string $body): void {
         try {

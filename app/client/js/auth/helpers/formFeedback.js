@@ -14,3 +14,15 @@ export function showServerFeedback(errors) {
     showFieldError(field, message);
   }
 }
+
+export function clearFormErrors() {
+  const errorElements = document.querySelectorAll('.error-message');
+  errorElements.forEach((el) => {
+    el.textContent = '';
+  });
+
+  const inputElements = document.querySelectorAll('.input-error');
+  inputElements.forEach((el) => {
+    el.classList.remove('input-error');
+  });
+}

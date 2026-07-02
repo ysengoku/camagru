@@ -85,7 +85,7 @@ final class Post extends Model {
      */
     #[Override]
     public function validate(): bool {
-        /** @var list<string> $this->errors */
+        /** @var list<string> $errors */
         $this->errors = [];
 
         if ($this->user_id <= 0) {

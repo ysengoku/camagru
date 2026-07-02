@@ -6,6 +6,8 @@ export const ToastType = Object.freeze({
 
 export const ToastMessage = Object.freeze({
   'email-resent': 'Email resent. Please check your inbox.',
+  'password-reset':
+    'Password reset successful. Please log in with your new password.',
 });
 
 export function showToast(type, message) {

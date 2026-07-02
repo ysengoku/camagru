@@ -39,20 +39,24 @@
 
 ### 2. AuthController (signup → login → logout → password reset)
 
-- [ ] Create `AuthController` with actions: `signup`, `login`, `logout`, `forgotPassword`, `resetPassword`
-- [ ] Create corresponding views: `auth/signup.php`, `auth/login.php`, `auth/forgot-password.php`, `auth/reset-password.php`
-- [ ] Implement signup: validate input, `password_hash()`, insert user with `email_verified=0` + `verification_token`, send verification email
-- [ ] Implement email verification route (`/verify-email?token=...`) that sets `email_verified=1`
-- [ ] Implement login: verify credentials, `session_regenerate_id(true)`, store `user_id` + CSRF token in `$_SESSION`
+- [X] Create `AuthController` with actions: `signup`, `login`, `logout`, `forgotPassword`, `resetPassword`
+- [X] Create corresponding views: `auth/signup.php`, `auth/login.php`, `auth/forgot-password.php`, `auth/reset-password.php`
+- [X] Implement signup: validate input, `password_hash()`, insert user with `email_verified=0` + `verification_token`, send verification email
+- [X] Implement email verification route (`/verify-email?token=...`) that sets `email_verified=1`
+- [X] Implement login: verify credentials, `session_regenerate_id(true)`, store `user_id` + CSRF token in `$_SESSION`
 - [ ] Implement logout: destroy session in DB + `session_destroy()`
-- [ ] Implement forgot-password: generate reset token, store with expiry, send email
-- [ ] Implement reset-password: validate token + expiry, update `password_hash`
+- [X] Implement forgot-password: generate reset token, store with expiry, send email
+- [X] Implement reset-password: validate token + expiry, update `password_hash`
 
 ### 3. Route auth guard
 
 - [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
 - [ ] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
-- [ ] Add CSRF validation in `Application::run()` for POST requests
+- [ ] CSRF protection (after logout):
+  - [ ] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
+  - [ ] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
+  - [ ] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
+  - [ ] `Application::run()`: for POST/PUT/DELETE/PATCH, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
 
 ### 4. EmailService (raw SMTP via `fsockopen()`)
 

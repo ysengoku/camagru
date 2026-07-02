@@ -2,23 +2,26 @@
 
 final class AuthController extends Controller {
     public function signup(): string {
+        $currentUserId = SessionStore::getCurrentUserId();
+
         switch (Request::getMethod()) {
             case 'GET':
-                if (isset($_SESSION['user_id'])) {
-                    (new Response())->redirect('/feed');
+                if ($currentUserId) {
+                    Response::redirect('/feed');
                 }
+
                 return $this->render(['pageTitle' => 'Sign Up', 'user' => null], 'signup');
             case 'POST':
                 $input = Request::getPostData();
                 $signupData = new SignupData($input['username'] ?? '', $input['email'] ?? '', $input['password'] ?? '');
                 $result = SignupService::getInstance()->processSignup($signupData);
-                if ($result['success']) {
+                if ($result->success) {
                     return $this->json(
-                        ['message' => 'User created successfully', 'username' => $result['user']->username, 'email' => $result['user']->email],
+                        ['message' => 'User created successfully'],
                         Response::CREATED
                     );
                 }
-                return $this->json(['errors' => $result['errors']], Response::BAD_REQUEST);
+                return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
             default:
                 return $this->methodNotAllowed();
         }
@@ -41,7 +44,7 @@ final class AuthController extends Controller {
         }
 
         if ($user->email_verified) {
-            return $this->json(['message' => 'Email is already verified'], Response::OK);
+            return $this->json(['error' => 'Email is already verified'], Response::OK);
         }
 
         $expiresAt = $user->verification_token_expires_at;
@@ -51,6 +54,8 @@ final class AuthController extends Controller {
         }
 
         $user->email_verified = 1;
+        $user->verification_token = null;
+        $user->verification_token_expires_at = null;
         if (!$user->save()) {
             return $this->json(['error' => 'Failed to verify email'], Response::INTERNAL_ERROR);
         }
@@ -68,7 +73,12 @@ final class AuthController extends Controller {
                 $username = $input['username'] ?? '';
                 $password = $input['password'] ?? '';
 
-                // TODO: Implement actual authentication logic
+                $res = LoginService::getInstance()->processLogin($username, $password);
+                if (!$res->success) {
+                    return $this->json(['error' => $res->errors], Response::BAD_REQUEST);
+                }
+
+                return $this->json(['message' => 'Login successful'], Response::OK);
             default:
                 return $this->methodNotAllowed();
         }
@@ -81,29 +91,62 @@ final class AuthController extends Controller {
         $method = Request::getMethod();
         switch ($method) {
             case 'GET':
-                // TODO: Check session
-                return $this->render(['pageTitle' => 'Forgot Password', 'user' => null], 'forgotPassword');
+                return $this->render([
+                    'pageTitle' => 'Forgot Password',
+                    'user' => null,
+                    'action' => 'reset-password'
+                ], 'forgotPassword');
             case 'POST':
                 $result = ForgotPasswordService::getInstance()->processForgotPassword(Request::getPostData()['email'] ?? '');
-                if ($result['success']) {
-                    return $this->json(['message' => 'Password reset email sent'], Response::OK);
+                if ($result->success) {
+                    return $this->json(['message' => 'An email has been sent successfully.'], Response::OK);
                 }
 
-                return $this->json(['errors' => $result['errors']], Response::BAD_REQUEST);
+                return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
             default:
                 return $this->methodNotAllowed();
         }
     }
 
-    // public function resetPassword(): string {
-    // }
+    public function resetPassword(): string {
+        $method = Request::getMethod();
+        switch ($method) {
+            case 'GET':
+                $token = Request::getQueryParam('token') ?? '';
+                $validationResult = ResetPasswordService::getInstance()->validateToken($token);
+                if (!$validationResult->success) {
+                    throw new HTTPNotFoundException();
+                }
+
+                return $this->render([
+                    'pageTitle' => 'Reset Password',
+                    'user' => null,
+                    'token' => $token
+                ], 'resetPassword');
+            case 'POST':
+                $input = Request::getPostData();
+                $result = ResetPasswordService::getInstance()->processResetPassword($input['token'] ?? '', $input['new_password'] ?? '');
+                if ($result->success) {
+                    return $this->json(['message' => 'Password reset successfully'], Response::OK);
+                }
+
+                return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
+            default:
+                return $this->methodNotAllowed();
+        }
+    }
 
     public function emailSent(): string {
         if (Request::getMethod() !== 'GET') {
             return $this->methodNotAllowed();
         }
+        
+        $action = Request::getQueryParam('action') ?? '';
+        if (!in_array($action, ['verify-email', 'reset-password'])) {
+            throw new HTTPNotFoundException();
+        }
 
-        return $this->render(['pageTitle' => 'Email Sent', 'user' => null], 'emailSent');
+        return $this->render(['pageTitle' => 'Email Sent', 'user' => null, 'action' => $action], 'emailSent');
     }
 
     public function resendEmail(): string {
@@ -148,7 +191,9 @@ final class AuthController extends Controller {
                 if (!$isVerified) {
                     return $this->json(['error' => 'Email is not verified. Cannot reset password.'], Response::BAD_REQUEST);
                 }
-                // TODO: Implement reset password email logic
+
+                ForgotPasswordService::getInstance()->sendPasswordResetEmail($email, $user->password_reset_token);
+
                 return $this->json(['message' => 'Reset password email resent successfully'], Response::OK);
             default:
                 return $this->json(['error' => 'Invalid action for resending email'], Response::BAD_REQUEST);

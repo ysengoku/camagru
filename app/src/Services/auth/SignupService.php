@@ -1,46 +1,37 @@
 <?php
 
 final class SignupService {
-    private static ?SignupService $instance = null;
+    use SingletonTrait;
+
     private SignupData $userData;
-    // private array $rules;
 
-    private function __construct() {
-        // Private constructor to prevent direct instantiation
-        // $this->rules = require __DIR__ . '/../../config/validation.php';
-    }
+    // Private constructor to prevent direct instantiation
+    private function __construct() {}
 
-    public static function getInstance(): SignupService {
-        if (self::$instance === null) {
-            self::$instance = new SignupService();
-        }
-        return self::$instance; 
-    }
-
-    public function processSignup(SignupData $data): array {
+    public function processSignup(SignupData $data): ServiceResult {
         $this->userData = $data;
         $validationErrors = $this->validateSignupData($data);
-
+    
         if (!empty($validationErrors)) {
-            return ['success' => false, 'errors' => $validationErrors];
+            return ServiceResult::failure($validationErrors);
         }
 
         $availability = $this->checkAvailability();
         if (!empty($availability['errors'])) {
-            return ['success' => false, 'errors' => $availability['errors']];
+            return ServiceResult::failure($availability['errors']);
         }
 
         $createdUser = $this->createUser($availability['existingUnverifiedUser']);
         if ($createdUser === null) {
-            return ['success' => false, 'errors' => ['general' => 'Failed to create user.']];
+            return ServiceResult::failure(['general' => 'Failed to create user.']);
         }
 
         $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
 
         SessionStore::set(SessionKey::PendingEmail, $createdUser->email);
-        SessionStore::set(SessionKey::ResendEmailAction, 'verify');
+        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::Verify->value);
 
-        return ['success' => true, 'user' => $createdUser];
+        return ServiceResult::success(['user' => $createdUser]);
     }
 
     private function validateSignupData(SignupData $data): array {
@@ -104,7 +95,7 @@ final class SignupService {
         return $newUser->createNewUser() ? $newUser : null;
     }
 
-    public function sendVerificationEmail(string $email, string $token) {
+    public function sendVerificationEmail(string $email, string $token): void {
         $verificationLink = "https://{$_SERVER['HTTP_HOST']}/verify-email?token={$token}";
         $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
         $subject = "Verify Your Email Address";

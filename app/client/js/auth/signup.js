@@ -1,7 +1,7 @@
 import { api, endpoints } from '../api.js';
-import { validator } from './helpers/validator.js';
 import { initPasswordToggles } from './helpers/passwordVisibility.js';
 import { showFieldError } from './helpers/formFeedback.js';
+import { validator } from './helpers/validator.js';
 
 function validateSignupForm(username, email, password, confirmPassword) {
   let isValid = true;
@@ -18,11 +18,7 @@ function validateSignupForm(username, email, password, confirmPassword) {
     isValid = false;
   }
 
-  const isPasswordValid = validator.validatePassword(
-    username,
-    password,
-    confirmPassword
-  );
+  const isPasswordValid = validator.validatePassword(password, confirmPassword);
   if (!isPasswordValid.valid) {
     showFieldError('password', isPasswordValid.message);
     showFieldError('confirm-password', isPasswordValid.message);
@@ -94,12 +90,12 @@ function init() {
         password,
       });
       if (response.ok) {
-        window.location.href = `/email-sent`;
+        window.location.href = `/email-sent?action=verify-email`;
       }
     } catch (error) {
       console.error('Signup error:', error.data);
-      if (error.data && error.data.errors) {
-        showServerFeedback(error.data.errors);
+      if (error.data && error.data.error) {
+        showServerFeedback(error.data.error);
       } else {
         const formErrorElement = document.getElementById('form-error');
         if (formErrorElement) {

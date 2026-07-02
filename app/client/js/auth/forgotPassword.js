@@ -1,4 +1,6 @@
-import { showFieldError } from "./helpers/formFeedback";
+import { api, endpoints } from '../api.js';
+import { Validator } from './helpers/validator';
+import { showFieldError, clearFormErrors } from './helpers/formFeedback';
 
 function init() {
   const forgotPasswordForm = document.getElementById('forgot-password-form');
@@ -13,6 +15,7 @@ function init() {
     clearFormErrors();
 
     const email = emailInputEl.value.trim();
+    const validator = new Validator();
 
     const isEmailValid = validator.validateEmail(email);
     if (!isEmailValid.valid) {
@@ -20,12 +23,16 @@ function init() {
     }
 
     try {
-      const response = await api.post(endpoints.PASSWORD_RESET_REQUEST, { email });
+      const response = await api.post(endpoints.PASSWORD_RESET_REQUEST, {
+        email,
+      });
       if (response.ok) {
-        window.location.href = `/email-sent`;
+        window.location.href = `/email-sent?action=reset-password`;
       }
     } catch (error) {
-      const message = error.data?.error || 'Failed to send password reset email. Please try again later.';
+      const message =
+        error.data?.error?.email ||
+        'Failed to send password reset email. Please try again later.';
       showFieldError('email', message);
     }
   });
