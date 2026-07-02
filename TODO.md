@@ -52,11 +52,16 @@
 
 - [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
 - [ ] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
-- [ ] CSRF protection (after logout):
-  - [ ] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
-  - [ ] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
-  - [ ] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
-  - [ ] `Application::run()`: for POST/PUT/DELETE/PATCH, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
+- [ ] Security pass (after logout):
+  - [ ] CSRF protection:
+    - [ ] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
+    - [ ] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
+    - [ ] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
+    - [ ] `Application::run()`: for POST/PUT/DELETE/PATCH, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
+  - [ ] Session cookie hardening: set `session.cookie_httponly=1`, `session.cookie_samesite=Strict` (or `Lax`), `session.cookie_secure=1` in prod — currently all unset despite being checked off in the "Session foundation" section above
+  - [ ] Fix email enumeration risk in forgot-password flow if any new call sites are added (already fixed in `ForgotPasswordService`, keep it that way)
+  - [ ] Password-reset token: invalidate (`null` out) after successful use; invalidate all sessions for the user on password reset (`DELETE FROM sessions WHERE user_id = ?`)
+  - [ ] Rate-limit `/api/forgot-password` itself, same cooldown pattern as `/api/resend-email`
 
 ### 4. EmailService (raw SMTP via `fsockopen()`)
 
