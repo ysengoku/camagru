@@ -21,6 +21,4 @@ spl_autoload_register(function ($class) {
 
 });
 
-$sessionHandler = new SessionHandler();
-session_set_save_handler($sessionHandler, true);
 session_start();

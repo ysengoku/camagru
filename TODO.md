@@ -32,10 +32,9 @@
 
 ### 1. Session foundation
 
-- [X] Update `Session` model to match DB schema (`session_token`, `csrf_token`, `expired_at`)
 - [X] Add `email_notifications TINYINT(1) DEFAULT 1` column to `users` table (migration)
-- [X] Implement `SessionHandler` class (implements `SessionHandlerInterface`) for DB-backed sessions
-- [X] Call `session_set_save_handler()` + `session_start()` in `bootstrap.php` with secure cookie config (`httponly`, `samesite=Strict`)
+- [X] Use PHP's built-in file-based session handling (`session_start()` in `bootstrap.php`) — DB-backed sessions (`Session` model, `SessionHandler`, `sessions` table) were tried and removed; single non-replicated `app` container doesn't need shared session storage
+- [ ] Configure secure cookie settings (`httponly`, `samesite=Strict`, `secure` in prod) — currently unset
 
 ### 2. AuthController (signup → login → logout → password reset)
 
@@ -44,7 +43,7 @@
 - [X] Implement signup: validate input, `password_hash()`, insert user with `email_verified=0` + `verification_token`, send verification email
 - [X] Implement email verification route (`/verify-email?token=...`) that sets `email_verified=1`
 - [X] Implement login: verify credentials, `session_regenerate_id(true)`, store `user_id` + CSRF token in `$_SESSION`
-- [ ] Implement logout: destroy session in DB + `session_destroy()`
+- [ ] Implement logout: call `session_destroy()` (currently only clears `user_id` from `$_SESSION`)
 - [X] Implement forgot-password: generate reset token, store with expiry, send email
 - [X] Implement reset-password: validate token + expiry, update `password_hash`
 
@@ -58,9 +57,9 @@
     - [ ] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
     - [ ] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
     - [ ] `Application::run()`: for POST/PUT/DELETE/PATCH, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
-  - [ ] Session cookie hardening: set `session.cookie_httponly=1`, `session.cookie_samesite=Strict` (or `Lax`), `session.cookie_secure=1` in prod — currently all unset despite being checked off in the "Session foundation" section above
+  - [ ] Session cookie hardening: set `session.cookie_httponly=1`, `session.cookie_samesite=Strict` (or `Lax`), `session.cookie_secure=1` in prod — currently all unset
   - [ ] Fix email enumeration risk in forgot-password flow if any new call sites are added (already fixed in `ForgotPasswordService`, keep it that way)
-  - [ ] Password-reset token: invalidate (`null` out) after successful use; invalidate all sessions for the user on password reset (`DELETE FROM sessions WHERE user_id = ?`)
+  - [ ] Password-reset token: invalidate (`null` out) after successful use. Invalidating the user's *other* active sessions on password reset is no longer a simple DB delete now that sessions are file-based — needs its own design if still wanted (e.g. a `password_changed_at` column checked on each request)
   - [ ] Rate-limit `/api/forgot-password` itself, same cooldown pattern as `/api/resend-email`
 
 ### 4. EmailService (raw SMTP via `fsockopen()`)

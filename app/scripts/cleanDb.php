@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/../src/core/Database.php';
 
-const TABLES = ['sessions', 'likes', 'comments', 'posts', 'users'];
+const TABLES = ['likes', 'comments', 'posts', 'users'];
 
 $db = Database::getInstance();
 
