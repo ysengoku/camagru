@@ -19,7 +19,7 @@
             <?php endif; ?>
             <nav class="flex align-center ms-auto">
                 <?php if ($user) : ?>
-                    <button type="submit" class="nav-action pe-4 border-none bg-transparent p-0 font-size-4 color-gray-500 cursor-pointer" form="logout-form">
+                    <button type="button" id="logout-button" class="nav-action pe-4 border-none bg-transparent p-0 font-size-4 color-gray-500 cursor-pointer">
                     Logout
                     </button>
                 <?php else : ?>

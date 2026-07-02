@@ -26,8 +26,8 @@ final class SessionStore {
     /**
      * Get the current authenticated user's ID from the session.
      */
-    public static function getCurrentUserId(): ?int {
-        return self::get(SessionKey::UserId);
+    public static function activeSession(): bool {
+        return (bool) self::get(SessionKey::UserId);
     }
 
     /**

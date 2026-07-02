@@ -2,16 +2,18 @@
 
 final class AuthController extends Controller {
     public function signup(): string {
-        $currentUserId = SessionStore::getCurrentUserId();
-
         switch (Request::getMethod()) {
             case 'GET':
-                if ($currentUserId) {
-                    Response::redirect('/feed');
+                if (SessionStore::activeSession()) {
+                    Response::redirect('/');
                 }
 
-                return $this->render(['pageTitle' => 'Sign Up', 'user' => null], 'signup');
+                return $this->render(['pageTitle' => 'Sign Up'], 'signup');
             case 'POST':
+                if (SessionStore::activeSession()) {
+                    return $this->json(['error' => 'Already logged in'], Response::BAD_REQUEST);
+                }
+
                 $input = Request::getPostData();
                 $signupData = new SignupData($input['username'] ?? '', $input['email'] ?? '', $input['password'] ?? '');
                 $result = SignupService::getInstance()->processSignup($signupData);
@@ -66,9 +68,16 @@ final class AuthController extends Controller {
     public function login(): string {
         switch (Request::getMethod()) {
             case 'GET':
-                // TODO: Check session
-                return $this->render(['pageTitle' => 'Login', 'user' => null], 'login');
+                if (SessionStore::activeSession()) {
+                    Response::redirect('/');
+                }
+
+                return $this->render(['pageTitle' => 'Login'], 'login');
             case 'POST':
+                if (SessionStore::activeSession()) {
+                    return $this->json(['error' => 'Already logged in'], Response::BAD_REQUEST);
+                }
+
                 $input = Request::getPostData();
                 $username = $input['username'] ?? '';
                 $password = $input['password'] ?? '';
@@ -84,8 +93,14 @@ final class AuthController extends Controller {
         }
     }
 
-    // public function logout(): void {
-    // }
+    public function logout(): string {
+        if (Request::getMethod() !== 'POST') {
+            return $this->methodNotAllowed();
+        }
+
+        SessionStore::clearUserSession();
+        return $this->json(['message' => 'Logged out successfully'], Response::OK);
+    }
 
     public function forgotPassword(): string {
         $method = Request::getMethod();
@@ -93,7 +108,6 @@ final class AuthController extends Controller {
             case 'GET':
                 return $this->render([
                     'pageTitle' => 'Forgot Password',
-                    'user' => null,
                     'action' => 'reset-password'
                 ], 'forgotPassword');
             case 'POST':
@@ -120,7 +134,6 @@ final class AuthController extends Controller {
 
                 return $this->render([
                     'pageTitle' => 'Reset Password',
-                    'user' => null,
                     'token' => $token
                 ], 'resetPassword');
             case 'POST':
@@ -146,7 +159,7 @@ final class AuthController extends Controller {
             throw new HTTPNotFoundException();
         }
 
-        return $this->render(['pageTitle' => 'Email Sent', 'user' => null, 'action' => $action], 'emailSent');
+        return $this->render(['pageTitle' => 'Email Sent', 'action' => $action], 'emailSent');
     }
 
     public function resendEmail(): string {

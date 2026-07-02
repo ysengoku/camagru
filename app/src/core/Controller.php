@@ -32,6 +32,8 @@ abstract class Controller {
             $template = $this->actionName;
         }
 
+        $props['user'] = User::getCurrentUser();
+
         $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
         $path = $controllerName . '/' . $template;
 

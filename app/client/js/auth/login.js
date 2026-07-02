@@ -44,7 +44,8 @@ function init() {
       }
     } catch (error) {
       const message =
-        error.data?.error?.general || 'Failed to login. Please try again later.';
+        error.data?.error?.general ||
+        'Failed to login. Please try again later.';
       showToast(ToastType.ERROR, message);
     }
   });
