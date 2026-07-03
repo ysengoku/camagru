@@ -24,6 +24,14 @@ final class Application {
                 throw new HTTPNotFoundException();
             }
 
+            $authRequired = $params['auth'] ?? false;
+            if ($authRequired) {
+                if ( SessionStore::activeSession() === false) {
+                    $this->response->redirect('/login');
+                    return;
+                }
+            }
+
             $controller = $params['controller'];
             $action     = $params['action'];
             $this->runAction($controller, $action);

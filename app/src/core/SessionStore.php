@@ -36,4 +36,20 @@ final class SessionStore {
     public static function clearUserSession(): void {
         self::delete(SessionKey::UserId);
     }
+
+    /**
+     * Check if the cooldown period for sending emails has passed.
+     * Returns the number of seconds remaining until the next email can be sent.
+     */
+    public static function secondsUntilEmailSendAllowed(): int {
+        $lastSentTime = self::get(SessionKey::LastEmailSentTime);
+        if ($lastSentTime === null) {
+            return 0;
+        }
+
+        $elapsedTime = time() - (int)$lastSentTime;
+        $cooldownPeriod = 60;
+
+        return max(0, $cooldownPeriod - $elapsedTime);
+    }
 }

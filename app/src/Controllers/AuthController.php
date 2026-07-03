@@ -93,12 +93,12 @@ final class AuthController extends Controller {
                     'action' => 'reset-password'
                 ], 'forgotPassword');
             case 'POST':
-                $result = ForgotPasswordService::getInstance()->processForgotPassword(Request::getPostData()['email'] ?? '');
-                if ($result->success) {
+                $res = ForgotPasswordService::getInstance()->processForgotPassword(Request::getPostData()['email'] ?? '');
+                if ($res->success) {
                     return $this->json(['message' => 'An email has been sent successfully.'], Response::OK);
                 }
 
-                return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
+                return $this->json(['error' => $res->errors], $res->errors['status'] ?? Response::BAD_REQUEST);
             default:
                 return $this->methodNotAllowed();
         }
@@ -116,7 +116,7 @@ final class AuthController extends Controller {
 
                 return $this->render([
                     'pageTitle' => 'Reset Password',
-                    'token' => $token
+                    'token'     => $token
                 ], 'resetPassword');
             case 'POST':
                 $input = Request::getPostData();
@@ -160,14 +160,12 @@ final class AuthController extends Controller {
             return $this->json(['error' => 'User not found'], Response::NOT_FOUND);
         }
 
-        $lastEmailSentTime = SessionStore::get(SessionKey::LastEmailSentTime);
-        if ($lastEmailSentTime !== null && (time() - $lastEmailSentTime) < 60) {
+        $secondsUntilEmailSendAllowed = SessionStore::secondsUntilEmailSendAllowed();
+        if ($secondsUntilEmailSendAllowed > 0) {
             return $this->json([
-                'error' => 'Please wait before resending the email',
-                'time_remaining' => 60 - (time() - $lastEmailSentTime)
-                ],
-                Response::TOO_MANY_REQUESTS
-            );
+                'error'          => 'Please wait before resending the email',
+                'time_remaining' => $secondsUntilEmailSendAllowed
+            ], Response::TOO_MANY_REQUESTS);
         }
 
         switch ($action) {

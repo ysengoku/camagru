@@ -10,7 +10,16 @@ final class ForgotPasswordService {
         $validationErrors = AuthInputValidator::validateEmail($email);
 
         if (!empty($validationErrors)) {
-            return ServiceResult::failure(['email' => $validationErrors]);
+            return ServiceResult::failure(['email' => $validationErrors, 'status' => Response::BAD_REQUEST]);
+        }
+
+        $secondsUntilEmailSendAllowed = SessionStore::secondsUntilEmailSendAllowed();
+        if ($secondsUntilEmailSendAllowed > 0) {
+            return ServiceResult::failure([
+                'general'        => 'Please wait before requesting another password reset email.',
+                'time_remaining' => $secondsUntilEmailSendAllowed,
+                'status'         => Response::TOO_MANY_REQUESTS
+            ]);
         }
 
         // Always report success regardless of whether the account exists or is

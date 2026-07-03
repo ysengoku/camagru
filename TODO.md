@@ -50,7 +50,7 @@
 ### 3. Route auth guard
 
 - [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
-- [ ] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
+- [X] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
 - [ ] Security pass (after logout):
   - [ ] CSRF protection:
     - [ ] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing

@@ -48,12 +48,11 @@ Every service method returns a `ServiceResult` (`success`, `errors`, `data`); `A
 
 ## 3. Session foundation
 
-Sessions use PHP's built-in file-based session handling. `bootstrap.php` calls plain `session_start()`.   
-On the current single, non-replicated `app` container, shared session storage across instances isn't needed, so the built-in file handler is the simpler choice.
+Sessions are DB-backed: `app/src/core/DatabaseSessionHandler.php` implements `SessionHandlerInterface` and stores session data in the `sessions` table. `bootstrap.php` wires it in with `session_set_save_handler(new DatabaseSessionHandler(), true)` before `session_start()`. This applies to every visitor, not just logged-in users: signup/forgot-password flows store `PendingEmail`/`ResendEmailAction`/`LastEmailSentTime` (§5) in the session before any `UserId` exists, `sessions.user_id` is nullable for exactly this case.
 
 - `SessionStore` is a typed wrapper around `$_SESSION`, keyed by the `SessionKey` enum (`UserId`, `PendingEmail`, `ResendEmailAction`, `LastEmailSentTime`) instead of raw string keys.
-- `SessionStore::setUserSession(int $userId)` is the single place a user becomes "logged in": it calls `session_regenerate_id(true)` before storing `UserId`, so a pre-login session ID can never remain valid post-login (session fixation protection).
-- `SessionStore::activeSession()` / `clearUserSession()` are the login-check and logout primitives used across `AuthController`.
+- `SessionStore::setUserSession(int $userId)` is the single place a user becomes "logged in": it calls `session_regenerate_id(true)` before storing `UserId`, so a pre-login session ID can never remain valid post-login (session fixation protection). It does not clear `PendingEmail`/`ResendEmailAction`/`LastEmailSentTime` — harmless leftovers, not sensitive data.
+- `SessionStore::activeSession()` is the login-check used across `AuthController`. `SessionService::processLogout()` calls `SessionStore::clearUserSession()` *and* `session_destroy()`, so the DB row is removed immediately rather than waiting on GC.
 
 ## 4. Signup & email verification flow
 
@@ -193,10 +192,8 @@ Client-side validation here is purely a UX optimization (instant feedback, fewer
 
 The following are known gaps in the current implementation, tracked in `TODO.md`:
 
-- **Route auth guard**: `routes.php` already tags protected routes with `'auth' => true` (`/studio`, `/profile`, `/api/logout`, …), but nothing reads that flag yet: `Router::resolve()` ignores it entirely, and `StudioController::index()` still has its intended redirect-if-unauthenticated check commented out. Plan: check the flag in `Application::run()` after route resolution and before controller dispatch, redirecting unauthenticated requests to `/login`.
 - **CSRF protection**: `Request::getCsrfToken()` exists but nothing issues or verifies a token yet. Plan: generate and store a token in `$_SESSION` on first use, render it as `<meta name="csrf-token">` in `layout.php`, have `api.js` attach it as an `X-CSRF-Token` header on every request, and check it with `hash_equals()` in `Application::run()` for POST/PUT/DELETE/PATCH: rejecting mismatches with a new `HTTPForbiddenException` (mirroring `HTTPNotFoundException`) and a 403 response.
 - **Session cookie hardening**: `session.cookie_httponly`, `session.cookie_samesite`, and (in prod) `session.cookie_secure` are not currently set.
-- **Logout hardening**: `AuthController::logout()` only clears `SessionKey::UserId` from the current session; it doesn't call `session_destroy()`, so the session file survives (and other keys in it) until it naturally expires via garbage collection.
 - **Password-reset hardening**: invalidate the reset token immediately after a successful reset (already niled out on use, but not proactively on any subsequent failed attempt), and rate-limit `/api/forgot-password` itself the same way `/api/resend-email` is rate-limited. Invalidating a user's *other* active sessions on password change is no longer a simple query now that sessions are file-based rather than DB-backed: it would need its own mechanism (e.g. a `password_changed_at` column on `users`, checked against a timestamp stored in the session on each request).
 - **`ProfileController`**: `index`/`update` are still stubs (`app/src/Controllers/ProfileController.php`). Planned: `edit` (username/email change, re-verifying on email change; password change) and `settings` (toggling `email_notifications_enabled`).
 - **Enable outgoing email**: `EmailService::getInstance()->send(...)` is implemented but commented out in both `SignupService::sendVerificationEmail()` and `ForgotPasswordService::sendPasswordResetEmail()`. Plan: confirm SMTP env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`) are wired for the target environment and uncomment the calls.
