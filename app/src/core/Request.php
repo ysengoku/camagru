@@ -38,6 +38,10 @@ final class Request {
     }
 
     public static function getCsrfToken(): string {
-        return $_SESSION['csrf_token'] ?? '';
+        if (SessionStore::get(SessionKey::CsrfToken) === null) {
+            $token = bin2hex(random_bytes(32));
+            SessionStore::set(SessionKey::CsrfToken, $token);
+        }
+        return SessionStore::get(SessionKey::CsrfToken);
     }
 }

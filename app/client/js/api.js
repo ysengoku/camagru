@@ -45,7 +45,8 @@ function createApiClient() {
    * @throws {ApiError}
    */
   async function request(method, url, body = null) {
-    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const options = { method, headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken } };
     if (body) {
       options.body = JSON.stringify(body);
     }

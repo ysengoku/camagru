@@ -28,7 +28,13 @@ final class ForgotPasswordService {
         if ($user !== null && $user->isEmailVerified()) {
             $token = $this->issueResetToken($user);
             $this->sendPasswordResetEmail($email, $token);
+        } else {
+            error_log("Password reset requested for non-existent or unverified email: $email");
         }
+
+        SessionStore::set(SessionKey::PendingEmail, $email);
+        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::ResetPassword->value);
+        SessionStore::set(SessionKey::LastEmailSentTime, time());
 
         return ServiceResult::success();
     }
@@ -45,9 +51,6 @@ final class ForgotPasswordService {
             return '';
         }
 
-        SessionStore::set(SessionKey::PendingEmail, $user->email);
-        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::ResetPassword->value);
-
         return $resetToken;
     }
 
@@ -58,6 +61,5 @@ final class ForgotPasswordService {
         $body = renderEmailTemplate('forgotPassword', ['logoUrl' => $logoUrl, 'resetLink' => $resetLink]);
 
         // EmailService::getInstance()->send($email, $subject, $body);
-        SessionStore::set(SessionKey::LastEmailSentTime, time());
     }
 }

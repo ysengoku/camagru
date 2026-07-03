@@ -33,8 +33,8 @@
 ### 1. Session foundation
 
 - [X] Add `email_notifications TINYINT(1) DEFAULT 1` column to `users` table (migration)
-- [X] Use PHP's built-in file-based session handling (`session_start()` in `bootstrap.php`) — DB-backed sessions (`Session` model, `SessionHandler`, `sessions` table) were tried and removed; single non-replicated `app` container doesn't need shared session storage
-- [ ] Configure secure cookie settings (`httponly`, `samesite=Strict`, `secure` in prod) — currently unset
+- [X] DB-backed sessions (`Session` model, `SessionHandler`, `sessions` table) were tried and removed; single non-replicated `app` container doesn't need shared session storage
+- [X] Session cookie hardening: set `session.cookie_httponly=1`, `session.cookie_samesite=Strict` (or `Lax`), `session.cookie_secure=1` in prod — currently all unset
 
 ### 2. AuthController (signup → login → logout → password reset)
 
@@ -43,7 +43,7 @@
 - [X] Implement signup: validate input, `password_hash()`, insert user with `email_verified=0` + `verification_token`, send verification email
 - [X] Implement email verification route (`/verify-email?token=...`) that sets `email_verified=1`
 - [X] Implement login: verify credentials, `session_regenerate_id(true)`, store `user_id` + CSRF token in `$_SESSION`
-- [ ] Implement logout: call `session_destroy()` (currently only clears `user_id` from `$_SESSION`)
+- [X] Implement logout: call `session_destroy()` (currently only clears `user_id` from `$_SESSION`)
 - [X] Implement forgot-password: generate reset token, store with expiry, send email
 - [X] Implement reset-password: validate token + expiry, update `password_hash`
 
@@ -52,15 +52,14 @@
 - [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
 - [X] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
 - [ ] Security pass (after logout):
-  - [ ] CSRF protection:
-    - [ ] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
-    - [ ] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
-    - [ ] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
-    - [ ] `Application::run()`: for POST/PUT/DELETE/PATCH, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
-  - [ ] Session cookie hardening: set `session.cookie_httponly=1`, `session.cookie_samesite=Strict` (or `Lax`), `session.cookie_secure=1` in prod — currently all unset
-  - [ ] Fix email enumeration risk in forgot-password flow if any new call sites are added (already fixed in `ForgotPasswordService`, keep it that way)
-  - [ ] Password-reset token: invalidate (`null` out) after successful use. Invalidating the user's *other* active sessions on password reset is no longer a simple DB delete now that sessions are file-based — needs its own design if still wanted (e.g. a `password_changed_at` column checked on each request)
-  - [ ] Rate-limit `/api/forgot-password` itself, same cooldown pattern as `/api/resend-email`
+  - [X] CSRF protection:
+    - [X] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
+    - [X] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
+    - [X] `api.js`: read the meta tag once, attach as `X-CSRF-Token` header on every request
+    - [X] `Application::run()`: for POST, compare header vs session with `hash_equals()`; throw new `HTTPForbiddenException` (mirrors `HTTPNotFoundException`) on mismatch, render 403
+  - [X] Fix email enumeration risk in forgot-password flow if any new call sites are added (already fixed in `ForgotPasswordService`, keep it that way)
+  - [X] Password-reset token: invalidate (`null` out) after successful use. Invalidating the user's *other* active sessions on password reset is no longer a simple DB delete now that sessions are file-based — needs its own design if still wanted (e.g. a `password_changed_at` column checked on each request)
+  - [X] Rate-limit `/api/forgot-password` itself, same cooldown pattern as `/api/resend-email`
 
 ### 4. EmailService (raw SMTP via `fsockopen()`)
 

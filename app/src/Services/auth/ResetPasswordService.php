@@ -30,14 +30,21 @@ final class ResetPasswordService {
         return ServiceResult::success();
     }
 
+    private function deleteAllSessionsForUser(int $userId): void {
+        $db = Database::getInstance();
+        $sql = "DELETE FROM sessions WHERE user_id = :user_id";
+        $db->execute($sql, ['user_id' => $userId]);
+    }
+
     public function processResetPassword(string $token, string $newPassword): ServiceResult {
         $tokenValidation = $this->validateToken($token);
         if (!$tokenValidation->success) {
             return ServiceResult::failure($tokenValidation->errors);
         }
 
-        if (AuthInputValidator::validatePassword($newPassword)) {
-            return ServiceResult::failure(['password' => 'Invalid password format.']);
+        $passwordFormatError = AuthInputValidator::validatePassword($newPassword);
+        if ($passwordFormatError) {
+            return ServiceResult::failure(['password' => $passwordFormatError]);
         }
 
         $user = User::findByPasswordResetToken($token);
@@ -50,6 +57,8 @@ final class ResetPasswordService {
         $user->password_reset_token = null;
         $user->password_reset_token_expires_at = null;
         $user->save();
+
+        $this->deleteAllSessionsForUser($user->id);
 
         return ServiceResult::success();
     }

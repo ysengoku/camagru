@@ -5,9 +5,12 @@ require_once __DIR__ . '/helper/renderer.php';
 require_once __DIR__ . '/helper/token.php';
 
 final class Application {
-    private Router $router;
+    private   Router   $router;
     protected Response $response;
-    public const string APP_NAME = 'Camagru';
+
+    public  const string APP_NAME            = 'Camagru';
+    private const array  ALLOWED_METHODS     = ['GET', 'POST'];
+    private const array  CSRF_EXEMPT_METHODS = ['GET'];
 
     public function __construct() {
         $this->router   = new Router(require __DIR__ . '/config/routes.php');
@@ -19,9 +22,23 @@ final class Application {
      */
     public function run(): void {
         try {
+            $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+            if (!in_array($method, self::ALLOWED_METHODS)) {
+                throw new HTTPNotFoundException();
+            }
+
             $params = $this->router->resolve($this->getPathInfo(), $_SERVER['REQUEST_METHOD'] ?? 'GET');
             if ($params === null) {
                 throw new HTTPNotFoundException();
+            }
+
+            $csrfToken = Request::getCsrfToken();
+            $receivedCsrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+            if (!in_array($method, self::CSRF_EXEMPT_METHODS) && !hash_equals($csrfToken, $receivedCsrfToken)) {
+                $this->response->setStatus(Response::FORBIDDEN);
+                $this->response->setContent('403 Forbidden: Invalid CSRF token');
+                $this->response->send();
+                return;
             }
 
             $authRequired = $params['auth'] ?? false;

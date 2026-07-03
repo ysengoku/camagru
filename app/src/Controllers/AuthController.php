@@ -152,12 +152,16 @@ final class AuthController extends Controller {
         $email = SessionStore::get(SessionKey::PendingEmail);
         $action = SessionStore::get(SessionKey::ResendEmailAction);
         if (empty($email) || empty($action)) {
-            return $this->json(['error' => 'No pending email or action found'], Response::BAD_REQUEST);
+            error_log('No pending email or action found in session for resending email');
+
+            return $this->json(['message' => 'Email resent successfully'], Response::OK); // Return OK to avoid revealing information about the session state
         }
 
         $user = User::findByEmail($email);
         if ($user === null) {
-            return $this->json(['error' => 'User not found'], Response::NOT_FOUND);
+            error_log("Resent email for non-existent email: $email");
+
+            return $this->json(['message' => 'Email resent successfully'], Response::OK);  // Return OK to avoid revealing information about the session state
         }
 
         $secondsUntilEmailSendAllowed = SessionStore::secondsUntilEmailSendAllowed();
@@ -182,7 +186,9 @@ final class AuthController extends Controller {
             case 'reset_password':
                 $isVerified = $user->email_verified === 1;
                 if (!$isVerified) {
-                    return $this->json(['error' => 'Email is not verified. Cannot reset password.'], Response::BAD_REQUEST);
+                    error_log("Attempted to resend password reset email for unverified email: $email");
+                    
+                    return $this->json(['message' => 'Email resent successfully'], Response::OK);  // Return OK to avoid revealing information about the session state
                 }
 
                 ForgotPasswordService::getInstance()->sendPasswordResetEmail($email, $user->password_reset_token);

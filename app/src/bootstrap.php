@@ -21,6 +21,14 @@ spl_autoload_register(function ($class) {
 
 });
 
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure'   => getenv('NODE_ENV') === 'production',
+]);
+
 $sessionHandler = new DatabaseSessionHandler();
 session_set_save_handler($sessionHandler, true);
 session_start();
