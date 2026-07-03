@@ -1,6 +1,6 @@
 <?php
 
-final class LoginService {
+final class SessionService {
     use SingletonTrait;
 
     public function processLogin(string $username, string $password): ServiceResult {
@@ -18,6 +18,17 @@ final class LoginService {
         }
 
         SessionStore::setUserSession($user->id);
+
+        return ServiceResult::success();
+    }
+
+    public function processLogout(): ServiceResult {
+        if (!SessionStore::activeSession()) {
+            return ServiceResult::failure(['general' => 'No active session found.']);
+        }
+
+        SessionStore::clearUserSession();
+        session_destroy();
 
         return ServiceResult::success();
     }

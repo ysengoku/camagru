@@ -35,34 +35,12 @@ final class AuthController extends Controller {
             return $this->methodNotAllowed();
         }
 
-        $token = Request::getQueryParam('token');
-        if (empty($token)) {
-            return $this->json(['error' => 'Verification token is required'], Response::BAD_REQUEST);
-        }
-
-        $user = User::findByVerificationToken($token);
-        if ($user === null) {
-            return $this->json(['error' => 'Invalid verification token'], Response::NOT_FOUND);
-        }
-
-        if ($user->email_verified) {
-            return $this->json(['error' => 'Email is already verified'], Response::OK);
-        }
-
-        $expiresAt = $user->verification_token_expires_at;
-        if ($expiresAt === null || new DateTime($expiresAt) < new DateTime()) {
-            $user->delete();
-            return $this->json(['error' => 'Verification link has expired'], Response::BAD_REQUEST);
-        }
-
-        $user->email_verified = 1;
-        $user->verification_token = null;
-        $user->verification_token_expires_at = null;
-        if (!$user->save()) {
-            return $this->json(['error' => 'Failed to verify email'], Response::INTERNAL_ERROR);
+        $res = VerifyEmailService::getInstance()->processVerification(Request::getQueryParam('token') ?? '');
+        if (!$res->success) {
+            return $this->json(['error' => $res->errors], $res->errors['status'] ?? Response::BAD_REQUEST);
         }
             
-        return $this->json(['message' => 'Email verified successfully'], Response::OK);
+        return $this->json(['message' => $res->data['message'] ?? 'Email verified successfully'], Response::OK);
     }
 
     public function login(): string {
@@ -82,7 +60,7 @@ final class AuthController extends Controller {
                 $username = $input['username'] ?? '';
                 $password = $input['password'] ?? '';
 
-                $res = LoginService::getInstance()->processLogin($username, $password);
+                $res = SessionService::getInstance()->processLogin($username, $password);
                 if (!$res->success) {
                     return $this->json(['error' => $res->errors], Response::BAD_REQUEST);
                 }
@@ -98,7 +76,11 @@ final class AuthController extends Controller {
             return $this->methodNotAllowed();
         }
 
-        SessionStore::clearUserSession();
+        $result = SessionService::getInstance()->processLogout();
+        if (!$result->success) {
+            return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
+        }
+
         return $this->json(['message' => 'Logged out successfully'], Response::OK);
     }
 

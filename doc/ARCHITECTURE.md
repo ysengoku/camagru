@@ -137,7 +137,7 @@ Added on top of classic MVC specifically to keep Controllers free of business ru
 
 - Each service is a **Singleton** (`SingletonTrait`, private constructor, `getInstance()`), since services are stateless request-scoped orchestrators, not data objects.
 - Every mutating operation returns a `ServiceResult` DTO (`success: bool`, `errors: array`, `data: mixed`) instead of throwing for expected failure cases (validation errors, "already taken", etc.). Controllers branch on `$result->success` and never need to know which exception types a service might throw.
-- `Services/auth/*` (`SignupService`, `LoginService`, `ForgotPasswordService`, `ResetPasswordService`, `AuthInputValidator`) hold the multi-step auth flows (validate → check availability → create/update → send email → set session).
+- `Services/auth/*` (`SignupService`, `SessionService`, `ForgotPasswordService`, `ResetPasswordService`, `AuthInputValidator`) hold the multi-step auth flows (validate → check availability → create/update → send email → set session).
 - `ImageComposer` is a non-singleton, stateful service scoped to a single compose operation: constructed with the base64 webcam/upload image, it applies filters (via `imagefilter`), stickers, and TrueType text overlays (via `imagefttext`) onto a GD canvas and writes the result to `public/media`.
 - `EmailService` sends transactional email (verification, password reset), rendered from `Views/emails/*` templates via `renderEmailTemplate()`.
 
