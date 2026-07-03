@@ -67,7 +67,9 @@
   --primary-700: #004942;
   --primary-800: #002722;
   --primary-100-rgb: 242, 252, 250;
-  --primary-600-rgb: 0, 150, 137;
+  --primary-400-rgb: 0, 192, 176;
+  --primary-500-rgb: 0, 150, 137;
+  --primary-600-rgb: 0, 110, 100;
   --primary-800-rgb: 0, 39, 34;
   --secondary-100: #fed5e0;
   --secondary-200: #fe9ab9;
@@ -282,6 +284,23 @@ p {
 .toast-danger  { background: var(--danger); }
 .toast-info    { background: var(--primary-600); }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(var(--primary-100-rgb), 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-600-rgb), 0.9);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-400-rgb), 0.9);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--primary-600-rgb), 0.9) rgba(var(--primary-100-rgb), 0.6);
+}
 
 .auth-form-container {
   display: flex;
@@ -358,6 +377,35 @@ p {
 
 .password-toggle:hover {
   color: var(--gray-600);
+}
+
+.avatar-selection {
+  input {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+  }
+
+  input:hover + img {
+    transform: scale(1.1);
+  }
+
+  input:checked + img {
+    border: 2px double var(--secondary-400);
+    opacity: 0.6;
+  }
+}
+
+.avatar-selection-list {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+
+.avatar-selection-option {
+  cursor: pointer;
 }
 
 .error-feedback {

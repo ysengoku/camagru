@@ -10,6 +10,7 @@ export const endpoints = {
   RESET_PASSWORD: `${API_BASE_URL}reset-password`,
   RESEND_EMAIL: `${API_BASE_URL}resend-email`,
   VALIDATION_RULES: `${API_BASE_URL}validation-rules`,
+  PROFILE: `${API_BASE_URL}profile`,
   PHOTOS: `${API_BASE_URL}photos`,
   STUDIO_CONFIG: `${API_BASE_URL}studio-config`,
 };

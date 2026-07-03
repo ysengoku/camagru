@@ -10,7 +10,7 @@
             </p>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="email" class="block">Email</label>
+            <label for="email" class="block color-gray-600">Email*</label>
             <input type="email" id="email" name="email" required class="form-input">
             <span id="email-error" class="error-feedback"></span>
         </div>

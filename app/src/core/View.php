@@ -40,6 +40,7 @@ final class View {
     public function render(string $template, array $props = []): string {
         /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
         $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';
+        error_log("Rendering template: $templatePath with props: " . json_encode($props));
         if (!file_exists($templatePath)) {
             throw new HTTPNotFoundException("View template not found: " . htmlspecialchars($template));
         }

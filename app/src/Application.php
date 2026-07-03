@@ -53,6 +53,7 @@ final class Application {
             $action     = $params['action'];
             $this->runAction($controller, $action);
         } catch (HTTPNotFoundException $e) {
+            error_log('HTTPNotFoundException: ' . $e->getMessage());
             $this->renderNotFound();
         }
 

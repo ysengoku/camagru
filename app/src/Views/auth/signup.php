@@ -9,17 +9,17 @@
             <span id="form-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="username" class="block">Username</label>
+            <label for="username" class="block color-gray-600">Username*</label>
             <input type="text" id="username" name="username" required class="form-input">
             <span id="username-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="email" class="block">Email</label>
+            <label for="email" class="block color-gray-600">Email*</label>
             <input type="email" id="email" name="email" required class="form-input">
             <span id="email-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="password" class="block">Password</label>
+            <label for="password" class="block color-gray-600">Password*</label>
             <div class="password-field">
                 <input type="password" id="password" name="password" required class="form-input">
                 <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
@@ -30,7 +30,7 @@
             <span id="password-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="confirm-password" class="block">Confirm Password</label>
+            <label for="confirm-password" class="block color-gray-600">Confirm Password*</label>
             <div class="password-field">
                 <input type="password" id="confirm-password" name="confirm-password" required class="form-input">
                 <button type="button" class="password-toggle" data-target="confirm-password" aria-label="Show password">

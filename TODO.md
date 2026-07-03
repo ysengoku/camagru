@@ -51,7 +51,7 @@
 
 - [X] Add `'auth' => true` to protected routes (`/studio`, `/profile`, `/profile/edit`, `/profile/settings`) in `routes.php`
 - [X] Add auth check in `Application::run()` before controller dispatch — redirect unauthenticated users to `/login`
-- [ ] Security pass (after logout):
+- [X] Security pass (after logout):
   - [X] CSRF protection:
     - [X] `Request::getCsrfToken()`: lazily generate + store in `$_SESSION['csrf_token']` if missing
     - [X] Render it as `<meta name="csrf-token" content="...">` in `layout.php`
@@ -68,8 +68,15 @@
 
 ### 5. ProfileController
 
-- [ ] Create `ProfileController` with actions: `index`, `edit`, `settings`
-- [ ] Implement profile edit: allow changing username, email (re-verify on change), password
+- [X] `ProfileController::index()` renders `profile/index.php` (username, email, current/new/confirm password, avatar picker)
+- [X] `avatarSelection.php`: lets user pick an avatar from their own posts (`Post::findByUserId()`), live preview via `profileManager.js`
+- [ ] `ProfileController::update()` is still a stub — build `ProfileService::updateProfile()`:
+  - [ ] Username/email uniqueness checks must exclude the current user's own row (same self-exclusion pattern as `SignupService::checkAvailability()`), so resubmitting unchanged values doesn't false-positive as "already taken"
+  - [ ] Require and verify `current_password` (`password_verify()`) when changing password and/or email — defends against a hijacked/unattended session being used to lock out the real owner
+  - [ ] New password stays optional (blank = unchanged) — `AuthInputValidator::validatePassword()` should only run when a new password is actually submitted
+  - [ ] Avatar: verify the submitted path belongs to one of the current user's own posts before saving (don't trust the client)
+  - [ ] Decide whether an email change should reset `email_verified`/reissue a verification token, matching signup's flow
+- [ ] `profileManager.js`: currently doesn't send `current_password` or the selected `avatar` in the submit payload, and always runs new-password validation even when the field is blank — needs both fixed to match the optional-password/current-password-required design above
 - [ ] Implement settings: toggle `email_notifications` preference
 
 ### 6. Verification hardening

@@ -6,7 +6,9 @@ final class ProfileController extends Controller {
             return $this->methodNotAllowed();
         }
 
-        // TODO: render profile page with user data
+        return $this->render([
+            // 'pageScript' => 'profile',
+            'pageTitle' => 'Profile']);
     }
 
     public function update(): string {
@@ -15,5 +17,6 @@ final class ProfileController extends Controller {
         }
 
         // TODO: handle profile update logic
+        return $this->json(['message' => 'Profile updated successfully'], Response::OK);
     }
 }

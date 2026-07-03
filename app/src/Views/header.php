@@ -15,7 +15,7 @@
         </a>
         <div class="navbar flex justify-between absolute bottom-0 left-0 right-0 px-4">
             <?php if ($user) : ?>
-                <?php echo render_nav_link(); ?>
+                <?php echo render_nav_link($user); ?>
             <?php endif; ?>
             <nav class="flex align-center ms-auto">
                 <?php if ($user) : ?>

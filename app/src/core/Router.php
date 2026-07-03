@@ -38,7 +38,6 @@ final class Router {
     public function resolve(string $pathInfo, string $method): ?array {
         foreach ($this->routes as $route) {
             if ($route['path'] === $pathInfo && (!isset($route['method']) || $route['method'] === $method)) {
-
                 return $route;
             }
         }

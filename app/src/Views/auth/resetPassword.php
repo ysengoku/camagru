@@ -9,7 +9,7 @@
             <span id="form-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="password" class="block">New Password</label>
+            <label for="password" class="block color-gray-600">New Password*</label>
             <div class="password-field">
                 <input type="password" id="password" name="password" required class="form-input">
                 <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
@@ -20,7 +20,7 @@
             <span id="password-error" class="error-feedback"></span>
         </div>
         <div class="flex-col gap-1 mb-4">
-            <label for="confirm-password" class="block">Confirm New Password</label>
+            <label for="confirm-password" class="block color-gray-600">Confirm New Password*</label>
             <div class="password-field">
                 <input type="password" id="confirm-password" name="confirm-password" required class="form-input">
                 <button type="button" class="password-toggle" data-target="confirm-password" aria-label="Show password">
