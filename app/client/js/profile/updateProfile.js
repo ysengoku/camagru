@@ -39,16 +39,18 @@ function init() {
       return true;
     }
 
-  return Array.from(form.elements)
-    .filter((el) => el.name)
-    .filter((isFirstRadioGroupOccurrence))
-    .some((el) => {
-      if (el.type === 'radio') {
-        const checked = form.querySelector(`input[name="${el.name}"]:checked`);
-        return (checked?.value ?? null) !== initialValues.get(el.name);
-      }
-      return currentValue(el) !== initialValues.get(el.name);
-    });
+    return Array.from(form.elements)
+      .filter((el) => el.name)
+      .filter(isFirstRadioGroupOccurrence)
+      .some((el) => {
+        if (el.type === 'radio') {
+          const checked = form.querySelector(
+            `input[name="${el.name}"]:checked`
+          );
+          return (checked?.value ?? null) !== initialValues.get(el.name);
+        }
+        return currentValue(el) !== initialValues.get(el.name);
+      });
   }
 
   function hasSensitiveChanges() {
@@ -69,13 +71,13 @@ function init() {
     let isValid = true;
 
     const inputData = buildInputData();
-  
+
     const isUsernameValid = validator.validateUsername(inputData.username);
     if (!isUsernameValid.valid) {
       showFieldError('username', isUsernameValid.message);
       isValid = false;
     }
-  
+
     const isEmailValid = validator.validateEmail(inputData.email);
     if (!isEmailValid.valid) {
       showFieldError('email', isEmailValid.message);
@@ -83,7 +85,10 @@ function init() {
     }
 
     if (inputData.password || inputData['confirm-password']) {
-      const isPasswordValid = validator.validatePassword(inputData.password, inputData['confirm-password']);
+      const isPasswordValid = validator.validatePassword(
+        inputData.password,
+        inputData['confirm-password']
+      );
       if (!isPasswordValid.valid) {
         showFieldError('password', isPasswordValid.message);
         showFieldError('confirm-password', isPasswordValid.message);
@@ -101,7 +106,10 @@ function init() {
     }
 
     if (hasSensitiveChanges() && !currentPassword) {
-      showFieldError('form', 'Current password is required to update sensitive information.');
+      showFieldError(
+        'form',
+        'Current password is required to update sensitive information.'
+      );
       return;
     }
 
@@ -154,17 +162,21 @@ function init() {
   const dialogElement = document.getElementById('password-confirmation-dialog');
   const currentPasswordInput = document.getElementById('current-password');
   let currentPassword = '';
-  document.getElementById('confirm-current-password-button')?.addEventListener('click', (event) => {
-    event.preventDefault();
-    currentPassword = currentPasswordInput ? currentPasswordInput.value : '';
-    dialogElement.close('confirm');
-  });
-  
-  document.getElementById('cancel-current-password-button')?.addEventListener('click', (event) => {
-    event.preventDefault();
-    dialogElement.close('cancel');
-  });
-  
+  document
+    .getElementById('confirm-current-password-button')
+    ?.addEventListener('click', (event) => {
+      event.preventDefault();
+      currentPassword = currentPasswordInput ? currentPasswordInput.value : '';
+      dialogElement.close('confirm');
+    });
+
+  document
+    .getElementById('cancel-current-password-button')
+    ?.addEventListener('click', (event) => {
+      event.preventDefault();
+      dialogElement.close('cancel');
+    });
+
   dialogElement.addEventListener('close', () => {
     if (currentPasswordInput.value) {
       currentPasswordInput.value = '';
