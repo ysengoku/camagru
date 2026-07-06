@@ -68,15 +68,18 @@
 
 ### 5. ProfileController
 
-- [X] `ProfileController::index()` renders `profile/index.php` (username, email, current/new/confirm password, avatar picker)
+- [X] `ProfileController::index()` renders `profile/index.php` (username, email, new/confirm password, avatar picker)
 - [X] `avatarSelection.php`: lets user pick an avatar from their own posts (`Post::findByUserId()`), live preview via `profileManager.js`
+- [ ] Current-password re-authentication, popup-based (step-up auth, not a static field):
+  - [X]Add a `<dialog>` asking for it instead
+  - [X]`profileManager.js`: on submit, detect a sensitive change via `emailInput.value !== emailInput.defaultValue` or `passwordInput.value !== ''`; if either is true, open the `<dialog>` to collect `current_password` before sending, otherwise submit directly with no `current_password` field at all
+  - [ ] Server-side check is independent of the popup and non-negotiable: `ProfileService` must itself verify `current_password` whenever email and/or password actually changed, regardless of what the client sent or showed
 - [ ] `ProfileController::update()` is still a stub — build `ProfileService::updateProfile()`:
   - [ ] Username/email uniqueness checks must exclude the current user's own row (same self-exclusion pattern as `SignupService::checkAvailability()`), so resubmitting unchanged values doesn't false-positive as "already taken"
-  - [ ] Require and verify `current_password` (`password_verify()`) when changing password and/or email — defends against a hijacked/unattended session being used to lock out the real owner
+  - [ ] Verify `current_password` via `password_verify()` when changing password and/or email (see popup flow above)
   - [ ] New password stays optional (blank = unchanged) — `AuthInputValidator::validatePassword()` should only run when a new password is actually submitted
   - [ ] Avatar: verify the submitted path belongs to one of the current user's own posts before saving (don't trust the client)
   - [ ] Decide whether an email change should reset `email_verified`/reissue a verification token, matching signup's flow
-- [ ] `profileManager.js`: currently doesn't send `current_password` or the selected `avatar` in the submit payload, and always runs new-password validation even when the field is blank — needs both fixed to match the optional-password/current-password-required design above
 - [ ] Implement settings: toggle `email_notifications` preference
 
 ### 6. Verification hardening

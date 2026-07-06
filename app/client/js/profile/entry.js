@@ -1,1 +1,1 @@
-import './profileManager.js';
+import '././updateProfile.js';

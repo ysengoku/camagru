@@ -8,6 +8,8 @@ export const ToastMessage = Object.freeze({
   'email-resent': 'Email resent. Please check your inbox.',
   'password-reset':
     'Password reset successful. Please log in with your new password.',
+  'profile-update-success': 'Profile updated successfully.',
+  'profile-update-error': 'Error updating profile. Please try again.',
 });
 
 export function showToast(type, message) {

@@ -7,7 +7,7 @@ final class ProfileController extends Controller {
         }
 
         return $this->render([
-            // 'pageScript' => 'profile',
+            'pageScript' => 'profile',
             'pageTitle' => 'Profile']);
     }
 

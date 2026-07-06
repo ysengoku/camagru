@@ -176,7 +176,6 @@ p {
 .avatar {
   border-radius: 50%;
   object-fit: cover;
-  /* border: 2px solid var(--gray-500); */
 }
 
 .avatar-small {
@@ -261,11 +260,12 @@ p {
 }
 
 .toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  margin: 1rem auto;
+  inset: auto; /* reset the [popover] default (inset: 0), which otherwise leaves right/top: 0 */
+  top: 68px;
+  right: 0;
+  left: auto;
+  margin: 0 1rem;
+  transform: translateX(50%) translateY(0);
   border: none;
   background: var(--gray-800);
   color: var(--gray-100);
@@ -277,7 +277,7 @@ p {
 
 .toast-visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(0) translateY(0);
 }
 
 .toast-success { background: var(--success); }
@@ -300,6 +300,12 @@ p {
 html {
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--primary-600-rgb), 0.9) rgba(var(--primary-100-rgb), 0.6);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid rgba(var(--primary-600-rgb), 0.2);
+  margin: 1.5rem 0 1rem 0;
 }
 
 .auth-form-container {
@@ -420,6 +426,61 @@ html {
     text-align: center;
     margin-bottom: 2rem;
   }
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 24px;
+    width: 100%;
+    height: 100%;
+    transition: background-color 0.3s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 2px;
+    background-color: var(--primary-100);
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: var(--primary-500);
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(26px);
+}
+
+.dialog {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 1.5rem 3rem;
+  background-color: rgba(var(--primary-100-rgb), 0.9);
+  box-shadow: 0 2px 4px rgba(var(--primary-800-rgb), 0.1);
+}
+
+.dialog::backdrop {
+  background-color: rgba(var(--primary-800-rgb), 0.5);
 }
 
 .button-no-border:disabled {
