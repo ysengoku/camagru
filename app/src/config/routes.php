@@ -28,7 +28,6 @@ $routes = [
     ['path' => '/api/logout', 'method' => 'POST', 'controller' => 'auth', 'action' => 'logout', 'auth' => true],
     ['path' => '/api/forgot-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'forgotPassword'],
     ['path' => '/api/reset-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resetPassword'],
-    ['path' => '/api/verify-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'verifyEmail'],
     ['path' => '/api/resend-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resendEmail'],
     ['path' => '/api/profile', 'method' => 'POST', 'controller' => 'profile', 'action' => 'update', 'auth' => true],
 

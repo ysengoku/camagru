@@ -29,18 +29,13 @@ final class AuthController extends Controller {
         }
     }
     
-    public function verifyEmail(): string {
-        $method = Request::getMethod();
-        if ($method !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
+    public function verifyEmail(): void {
         $res = VerifyEmailService::getInstance()->processVerification(Request::getQueryParam('token') ?? '');
         if (!$res->success) {
-            return $this->json(['error' => $res->errors], $res->errors['status'] ?? Response::BAD_REQUEST);
+            throw new HTTPNotFoundException();
         }
-            
-        return $this->json(['message' => $res->data['message'] ?? 'Email verified successfully'], Response::OK);
+
+        Response::redirect('/login?toast=email-verified');
     }
 
     public function login(): string {

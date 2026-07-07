@@ -1,3 +1,7 @@
+<?php
+    require_once __DIR__ . '/../components/emailField.php';
+?>
+
 <div class="auth-form-container">
     <form method="POST" action="/api/forgot-password" id="forgot-password-form" class="auth-form" novalidate>
         <h2>Forgot Password</h2>
@@ -9,12 +13,7 @@
                 Enter your email address to receive a link to reset your password.
             </p>
         </div>
-        <div class="flex-col gap-1 mb-4">
-            <label for="email" class="block color-gray-600">Email*</label>
-            <input type="email" id="email" name="email" required class="form-input">
-            <span id="email-error" class="error-feedback"></span>
-        </div>
-
+        <?= render_email_field(null, true) ?>
         <div class="my-4 pt-4">
             <button type="submit" class="button-primary font-bold w-100">
                 Reset Password
@@ -22,4 +21,3 @@
         </div>
     </form>
 </div>
-

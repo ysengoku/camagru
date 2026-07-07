@@ -1,6 +1,9 @@
 <?php
-    require_once __DIR__ . '/../components/icon.php';
     require_once __DIR__ . '/../components/avatar.php';
+    require_once __DIR__ . '/../components/emailField.php';
+    require_once __DIR__ . '/../components/icon.php';
+    require_once __DIR__ . '/../components/passwordField.php';
+    require_once __DIR__ . '/../components/usernameField.php';
     require_once __DIR__ . '/avatarSelection.php';
 
     $notificationsEnabled = $user->email_notifications_enabled ?? false;
@@ -28,44 +31,15 @@
             <span id="form-error" class="error-feedback"></span>
         </div>
 
-        <div class="flex-col gap-1 mb-4">
-            <label for="username" class="block color-gray-600">Username</label>
-            <input type="text" id="username" name="username" class="form-input" value="<?= htmlspecialchars($user->username ?? '') ?>">
-            <span id="username-error" class="error-feedback"></span>
-        </div>
-        <div class="flex-col gap-1 mb-4">
-            <label for="email" class="block color-gray-600">Email</label>
-            <input type="email" id="email" name="email" data-sensitive="true" class="form-input" value="<?= htmlspecialchars($user->email ?? '') ?>">
-            <span id="email-error" class="error-feedback"></span>
-        </div>
+        <?= render_username_field($user) ?>
+        <?= render_email_field($user) ?>
 
         <hr />
-
-        <div class="flex-col gap-1 mb-4">
-            <label for="password" class="block color-gray-600">Change Password</label>
-            <div class="password-field">
-                <input type="password" id="password" name="password" data-sensitive="true" class="form-input">
-                <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
-                    <span class="icon-visible"><?= render_icon('visible') ?></span>
-                    <span class="icon-invisible" hidden><?= render_icon('invisible') ?></span>
-                </button>
-            </div>
-            <span id="password-error" class="error-feedback"></span>
-        </div>
-        <div class="flex-col gap-1 mb-4">
-            <label for="confirm-password" class="block color-gray-600">Confirm New Password</label>
-            <div class="password-field">
-                <input type="password" id="confirm-password" name="confirm-password" class="form-input">
-                <button type="button" class="password-toggle" data-target="confirm-password" aria-label="Show password">
-                    <span class="icon-visible"><?= render_icon('visible') ?></span>
-                    <span class="icon-invisible" hidden><?= render_icon('invisible') ?></span>
-                </button>
-            </div>
-            <span id="confirm-password-error" class="error-feedback"></span>
-        </div>
+        
+        <?= render_password_field('Change Password', 'password') ?>
+        <?= render_password_field('Confirm New Password', 'confirm-password') ?>
 
         <hr />
-
 
         <div class="flex-col gap-1 mb-4">
             <label for="avatar" class="block color-gray-600">Profile Picture</label>

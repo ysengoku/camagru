@@ -6,6 +6,7 @@ export const ToastType = Object.freeze({
 
 export const ToastMessage = Object.freeze({
   'email-resent': 'Email resent. Please check your inbox.',
+  'email-verified': 'Email verified successfully. Please login to continue.',
   'password-reset':
     'Password reset successful. Please log in with your new password.',
   'profile-update-success': 'Profile updated successfully.',
