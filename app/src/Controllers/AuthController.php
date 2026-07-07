@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../helper/mailer.php';
+
 final class AuthController extends Controller {
     public function signup(): string {
         switch (Request::getMethod()) {
@@ -156,7 +158,7 @@ final class AuthController extends Controller {
         if ($user === null) {
             error_log("Resent email for non-existent email: $email");
 
-            return $this->json(['message' => 'Email resent successfully'], Response::OK);  // Return OK to avoid revealing information about the session state
+            return $this->json(['message' => 'Email resent successfully'], Response::OK); // Return OK to avoid revealing information about the session state
         }
 
         $secondsUntilEmailSendAllowed = SessionStore::secondsUntilEmailSendAllowed();
@@ -168,16 +170,28 @@ final class AuthController extends Controller {
         }
 
         switch ($action) {
-            case 'verify':
-                $token = $user->verification_token;
-                $tokenExpiresAt = $user->verification_token_expires_at;
+            case 'signup':
+                $token = $user->email_verification_token;
+                $tokenExpiresAt = $user->email_verification_token_expires_at;
                 if (empty($token) || empty($tokenExpiresAt) || new DateTime($tokenExpiresAt) < new DateTime()) {
                     return $this->json(['error' => 'Verification token has expired or is missing'], Response::BAD_REQUEST);
                 }
 
-                SignupService::getInstance()->sendVerificationEmail($email, $token);
+                // SignupService::getInstance()->sendVerificationEmail($email, $token);
+                sendVerificationLinkEmail($email, $token);
 
                 return $this->json(['message' => 'Verification email resent successfully'], Response::OK);
+            case 'email_change':
+                $token = $user->email_verification_token;
+                $tokenExpiresAt = $user->email_verification_token_expires_at;
+                if (empty($token) || empty($tokenExpiresAt) || new DateTime($tokenExpiresAt) < new DateTime()) {
+                    return $this->json(['error' => 'Verification token has expired or is missing'], Response::BAD_REQUEST);
+                }
+
+                // ProfileService::getInstance()->sendVerificationEmail($email, $token);
+                sendVerificationLinkEmail($email, $token, false);
+
+                return $this->json(['message' => 'Email change verification email resent successfully'], Response::OK);
             case 'reset_password':
                 $isVerified = $user->email_verified === 1;
                 if (!$isVerified) {
@@ -186,7 +200,8 @@ final class AuthController extends Controller {
                     return $this->json(['message' => 'Email resent successfully'], Response::OK);  // Return OK to avoid revealing information about the session state
                 }
 
-                ForgotPasswordService::getInstance()->sendPasswordResetEmail($email, $user->password_reset_token);
+                // ForgotPasswordService::getInstance()->sendPasswordResetEmail($email, $user->password_reset_token);
+                sendPasswordResetEmail($email, $user->password_reset_token);
 
                 return $this->json(['message' => 'Reset password email resent successfully'], Response::OK);
             default:

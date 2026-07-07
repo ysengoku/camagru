@@ -45,24 +45,27 @@ $users = [
         'username' => 'verified',
         'email' => 'verified_user@test.local',
         'email_verified' => 1,
-        'verification_token' => null,
-        'verification_token_expires_at' => null,
+        'pending_email' => null,
+        'email_verification_token' => null,
+        'email_verification_token_expires_at' => null,
         'withPosts' => true,
     ],
     [
         'username' => 'unverified',
         'email' => 'unverified_user@test.local',
         'email_verified' => 0,
-        'verification_token' => bin2hex(random_bytes(32)),
-        'verification_token_expires_at' => (new DateTime('+1 hour'))->format('Y-m-d H:i:s'),
+        'pending_email' => null,
+        'email_verification_token' => bin2hex(random_bytes(32)),
+        'email_verification_token_expires_at' => (new DateTime('+1 hour'))->format('Y-m-d H:i:s'),
         'withPosts' => false,
     ],
     [
         'username' => 'expired_token',
         'email' => 'expired_token_user@test.local',
         'email_verified' => 0,
-        'verification_token' => bin2hex(random_bytes(32)),
-        'verification_token_expires_at' => (new DateTime('-1 hour'))->format('Y-m-d H:i:s'),
+        'pending_email' => null,
+        'email_verification_token' => bin2hex(random_bytes(32)),
+        'email_verification_token_expires_at' => (new DateTime('-1 hour'))->format('Y-m-d H:i:s'),
         'withPosts' => false,
     ],
 ];
@@ -75,12 +78,12 @@ foreach ($users as $data) {
     }
 
     $user = new User(
-        $data['username'],
-        $data['email'],
-        $passwordHash,
-        $data['verification_token'] ?? '',
-        $data['verification_token_expires_at'],
-        $data['email_verified']
+        username:$data['username'],
+        email: $data['email'],
+        passwordHash: $passwordHash,
+        emailVerificationToken: $data['email_verification_token'] ?? '',
+        emailVerificationTokenExpiresAt: $data['email_verification_token_expires_at'],
+        emailVerified: $data['email_verified']
     );
 
     if (!$user->createNewUser()) {

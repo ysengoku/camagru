@@ -90,7 +90,8 @@ function init() {
         password,
       });
       if (response.ok) {
-        window.location.href = `/email-sent?action=verify-email`;
+        console.log('Signup successful:', response.data);
+        window.location.href = '/email-sent?action=verify-email';
       }
     } catch (error) {
       console.error('Signup error:', error.data);

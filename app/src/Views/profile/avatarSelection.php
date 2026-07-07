@@ -33,6 +33,7 @@ if (!function_exists('render_avatar_selection')) {
             <div class="avatar-selection-list">
                 {$avatarsHtml}
             </div>
+            <span id="avatar-error" class="error-feedback"></span>
         </div>
         HTML;
     }

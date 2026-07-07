@@ -1,6 +1,10 @@
 import { api, endpoints } from '../api.js';
 import { initPasswordToggles } from '../auth/helpers/passwordVisibility.js';
-import { showFieldError } from '../auth/helpers/formFeedback.js';
+import {
+  showFieldError,
+  clearFormErrors,
+  showServerFeedback,
+} from '../auth/helpers/formFeedback.js';
 import { showToast, ToastType, ToastMessage } from '../toast.js';
 import { validator } from '../auth/helpers/validator.js';
 
@@ -114,13 +118,19 @@ function init() {
     }
 
     const inputData = buildInputData();
-    inputData.current_password = currentPassword;
+    inputData['current-password'] = currentPassword;
     delete inputData['confirm-password'];
 
     try {
-      await api.post(endpoints.PROFILE, inputData);
+      const res = await api.post(endpoints.PROFILE, inputData);
+
+      if (res.data && res.data.emailVerificationRequired) {
+        window.location.href = '/email-sent?action=verify-email';
+        return;
+      }
 
       showToast(ToastType.SUCCESS, ToastMessage['profile-update-success']);
+
       const passwordFields = ['password', 'confirm-password'];
       passwordFields.forEach((field) => {
         const input = document.getElementById(field);
@@ -135,9 +145,12 @@ function init() {
         .forEach((el) => {
           initialValues.set(el.name, currentValue(el));
         });
+      clearFormErrors();
     } catch (error) {
-      console.error('Error submitting profile data:', error);
-      showToast(ToastType.ERROR, ToastMessage['profile-update-error']);
+      showServerFeedback(error.data?.error || {});
+      if (error.data?.error?.general) {
+        showFieldError('form', error.data.error.general);
+      }
     }
   }
 
@@ -158,6 +171,7 @@ function init() {
   }
 
   initPasswordToggles();
+  form.addEventListener('input', () =>clearFormErrors());
 
   const dialogElement = document.getElementById('password-confirmation-dialog');
   const currentPasswordInput = document.getElementById('current-password');

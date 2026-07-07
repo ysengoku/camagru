@@ -23,16 +23,16 @@
                 $active = $current === $link['href'] ? 'nav-link-active' : '';
                 $iconHtml = $link['href'] === '/profile' ? $profileIconHtml : render_icon($link['icon']);
                 $navLinksHtml .= <<<HTML
-            <div class="nav-link-container {$active}">
-                <a href="{$link['href']}" class="px-1 nav-link">
-                    {$iconHtml}
-                </a>
-            </div>
-            HTML;
+                <div class="nav-link-container {$active}">
+                    <a href="{$link['href']}" class="px-1 nav-link">
+                        {$iconHtml}
+                    </a>
+                </div>
+                HTML;
             }
 
             return <<<HTML
-        <nav class="flex flex-1 justify-center align-start">
+        <nav class="flex flex-1 justify-center align-end">
             {$navLinksHtml}
         </nav>
         HTML;

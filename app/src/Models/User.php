@@ -6,55 +6,59 @@
 final class User extends Model {
     protected static string $name = 'users';
     protected static array $schema = [
-        'id'                              => 'INT AUTO_INCREMENT PRIMARY KEY',
-        'username'                        => 'VARCHAR(255) UNIQUE NOT NULL',
-        'email'                           => 'VARCHAR(255) UNIQUE NOT NULL',
-        'password_hash'                   => 'VARCHAR(255) NOT NULL',
-        'avatar'                          => 'VARCHAR(255) DEFAULT NULL',
-        'verification_token'              => 'VARCHAR(64) DEFAULT NULL',
-        'verification_token_expires_at'   => 'TIMESTAMP NULL DEFAULT NULL',
-        'email_verified'                  => 'TINYINT(1) DEFAULT 0 NOT NULL',
-        'email_notifications_enabled'     => 'TINYINT(1) DEFAULT 1 NOT NULL',
-        'password_reset_token'            => 'VARCHAR(64) DEFAULT NULL',
-        'password_reset_token_expires_at' => 'TIMESTAMP NULL DEFAULT NULL',
-        'created_at'                      => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+        'id'                                  => 'INT AUTO_INCREMENT PRIMARY KEY',
+        'username'                            => 'VARCHAR(255) UNIQUE NOT NULL',
+        'email'                               => 'VARCHAR(255) UNIQUE NOT NULL',
+        'password_hash'                       => 'VARCHAR(255) NOT NULL',
+        'avatar'                              => 'VARCHAR(255) DEFAULT NULL',
+        'pending_email'                       => 'VARCHAR(255) DEFAULT NULL',
+        'email_verification_token'            => 'VARCHAR(64) DEFAULT NULL',
+        'email_verification_token_expires_at' => 'TIMESTAMP NULL DEFAULT NULL',
+        'email_verified'                      => 'TINYINT(1) DEFAULT 0 NOT NULL',
+        'email_notifications_enabled'         => 'TINYINT(1) DEFAULT 1 NOT NULL',
+        'password_reset_token'                => 'VARCHAR(64) DEFAULT NULL',
+        'password_reset_token_expires_at'     => 'TIMESTAMP NULL DEFAULT NULL',
+        'created_at'                          => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
 
-    public int     $id                              = 0;
-    public string  $username                        = '';
-    public string  $email                           = '';
-    public string  $password_hash                   = '';
-    public ?string $avatar                          = null;
-    public ?string $verification_token              = null;
-    public ?string $verification_token_expires_at   = null;
-    public int     $email_verified                  = 0;
-    public int     $email_notifications_enabled     = 1;
-    public ?string $password_reset_token            = null;
-    public ?string $password_reset_token_expires_at = null;
-    public ?string $created_at                      = '';
+    public int     $id                                  = 0;
+    public string  $username                            = '';
+    public string  $email                               = '';
+    public string  $password_hash                       = '';
+    public ?string $avatar                              = null;
+    public ?string $pending_email                       = null;
+    public ?string $email_verification_token            = null;
+    public ?string $email_verification_token_expires_at = null;
+    public int     $email_verified                      = 0;
+    public int     $email_notifications_enabled         = 1;
+    public ?string $password_reset_token                = null;
+    public ?string $password_reset_token_expires_at     = null;
+    public ?string $created_at                          = '';
 
     public function __construct(
         string $username,
         string $email,
         string $passwordHash,
-        ?string $verificationToken = null,
-        ?string $verificationTokenExpiresAt = null,
+        ?string $avatar = null,
+        ?string $pendingEmail = null,
+        ?string $emailVerificationToken = null,
+        ?string $emailVerificationTokenExpiresAt = null,
         int $emailVerified = 0,
         int $emailNotificationsEnabled = 1,
         ?string $passwordResetToken = null,
         ?string $passwordResetTokenExpiresAt = null,
-        ?string $avatar = null,
     ) {
-        $this->username                        = $username;
-        $this->email                           = $email;
-        $this->password_hash                   = $passwordHash;
-        $this->avatar                          = $avatar;
-        $this->verification_token              = $verificationToken;
-        $this->verification_token_expires_at   = $verificationTokenExpiresAt;
-        $this->email_verified                  = (int) $emailVerified;
-        $this->email_notifications_enabled     = (int) $emailNotificationsEnabled;
-        $this->password_reset_token            = $passwordResetToken;
-        $this->password_reset_token_expires_at = $passwordResetTokenExpiresAt;
+        $this->username                            = $username;
+        $this->email                               = $email;
+        $this->password_hash                       = $passwordHash;
+        $this->avatar                              = $avatar;
+        $this->pending_email                       = $pendingEmail;
+        $this->email_verification_token            = $emailVerificationToken;
+        $this->email_verification_token_expires_at = $emailVerificationTokenExpiresAt;
+        $this->email_verified                      = (int) $emailVerified;
+        $this->email_notifications_enabled         = (int) $emailNotificationsEnabled;
+        $this->password_reset_token                = $passwordResetToken;
+        $this->password_reset_token_expires_at     = $passwordResetTokenExpiresAt;
     }
 
     public static function getCurrentUser(): ?self {
@@ -96,7 +100,7 @@ final class User extends Model {
             return null;
         }
 
-        return self::findOneByField('verification_token', $token);
+        return self::findOneByField('email_verification_token', $token);
     }
 
     public static function findByPasswordResetToken(string $token): ?self {

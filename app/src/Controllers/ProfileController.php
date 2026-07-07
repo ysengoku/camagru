@@ -16,7 +16,21 @@ final class ProfileController extends Controller {
             return $this->methodNotAllowed();
         }
 
-        // TODO: handle profile update logic
-        return $this->json(['message' => 'Profile updated successfully'], Response::OK);
+        $data = Request::getPostData();
+        $profileData = new ProfileData(
+            username: $data['username'] ?? '',
+            email: $data['email'] ?? '',
+            password: $data['current-password'] ?? null,
+            newPassword: $data['password'] ?? null,
+            avatar: $data['avatar'] ?? null,
+            notificationsEnabled: isset($data['notifications']) ? (bool)$data['notifications'] : false
+            );
+
+        $res = ProfileService::getInstance()->updateProfile($profileData);
+        if (!$res->success) {
+            return $this->json(['error' => $res->errors], Response::BAD_REQUEST);
+        }
+
+        return $this->json($res->data, Response::OK);
     }
 }

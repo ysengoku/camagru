@@ -61,6 +61,23 @@ final class Post extends Model {
         return array_map(fn(array $row): self => static::fromRow($row), $rows);
     }
 
+    /**
+     * @return self|null
+     */
+    public static function findByPath(string $imagePath): ?self {
+        if (trim($imagePath) === '') {
+            return null;
+        }
+
+        $db = self::getDb();
+        $sql = 'SELECT * FROM posts WHERE image_path = :image_path LIMIT 1';
+
+        /** @var array<string, mixed>|null $row */
+        $row = $db->fetch($sql, ['image_path' => $imagePath]);
+
+        return $row ? static::fromRow($row) : null;
+    }
+
     #[Override]
     protected function beforeSave(): bool {
         $this->image_path = trim($this->image_path);

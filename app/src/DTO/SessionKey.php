@@ -9,6 +9,7 @@ enum SessionKey: string {
 }
 
 enum EmailAction: string {
-    case Verify = 'verify';
+    case Signup = 'signup';
+    case EmailChange = 'email_change';
     case ResetPassword = 'reset_password';
 }

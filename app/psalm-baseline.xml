@@ -28,7 +28,7 @@
       <code><![CDATA[$email]]></code>
       <code><![CDATA[$password_hash]]></code>
       <code><![CDATA[$username]]></code>
-      <code><![CDATA[$verification_token]]></code>
+      <code><![CDATA[$email_verification_token]]></code>
     </PossiblyUnusedProperty>
   </file>
 </files>

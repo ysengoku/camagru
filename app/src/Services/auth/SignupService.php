@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../helper/mailer.php';
+
 final class SignupService {
     use SingletonTrait;
 
@@ -26,10 +28,11 @@ final class SignupService {
             return ServiceResult::failure(['general' => 'Failed to create user.']);
         }
 
-        $this->sendVerificationEmail($createdUser->email, $createdUser->verification_token);
+        // $this->sendVerificationEmail($createdUser->email, $createdUser->email_verification_token);
+        sendVerificationLinkEmail($createdUser->email, $createdUser->email_verification_token);
 
         SessionStore::set(SessionKey::PendingEmail, $createdUser->email);
-        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::Verify->value);
+        SessionStore::set(SessionKey::ResendEmailAction, EmailAction::Signup->value);
 
         return ServiceResult::success(['user' => $createdUser]);
     }
@@ -90,22 +93,28 @@ final class SignupService {
         $verificationToken = $verificationTokenData['token'];
         $verificationTokenExpiresAt = $verificationTokenData['expiresAt'];
 
-        $newUser = new User($this->userData->username, $this->userData->email, $passwordHash, $verificationToken, $verificationTokenExpiresAt);
+        $newUser = new User(
+            username: $this->userData->username,
+            email: $this->userData->email,
+            passwordHash: $passwordHash,
+            emailVerificationToken: $verificationToken,
+            emailVerificationTokenExpiresAt: $verificationTokenExpiresAt
+        );
 
         return $newUser->createNewUser() ? $newUser : null;
     }
 
-    public function sendVerificationEmail(string $email, string $token): void {
-        $verificationLink = "https://{$_SERVER['HTTP_HOST']}/verify-email?token={$token}";
-        $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
-        $subject = "Verify Your Email Address";
-        $body = renderEmailTemplate('verification', ['logoUrl' => $logoUrl, 'verificationLink' => $verificationLink]);
+    // public function sendVerificationEmail(string $email, string $token): void {
+    //     $verificationLink = getenv('APP_BASE_URL') . "/verify-email?token={$token}";
+    //     $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
+    //     $subject = "Verify Your Email Address";
+    //     $body = renderEmailTemplate('verification', ['logoUrl' => $logoUrl, 'verificationLink' => $verificationLink]);
 
-        try {
-            // EmailService::getInstance()->send($email, $subject, $body);
-            SessionStore::set(SessionKey::LastEmailSentTime, time());
-        } catch (Exception $e) {
-            error_log("Failed to send verification email: " . $e->getMessage());
-        }
-    }
+    //     try {
+    //         // EmailService::getInstance()->send($email, $subject, $body);
+    //         SessionStore::set(SessionKey::LastEmailSentTime, time());
+    //     } catch (Exception $e) {
+    //         error_log("Failed to send verification email: " . $e->getMessage());
+    //     }
+    // }
 }

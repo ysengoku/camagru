@@ -12,9 +12,7 @@ if (!function_exists('render_avatar')) {
             // Letter avatar
             $letter = htmlspecialchars(strtoupper(substr($displayName, 0, 1)), ENT_QUOTES);
             return <<<HTML
-            <span class="letter-avatar avatar-{$sizeHtml}">
-                {$letter}
-            </span>
+            <span class="letter-avatar avatar-{$sizeHtml}">{$letter}</span>
             HTML;
         }
         

@@ -6,7 +6,7 @@ final class SessionService {
     public function processLogin(string $username, string $password): ServiceResult {
         $user = User::findByUsername($username);
         if (!$user) {
-            return ServiceResult::failure(['general' => 'Invalid username.']);
+            return ServiceResult::failure(['general' => 'Invalid username or password.']);
         }
 
         if (!$user->isEmailVerified()) {

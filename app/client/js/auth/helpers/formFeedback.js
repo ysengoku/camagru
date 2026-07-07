@@ -16,7 +16,7 @@ export function showServerFeedback(errors) {
 }
 
 export function clearFormErrors() {
-  const errorElements = document.querySelectorAll('.error-message');
+  const errorElements = document.querySelectorAll('.error-feedback');
   errorElements.forEach((el) => {
     el.textContent = '';
   });
