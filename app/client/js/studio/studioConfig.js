@@ -11,8 +11,6 @@ async function fetchStudioConfig() {
 
 const config = await fetchStudioConfig();
 
-console.log('Loaded studio config:', config);
-
 export const studioConfig = {
   ...config,
   canvasAspectRatio: null,

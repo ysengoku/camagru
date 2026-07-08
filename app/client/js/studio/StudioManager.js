@@ -5,6 +5,7 @@ import { studioStore } from '../store/studioStore';
 import { studioConfig } from './studioConfig';
 import { validateUploadedFile } from './validator';
 import { api, endpoints } from '../api';
+import { showToast, ToastMessage, ToastType } from '../toast';
 
 class StudioManager {
   static #instance = null;
@@ -275,8 +276,7 @@ class StudioManager {
 
       studioStore.setState({ webcamOn: true, editorMode: 'webcam' });
     } catch (error) {
-      console.error('Error accessing webcam:', error);
-      // TODO : Show error message to user
+      showToast(ToastType.ERROR, ToastMessage['webcam-access-error']);
     }
   }
 

@@ -11,6 +11,7 @@ export const ToastMessage = Object.freeze({
     'Password reset successful. Please log in with your new password.',
   'profile-update-success': 'Profile updated successfully.',
   'profile-update-error': 'Error updating profile. Please try again.',
+  'webcam-access-error': 'Webcam is not accessible.',
 });
 
 export function showToast(type, message) {
