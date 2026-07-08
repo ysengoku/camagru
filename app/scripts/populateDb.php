@@ -6,6 +6,8 @@ require_once __DIR__ . '/../src/core/Model.php';
 require_once __DIR__ . '/../src/helper/Path.php';
 require_once __DIR__ . '/../src/Models/User.php';
 require_once __DIR__ . '/../src/Models/Post.php';
+require_once __DIR__ . '/../src/Models/Like.php';
+require_once __DIR__ . '/../src/Models/Comment.php';
 
 const TEST_PASSWORD = '123';
 const FIXTURES_DIR = __DIR__ . '/fixtures';
@@ -38,17 +40,109 @@ function seedPosts(User $user): array {
     return $posts;
 }
 
+const COMMENT_POOL = [
+    'Love this!',
+    'Amazing shot!',
+    'Wow, stunning!',
+    'This is beautiful.',
+    'Great capture!',
+    'So cool!',
+    'Incredible!',
+    'Nice one!',
+    'This made my day.',
+    'Absolutely gorgeous.',
+];
+
+/**
+ * Randomly like and comment on a subset of the given posts, using the given verified
+ * users as the pool of possible likers/commenters (excluding a post's own author).
+ * @param list<Post> $posts
+ * @param list<User> $verifiedUsers
+ */
+function seedEngagement(array $posts, array $verifiedUsers): void {
+    $likeCount = 0;
+    $commentCount = 0;
+
+    foreach ($posts as $post) {
+        $possibleLikers = array_values(array_filter(
+            $verifiedUsers,
+            fn(User $user): bool => $user->id !== $post->user_id
+        ));
+        shuffle($possibleLikers);
+
+        $likersForPost = array_slice($possibleLikers, 0, random_int(0, min(count($possibleLikers), 4)));
+        foreach ($likersForPost as $liker) {
+            $like = new Like();
+            $like->post_id = $post->id;
+            $like->author_id = $liker->id;
+            if ($like->save()) {
+                $likeCount++;
+            }
+        }
+
+        $numComments = random_int(0, 3);
+        for ($i = 0; $i < $numComments; $i++) {
+            $commenter = $verifiedUsers[array_rand($verifiedUsers)];
+            $comment = new Comment();
+            $comment->post_id = $post->id;
+            $comment->author_id = $commenter->id;
+            $comment->content = COMMENT_POOL[array_rand(COMMENT_POOL)];
+            if ($comment->save()) {
+                $commentCount++;
+            }
+        }
+    }
+
+    echo "Created {$likeCount} like(s) and {$commentCount} comment(s) across " . count($posts) . " post(s)\n";
+}
+
 $passwordHash = password_hash(TEST_PASSWORD, PASSWORD_DEFAULT);
 
 $users = [
     [
-        'username' => 'verified',
-        'email' => 'verified_user@test.local',
+        'username' => 'Yuko',
+        'email' => 'yuko@test.local',
         'email_verified' => 1,
         'pending_email' => null,
         'email_verification_token' => null,
         'email_verification_token_expires_at' => null,
         'withPosts' => true,
+    ],
+    [
+        'username' => 'martine',
+        'email' => 'martine@test.local',
+        'email_verified' => 1,
+        'pending_email' => null,
+        'email_verification_token' => null,
+        'email_verification_token_expires_at' => null,
+        'withPosts' => true,
+    ],
+    [
+        'username' => 'claude',
+        'email' => 'claude@test.local',
+        'email_verified' => 1,
+        'pending_email' => null,
+        'email_verification_token' => null,
+        'email_verification_token_expires_at' => null,
+        'withPosts' => true,
+    ],
+    [
+        'username' => 'David',
+        'email' => 'david@test.local',
+        'email_verified' => 1,
+        'pending_email' => null,
+        'email_verification_token' => null,
+        'email_verification_token_expires_at' => null,
+        'withPosts' => false,
+    ],
+    [
+        'username' => 'guy',
+        'email' => 'guy@test.local',
+        'email_verified' => 1,
+        'pending_email' => null,
+        'email_verification_token' => null,
+        'email_verification_token_expires_at' => null,
+        'withPosts' => false,
     ],
     [
         'username' => 'unverified',
@@ -69,6 +163,11 @@ $users = [
         'withPosts' => false,
     ],
 ];
+
+/** @var list<User> $newVerifiedUsers */
+$newVerifiedUsers = [];
+/** @var list<Post> $newPosts */
+$newPosts = [];
 
 foreach ($users as $data) {
     $existing = User::findByEmail($data['email']);
@@ -93,9 +192,14 @@ foreach ($users as $data) {
 
     echo "Created {$data['username']} <{$data['email']}> (password: " . TEST_PASSWORD . ")\n";
 
+    if ($data['email_verified'] === 1) {
+        $newVerifiedUsers[] = $user;
+    }
+
     if ($data['withPosts']) {
         $posts = seedPosts($user);
         echo "Created " . count($posts) . " post(s) for {$data['username']}\n";
+        $newPosts = array_merge($newPosts, $posts);
 
         if (!empty($posts)) {
             $user->avatar = $posts[0]->image_path;
@@ -104,4 +208,8 @@ foreach ($users as $data) {
                 : print("Failed to set avatar for {$data['username']}\n");
         }
     }
+}
+
+if (!empty($newPosts) && count($newVerifiedUsers) > 1) {
+    seedEngagement($newPosts, $newVerifiedUsers);
 }

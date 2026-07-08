@@ -1,8 +1,8 @@
 <?php
 
 class Database {
-    private static $instance = null;
-    private $conn;
+    private static ?self $instance = null;
+    private ?PDO $conn = null;
 
     private function __construct() {
         $dsn = sprintf(

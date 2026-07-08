@@ -8,8 +8,6 @@ final class ResetPasswordService {
 
     public function validateToken(string $token): ServiceResult {
         if (empty($token)) {
-            error_log("Token is required for password reset.");
-
             return ServiceResult::failure(['token' => 'Token is required.']);
         }
 
@@ -22,8 +20,6 @@ final class ResetPasswordService {
 
         $expiresAt = $user->password_reset_token_expires_at;
         if ($expiresAt === null || strtotime($expiresAt) < time()) {
-            error_log("Password reset token has expired for user id {$user->id}.");
-
             return ServiceResult::failure(['token' => 'Token has expired.']);
         }
 

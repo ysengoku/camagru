@@ -35,4 +35,16 @@ final class Like extends Model {
 
         return self::findById((string) $id);
     }
+
+    public static function countByPostId(int $postId): int {
+        if ($postId <= 0) {
+            return 0;
+        }
+
+        $db = Database::getInstance();
+        $sql = 'SELECT COUNT(*) as like_count FROM likes WHERE post_id = :post_id';
+        $result = $db->fetch($sql, ['post_id' => $postId]);
+
+        return (int) ($result['like_count'] ?? 0);
+    }
 }

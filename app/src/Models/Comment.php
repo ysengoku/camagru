@@ -22,4 +22,12 @@ final class Comment extends Model {
 
     public function __construct() {
     }
+
+    public static function findByPostId(int $postId): array {
+        if ($postId <= 0) {
+            return [];
+        }
+
+        return self::findAllByField('post_id', $postId);
+    }
 }

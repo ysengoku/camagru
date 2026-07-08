@@ -8,67 +8,45 @@ final class FeedController extends Controller {
         if (Request::getMethod() !== 'GET') {
             return $this->methodNotAllowed();
         }
-        // $userModel = new User();
-        // $currentUser = $userModel->getCurrentUser();
-        // $users = $userModel->getAllUsers();
 
-        // $postModel = new Post();
-        // $posts = $postModel->getAllPosts();
+        $user = User::getCurrentUser();
 
-        // test data
-        $user = [
-            'id' => 1,
-            'username' => 'john_doe',
-            'avatar_path' => '/assets/img/sample-pic3.jpg'
-        ];
+        $posts = Post::all();
+        $postData = array_map(function (Post $post) {
+            $author = User::find($post->user_id);
+            if (!$author) {
+                throw new RuntimeException("Author not found for post ID {$post->id}");
+            }
 
-        $posts = [
-            new PostData(
-                id: 1,
-                author_name: 'john_doe',
-                author_id: 1,
-                author_avatar: null,
-                image_path: '/media/seed-verified-0.jpg',
-                created_at: '2024-06-01 18:30:00',
-                likes_count: 10,
-                comments_count: 2,
-                comments: [
-                    new PostCommentData(author_name: 'jane_smith', text: 'Amazing view!'),
-                    new PostCommentData(author_name: 'alice_wonder', text: 'Love this!')
-                ]
-            ),
-            new PostData(
-                id: 2,
-                author_name: 'jane_smith',
-                author_id: 2,
-                author_avatar: '/media/seed-verified-1.jpg',
-                image_path: '/media/seed-verified-1.jpg',
-                created_at: '2024-06-02 14:15:00',
-                likes_count: 5,
-                comments_count: 0,
-                comments: []
-            ),
-            new PostData(
-                id: 3,
-                author_name: 'alice_wonder',
-                author_id: 3,
-                author_avatar: '/media/seed-verified-2.jpg',
-                image_path: '/media/seed-verified-2.jpg',
-                created_at: '2024-06-03 10:00:00',
-                likes_count: 20,
-                comments_count: 3,
-                comments: [
-                    new PostCommentData(author_name: 'john_doe', text: 'Yummy!'),
-                    new PostCommentData(author_name: 'jane_smith', text: 'Recipe, please!'),
-                    new PostCommentData(author_name: 'bob_builder', text: 'Looks great!')
-                ]
-            )
-        ];
+            $comments = Comment::findByPostId($post->id);
+            $commentData = array_map(function (Comment $comment) {
+                $commentAuthor = User::find($comment->author_id);
+                if (!$commentAuthor) {
+                    throw new RuntimeException("Author not found for comment ID {$comment->id}");
+                }
+                return new PostCommentData(
+                    author_name: $commentAuthor->username,
+                    text: $comment->content
+                );
+            }, $comments);
+
+            return new PostData(
+                id: $post->id,
+                author_name: $author->username,
+                author_id: $author->id,
+                author_avatar: $author->avatar,
+                image_path: $post->image_path,
+                created_at: $post->created_at,
+                likes_count: Like::countByPostId($post->id),
+                comments_count: count($comments),
+                comments: $commentData
+            );
+        }, $posts);
 
         return $this->render([
             'pageScript' => 'feed',
             'user' => $user,
-            'posts' => $posts
+            'posts' => $postData
         ]);
     }
 }

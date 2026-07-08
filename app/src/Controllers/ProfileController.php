@@ -11,7 +11,8 @@ final class ProfileController extends Controller {
 
         return $this->render([
             'pageScript' => 'profile',
-            'pageTitle' => 'Profile']);
+            'pageTitle' => 'Profile'
+        ]);
     }
 
     public function update(): string {

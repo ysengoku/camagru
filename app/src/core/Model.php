@@ -90,6 +90,24 @@ abstract class Model {
         ));
     }
 
+    /** Find all records by a specific field.
+     * @param string $field
+     * @param mixed $value
+     * @return list<static>
+     */
+    protected static function findAllByField(string $field, mixed $value): array {
+        $db = self::getDb();
+        $table = static::$name;
+        $sql = "SELECT * FROM `$table` WHERE `$field` = :value";
+
+        $rows = $db->fetchAll($sql, ['value' => $value]);
+
+        return array_values(array_map(
+            fn(array $row): self => static::fromRow($row),
+            $rows
+        ));
+    }
+
     /**
      * Save the current instance to the database. (insert or update)
      * @return bool
