@@ -1,3 +1,9 @@
+<?php
+    $logoUrl = $logoUrl ?? '';
+    $message = $message ?? '';
+    $verificationLink = $verificationLink ?? '';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

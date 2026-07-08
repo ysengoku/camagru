@@ -30,15 +30,16 @@ final class User extends Model {
     public ?string $email_verification_token            = null;
     public ?string $email_verification_token_expires_at = null;
     public int     $email_verified                      = 0;
+    /** @psalm-suppress PossiblyUnusedProperty - read in Views/profile/index.php, not visible to Psalm in templates */
     public int     $email_notifications_enabled         = 1;
     public ?string $password_reset_token                = null;
     public ?string $password_reset_token_expires_at     = null;
     public ?string $created_at                          = '';
 
     public function __construct(
-        string $username,
-        string $email,
-        string $passwordHash,
+        string $username = '',
+        string $email = '',
+        string $passwordHash = '',
         ?string $avatar = null,
         ?string $pendingEmail = null,
         ?string $emailVerificationToken = null,
@@ -55,8 +56,8 @@ final class User extends Model {
         $this->pending_email                       = $pendingEmail;
         $this->email_verification_token            = $emailVerificationToken;
         $this->email_verification_token_expires_at = $emailVerificationTokenExpiresAt;
-        $this->email_verified                      = (int) $emailVerified;
-        $this->email_notifications_enabled         = (int) $emailNotificationsEnabled;
+        $this->email_verified                      = $emailVerified;
+        $this->email_notifications_enabled         = $emailNotificationsEnabled;
         $this->password_reset_token                = $passwordResetToken;
         $this->password_reset_token_expires_at     = $passwordResetTokenExpiresAt;
     }

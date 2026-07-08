@@ -22,8 +22,9 @@ abstract class Controller {
         $this->statusCode = $statusCode;
         $this->statusText = Response::STATUS_TEXTS[$statusCode] ?? 'Unknown Status';
         header('Content-Type: application/json');
+        $json = json_encode($data);
 
-        return json_encode($data) ?: '{"error":"Internal Server Error"}';
+        return $json === false ? '{"error":"Internal Server Error"}' : $json;
     }
 
     protected function render(array $props = [], ?string $template = null): string {

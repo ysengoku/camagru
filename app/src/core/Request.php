@@ -12,6 +12,7 @@ final class Request {
     public static function getQueryParams(): array {
         $url = $_SERVER['REQUEST_URI'] ?? '';
         $queryString = parse_url($url, PHP_URL_QUERY);
+        $queryString = is_string($queryString) ? $queryString : '';
         parse_str($queryString, $queryParams);
 
         return $queryParams;
@@ -38,10 +39,11 @@ final class Request {
     }
 
     public static function getCsrfToken(): string {
-        if (SessionStore::get(SessionKey::CsrfToken) === null) {
+        $token = SessionStore::get(SessionKey::CsrfToken);
+        if (!is_string($token) || $token === '') {
             $token = bin2hex(random_bytes(32));
             SessionStore::set(SessionKey::CsrfToken, $token);
         }
-        return SessionStore::get(SessionKey::CsrfToken);
+        return $token;
     }
 }

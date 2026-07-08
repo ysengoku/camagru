@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
 final class ProfileController extends Controller {
     public function index(): string {
         if (Request::getMethod() !== 'GET') {

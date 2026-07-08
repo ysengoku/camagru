@@ -9,8 +9,10 @@
 ?>
 
 <?php
-    $isProd = getenv('NODE_ENV') === 'production';
-    $css = $isProd ? viteEntryCSS('js/main.js') : null;
+require_once __DIR__ . '/../helper/renderer.php';
+
+$isProd = getenv('NODE_ENV') === 'production';
+$css = $isProd ? viteEntryCSS('js/main.js') : null;
 ?>
 <!doctype html>
 <html lang="en">

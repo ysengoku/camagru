@@ -42,8 +42,8 @@ final class Application {
             }
 
             $authRequired = $params['auth'] ?? false;
-            if ($authRequired) {
-                if ( SessionStore::activeSession() === false) {
+            if ($authRequired === true) {
+                if (SessionStore::activeSession() === false) {
                     $this->response->redirect('/login');
                     return;
                 }

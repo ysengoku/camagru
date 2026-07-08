@@ -1,3 +1,8 @@
+<?php
+    $logoUrl = $logoUrl ?? '';
+    $resetLink = $resetLink ?? '';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

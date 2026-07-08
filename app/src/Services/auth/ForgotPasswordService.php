@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../helper/mailer.php';
+require_once __DIR__ . '/../../helper/token.php';
 
 final class ForgotPasswordService {
     use SingletonTrait;
@@ -11,7 +12,7 @@ final class ForgotPasswordService {
     public function processForgotPassword(string $email): ServiceResult {
         $validationErrors = AuthInputValidator::validateEmail($email);
 
-        if (!empty($validationErrors)) {
+        if ($validationErrors !== null) {
             return ServiceResult::failure(['email' => $validationErrors, 'status' => Response::BAD_REQUEST]);
         }
 
@@ -29,7 +30,6 @@ final class ForgotPasswordService {
         $user = User::findByEmail($email);
         if ($user !== null && $user->isEmailVerified()) {
             $token = $this->issueResetToken($user);
-            // $this->sendPasswordResetEmail($email, $token);
             sendPasswordResetEmail($email, $token);
         } else {
             error_log("Password reset requested for non-existent or unverified email: $email");
@@ -56,13 +56,4 @@ final class ForgotPasswordService {
 
         return $resetToken;
     }
-
-    // public function sendPasswordResetEmail(string $email, string $token): void {
-    //     $resetLink = getenv('APP_BASE_URL') . "/reset-password?token=$token";
-    //     $subject = "Password Reset";
-    //     $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
-    //     $body = renderEmailTemplate('forgotPassword', ['logoUrl' => $logoUrl, 'resetLink' => $resetLink]);
-
-    //     // EmailService::getInstance()->send($email, $subject, $body);
-    // }
 }

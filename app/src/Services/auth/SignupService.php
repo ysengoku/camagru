@@ -1,10 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../../helper/mailer.php';
+require_once __DIR__ . '/../../helper/token.php';
 
 final class SignupService {
     use SingletonTrait;
 
+    /** @psalm-suppress PropertyNotSetInConstructor - always set first thing in processSignup(), before any private method that reads it runs */
     private SignupData $userData;
 
     // Private constructor to prevent direct instantiation
@@ -23,13 +25,13 @@ final class SignupService {
             return ServiceResult::failure($availability['errors']);
         }
 
-        $createdUser = $this->createUser($availability['existingUnverifiedUser']);
+        $verificationTokenData = generateToken(32, 15);
+        $createdUser = $this->createUser($availability['existingUnverifiedUser'], $verificationTokenData);
         if ($createdUser === null) {
             return ServiceResult::failure(['general' => 'Failed to create user.']);
         }
 
-        // $this->sendVerificationEmail($createdUser->email, $createdUser->email_verification_token);
-        sendVerificationLinkEmail($createdUser->email, $createdUser->email_verification_token);
+        sendVerificationLinkEmail($createdUser->email, $verificationTokenData['token']);
 
         SessionStore::set(SessionKey::PendingEmail, $createdUser->email);
         SessionStore::set(SessionKey::ResendEmailAction, EmailAction::Signup->value);
@@ -41,23 +43,28 @@ final class SignupService {
         $errors = [];
 
         $usernameError = AuthInputValidator::validateUsername($data->username);
-        if ($usernameError) {
+        if ($usernameError !== null) {
             $errors['username'] = $usernameError;
         }
 
         $emailError = AuthInputValidator::validateEmail($data->email);
-        if ($emailError) {
+        if ($emailError !== null) {
             $errors['email'] = $emailError;
         }
 
         $passwordError = AuthInputValidator::validatePassword($data->password);
-        if ($passwordError) {
+        if ($passwordError !== null) {
             $errors['password'] = $passwordError;
         }
 
         return $errors;
     }
 
+    /**
+     * Checks if the username and email are available for registration.
+     * If an unverified user exists with the same email, it will be returned for potential deletion before creating a new user.
+     * @return array{errors: array<string, string>, existingUnverifiedUser: ?User}
+    */
     private function checkAvailability(): array {
         $errors = [];
 
@@ -84,14 +91,17 @@ final class SignupService {
         ];
     }
 
-    private function createUser(?User $existingUnverifiedUser): ?User {
+    /**
+     * Creates a new user in the database, deleting any existing unverified user with the same email if applicable.
+     * @param array{token: string, expiresAt: string} $tokenData
+     */
+    private function createUser(?User $existingUnverifiedUser, array $tokenData): ?User {
         $existingUnverifiedUser?->delete();
 
         $passwordHash = password_hash($this->userData->password, PASSWORD_DEFAULT);
-        
-        $verificationTokenData = generateToken(32);
-        $verificationToken = $verificationTokenData['token'];
-        $verificationTokenExpiresAt = $verificationTokenData['expiresAt'];
+
+        $verificationToken = $tokenData['token'];
+        $verificationTokenExpiresAt = $tokenData['expiresAt'];
 
         $newUser = new User(
             username: $this->userData->username,
@@ -103,18 +113,4 @@ final class SignupService {
 
         return $newUser->createNewUser() ? $newUser : null;
     }
-
-    // public function sendVerificationEmail(string $email, string $token): void {
-    //     $verificationLink = getenv('APP_BASE_URL') . "/verify-email?token={$token}";
-    //     $logoUrl = getenv('APP_ASSETS_URL') . 'img/logo.png';
-    //     $subject = "Verify Your Email Address";
-    //     $body = renderEmailTemplate('verification', ['logoUrl' => $logoUrl, 'verificationLink' => $verificationLink]);
-
-    //     try {
-    //         // EmailService::getInstance()->send($email, $subject, $body);
-    //         SessionStore::set(SessionKey::LastEmailSentTime, time());
-    //     } catch (Exception $e) {
-    //         error_log("Failed to send verification email: " . $e->getMessage());
-    //     }
-    // }
 }

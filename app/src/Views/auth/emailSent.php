@@ -1,18 +1,19 @@
 <?php
 $email = SessionStore::get(SessionKey::PendingEmail);
+$emailStr = is_string($email) ? $email : '';
 $action = $action ?? 'default';
 $messageTemplates = [
     'default' => 'An email has been sent to %s.',
     'verify-email' => 'A verification email has been sent to %s.',
     'reset-password' => 'If an account exists, a password reset link has been sent to %s.',
 ];
-$emailHtml = '<span class="color-primary-600">' . htmlspecialchars($email ?? '') . '</span>';
+$emailHtml = '<span class="color-primary-600">' . htmlspecialchars($emailStr) . '</span>';
 $message = sprintf($messageTemplates[$action] ?? $messageTemplates['default'], $emailHtml);
 
 $cooldownTime = 60; // Cooldown time in seconds
 $lastEmailSentTime = SessionStore::get(SessionKey::LastEmailSentTime);
 $timeRemaining = 0;
-if ($lastEmailSentTime !== null) {
+if (is_int($lastEmailSentTime)) {
     $timeElapsed = time() - $lastEmailSentTime;
     if ($timeElapsed < $cooldownTime) {
         $timeRemaining = $cooldownTime - $timeElapsed;

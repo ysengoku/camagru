@@ -2,7 +2,6 @@
 
 final class EmailService {
     use SingletonTrait;
-    // private static ?EmailService $instance = null;
 
     private string $smtpHost;
     private int    $smtpPort;
@@ -10,7 +9,7 @@ final class EmailService {
     private string $smtpPass;
     private string $mailFrom;
 
-    /** @var resource $socket */
+    /** @var resource|null $socket */
     private $socket = null;
 
     private function __construct() {
@@ -32,19 +31,13 @@ final class EmailService {
         }
     }
 
-    // public static function getInstance(): EmailService {
-    //     if (self::$instance === null) {
-    //         self::$instance = new EmailService();
-    //     }
-    //     return self::$instance;
-    // }
-
     public function send(string $to, string $subject, string $body): void {
         try {
-            $this->socket = @fsockopen($this->smtpHost, $this->smtpPort, $errno, $errstr, 5);
-            if ($this->socket === false) {
+            $socket = @fsockopen($this->smtpHost, $this->smtpPort, $errno, $errstr, 5);
+            if ($socket === false) {
                 throw new RuntimeException("Failed to connect to SMTP server: $errstr ($errno)");
             }
+            $this->socket = $socket;
             $this->expect(220); // Server welcome
 
             $this->startTls();
@@ -56,8 +49,9 @@ final class EmailService {
             $this->expect(221);
         } finally {
             if (isset($this->socket) && is_resource($this->socket)) {
-                fclose($this->socket);
+                $socket = $this->socket;
                 $this->socket = null;
+                fclose($socket);
             }
         }
     }
@@ -80,13 +74,14 @@ final class EmailService {
     }
 
     private function startTls(): void {
-        $host = gethostname() ?: 'localhost';
+        $hostname = gethostname();
+        $host = $hostname !== false ? $hostname : 'localhost';
         $this->write("EHLO {$host}");
         $this->expect(250);
 
         $this->write("STARTTLS");
         $this->expect(220);
-        if (!stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+        if (stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) !== true) {
             throw new RuntimeException("Failed to enable TLS encryption for SMTP connection.");
         }
 

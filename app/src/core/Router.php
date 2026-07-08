@@ -6,7 +6,8 @@ final class Router {
      * path: string,
      * controller: string,
      * action: string,
-     * method?: string
+     * method?: string,
+     * auth?: bool
      * }>
      */
     private array $routes;
@@ -17,8 +18,9 @@ final class Router {
      *     path: string,
      *     controller: string,
      *     action: string,
-     *     method?: string
-     * }> $routes An array of route definitions, each containing 'path', 'controller', 'action', and optionally 'method'.
+     *     method?: string,
+     *     auth?: bool
+     * }> $routes An array of route definitions, each containing 'path', 'controller', 'action', and optionally 'method' and 'auth'.
      */
     public function __construct(array $routes) {
         $this->routes = $routes;
@@ -32,7 +34,8 @@ final class Router {
      *     path: string,
      *     controller: string,
      *     action: string,
-     *     method?: string
+     *     method?: string,
+     *     auth?: bool
      * }|null Returns the route parameters if found, or null if not found.
      */
     public function resolve(string $pathInfo, string $method): ?array {

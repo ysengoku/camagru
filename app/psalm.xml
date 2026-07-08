@@ -7,6 +7,7 @@
 >
   <projectFiles>
     <directory name="src" />
+    <directory name="cron" />
     <file name="public/index.php" />
     <ignoreFiles>
       <directory name="vendor" />
@@ -16,5 +17,11 @@
   <issueHandlers>
     <MissingParamType severity="error" />
     <MissingReturnType severity="error" />
+    <!-- self-typed static property in a trait used by many classes; Psalm can't reconcile the type per using class -->
+    <MismatchingDocblockPropertyType>
+      <errorLevel type="suppress">
+        <file name="src/core/SingletonTrait.php" />
+      </errorLevel>
+    </MismatchingDocblockPropertyType>
   </issueHandlers>
 </psalm>

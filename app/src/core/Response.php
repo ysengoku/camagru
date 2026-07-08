@@ -34,7 +34,7 @@ final class Response {
     public function send(): void {
         http_response_code($this->statusCode);
         header(sprintf('HTTP/1.1 %d %s', $this->statusCode, $this->statusText), true, $this->statusCode);
-        error_log("Sending response with status {$this->statusCode}: {$this->statusText}");
+
         echo $this->content;
     }
 

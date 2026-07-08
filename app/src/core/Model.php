@@ -29,7 +29,7 @@ abstract class Model {
     /**
      * Map array data to instance properties based on schema.
      * @param array<string, mixed> $data
-     * @return self
+     * @return static
      */
     public static function fromRow(array $data): self {
         // Create a new instance without calling the constructor that requires parameters,
@@ -46,7 +46,7 @@ abstract class Model {
     /**
      * Find an record by its ID.
      * @param string $id
-     * @return self|null
+     * @return static|null
      */
     protected static function findById(string $id) {
         $db = self::getDb();
@@ -61,7 +61,7 @@ abstract class Model {
     /** Find a record by a specific field.
      * @param string $field
      * @param mixed $value
-     * @return self|null
+     * @return static|null
      */
     protected static function findOneByField(string $field, mixed $value) {
         $db = self::getDb();
@@ -75,7 +75,7 @@ abstract class Model {
 
     /**
      * Find all records in the table.
-     * @return list<self>
+     * @return list<static>
      */
     protected static function findAll(): array {
         $db = self::getDb();

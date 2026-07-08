@@ -66,8 +66,8 @@ function init() {
   function buildInputData() {
     return Object.fromEntries(
       Array.from(form.elements)
-        .filter((el) => el.name)
-        .map((el) => [el.name, el.type === 'checkbox' ? el.checked : el.value])
+        .filter((el) => el.name && !(el.type === 'radio' && !el.checked))
+        .map((el) => [el.name, currentValue(el)])
     );
   }
 
@@ -171,7 +171,7 @@ function init() {
   }
 
   initPasswordToggles();
-  form.addEventListener('input', () =>clearFormErrors());
+  form.addEventListener('input', () => clearFormErrors());
 
   const dialogElement = document.getElementById('password-confirmation-dialog');
   const currentPasswordInput = document.getElementById('current-password');

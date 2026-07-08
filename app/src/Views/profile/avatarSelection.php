@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../components/avatar.php';
 
 if (!function_exists('render_avatar_selection')) {
-    function render_avatar_selection($user): string {
+    function render_avatar_selection(User $user): string {
         $posts = Post::findByUserId($user->id);
 
         if (!$posts) {

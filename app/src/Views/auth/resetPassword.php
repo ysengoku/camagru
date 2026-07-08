@@ -1,6 +1,8 @@
 <?php
     require_once __DIR__ . '/../components/icon.php';
     require_once __DIR__ . '/../components/passwordField.php';
+
+    $token = $token ?? '';
 ?>
 
 <div class="auth-form-container">

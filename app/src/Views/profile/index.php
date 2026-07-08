@@ -1,12 +1,19 @@
 <?php
-    require_once __DIR__ . '/../components/avatar.php';
-    require_once __DIR__ . '/../components/emailField.php';
-    require_once __DIR__ . '/../components/icon.php';
-    require_once __DIR__ . '/../components/passwordField.php';
-    require_once __DIR__ . '/../components/usernameField.php';
-    require_once __DIR__ . '/avatarSelection.php';
+require_once __DIR__ . '/../components/avatar.php';
+require_once __DIR__ . '/../components/emailField.php';
+require_once __DIR__ . '/../components/icon.php';
+require_once __DIR__ . '/../components/passwordField.php';
+require_once __DIR__ . '/../components/usernameField.php';
+require_once __DIR__ . '/avatarSelection.php';
 
-    $notificationsEnabled = $user->email_notifications_enabled ?? false;
+/**
+ * @var User|null $user
+ */
+if ($user === null) {
+    throw new HTTPNotFoundException();
+}
+
+$notificationsEnabled = $user->email_notifications_enabled;
 ?>
 
 <dialog id="password-confirmation-dialog" class="dialog">
@@ -44,7 +51,7 @@
         <div class="flex-col gap-1 mb-4">
             <label for="avatar" class="block color-gray-600">Profile Picture</label>
             <div id="avatar-preview">
-                <?= render_avatar($user->username, 'large', $user->avatar ?? null) ?>
+                <?= render_avatar($user->username, 'large', $user->avatar !== null ? $user->avatar : null) ?>
             </div>
             <?= render_avatar_selection($user) ?>
         </div>
@@ -54,7 +61,7 @@
         <div class="flex-col gap-1 mb-4">
             <span class="color-gray-600 mb-2">Email Notifications</span>
             <label for="notifications" class="toggle-switch mb-4">
-                <input type="checkbox" id="notifications" name="notifications" <?= $notificationsEnabled ? 'checked' : '' ?>>
+                <input type="checkbox" id="notifications" name="notifications" <?= $notificationsEnabled === 1 ? 'checked' : '' ?>>
                 <span class="toggle-slider toggle-slider-round"></span>
             </label>
         </div>

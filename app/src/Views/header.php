@@ -1,6 +1,6 @@
 <?php
 /**
- * @var array $user
+ * @var User|null $user
  */
 ?>
 

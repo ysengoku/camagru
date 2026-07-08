@@ -10,22 +10,24 @@ final class ProfileService {
     private function __construct() {}
 
     public function updateProfile(ProfileData $data): ServiceResult {
-        $validationErrors = $this->validateProfileData($data);
-    
+        $user = User::getCurrentUser();
+        if ($user === null) {
+            return ServiceResult::failure(['general' => 'Not authenticated.']);
+        }
+
+        $validationErrors = $this->validateProfileData($data, $user);
         if (!empty($validationErrors)) {
             return ServiceResult::failure($validationErrors);
         }
 
-        $user = User::getCurrentUser();
         $user->username = $data->username;
         $user->avatar = $data->avatar;
-        $user->email_notifications_enabled = $data->notificationsEnabled;
-        error_log("New password: {$data->newPassword}");
-        if ($data->newPassword) {
+        $user->email_notifications_enabled = $data->notificationsEnabled ? 1 : 0;
+        if ($data->newPassword !== null && $data->newPassword !== '') {
             $user->password_hash = password_hash($data->newPassword, PASSWORD_DEFAULT);
         }
 
-        if ($this->isEmailChangeRequested($data)) {
+        if ($this->isEmailChangeRequested($data, $user)) {
             if (!$this->setupPendingEmail($user, $data)) {
                 return ServiceResult::failure(['email' => 'Failed to update email.']);
             }
@@ -43,37 +45,38 @@ final class ProfileService {
         return ServiceResult::success(['message' => 'Profile updated successfully.', 'emailVerificationRequired' => false]);
     }
 
-    private function validateProfileData(ProfileData $data): array {
+    private function validateProfileData(ProfileData $data, User $user): array {
         $errors = [];
 
         $usernameError = AuthInputValidator::validateUsername($data->username);
-        if ($usernameError) {
+        if ($usernameError !== null) {
             $errors['username'] = $usernameError;
         }
 
         $emailError = AuthInputValidator::validateEmail($data->email);
-        if ($emailError) {
+        if ($emailError !== null) {
             $errors['email'] = $emailError;
         }
 
-        $availabilityErrors = $this->checkAvailability($data);
+        $availabilityErrors = $this->checkAvailability($data, $user);
         $errors = array_merge($errors, $availabilityErrors);
 
-        if ($data->newPassword) {
+        $hasNewPassword = $data->newPassword !== null && $data->newPassword !== '';
+        if ($hasNewPassword) {
             $passwordErrors = AuthInputValidator::validatePassword($data->newPassword);
-            if ($passwordErrors) {
+            if ($passwordErrors !== null) {
                 $errors['password'] = $passwordErrors;
             }
-        }  
+        }
 
-        if ($this->isAvatarValid($data->avatar) === false) {
+        if ($this->isAvatarValid($data->avatar, $user) === false) {
             $errors['avatar'] = 'Invalid avatar selection.';
         }
 
-        if ($this->isEmailChangeRequested($data) || !empty($data->newPassword)) {
-            if (empty($data->password)) {
+        if ($this->isEmailChangeRequested($data, $user) || $hasNewPassword) {
+            if ($data->password === null || $data->password === '') {
                 $errors['general'] = 'Current password is required to change email or password.';
-            } elseif (!$this->isCurrentPasswordValid($data->password)) {
+            } elseif (!$this->isCurrentPasswordValid($data->password, $user)) {
                 $errors['general'] = 'Current password is incorrect.';
             }
         }
@@ -81,22 +84,22 @@ final class ProfileService {
         return $errors;
     }
 
-    private function checkAvailability(ProfileData $data): array {
+    private function checkAvailability(ProfileData $data, User $user): array {
         $errors = [];
 
-        if (!$this->isUsernameAvailable($data->username)) {
+        if (!$this->isUsernameAvailable($data->username, $user)) {
             $errors['username'] = 'Username is already taken.';
         }
 
-        if (!$this->isEmailAvailable($data->email)) {
+        if (!$this->isEmailAvailable($data->email, $user)) {
             $errors['email'] = 'Email is already in use.';
         }
 
         return $errors;
     }
 
-    private function isUsernameAvailable(string $username): bool {
-        if (User::getCurrentUser()->username === $username) {
+    private function isUsernameAvailable(string $username, User $user): bool {
+        if ($user->username === $username) {
             return true;
         }
 
@@ -107,8 +110,8 @@ final class ProfileService {
         return true;
     }
 
-    private function isEmailAvailable(string $email): bool {
-        if (User::getCurrentUser()->email === $email) {
+    private function isEmailAvailable(string $email, User $user): bool {
+        if ($user->email === $email) {
             return true;
         }
 
@@ -119,12 +122,11 @@ final class ProfileService {
         return true;
     }
 
-    private function isCurrentPasswordValid(string $currentPassword): bool {
-        $currentUser = User::getCurrentUser();
-        return password_verify($currentPassword, $currentUser->password_hash);
+    private function isCurrentPasswordValid(string $currentPassword, User $user): bool {
+        return password_verify($currentPassword, $user->password_hash);
     }
 
-    private function isAvatarValid(?string $avatar): bool {
+    private function isAvatarValid(?string $avatar, User $user): bool {
         if ($avatar === null || $avatar === '') {
             return true;
         }
@@ -134,15 +136,15 @@ final class ProfileService {
             return false;
         }
 
-        if ($post->user_id !== User::getCurrentUser()->id) {
+        if ($post->user_id !== $user->id) {
             return false;
         }
 
         return true;
     }
 
-    private function isEmailChangeRequested(ProfileData $data): bool {
-        return !empty($data->email) && $data->email !== User::getCurrentUser()->email;
+    private function isEmailChangeRequested(ProfileData $data, User $user): bool {
+        return $data->email !== '' && $data->email !== $user->email;
     }
 
     private function setupPendingEmail(User $user, ProfileData $data): bool {

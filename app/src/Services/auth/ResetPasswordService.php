@@ -43,7 +43,7 @@ final class ResetPasswordService {
         }
 
         $passwordFormatError = AuthInputValidator::validatePassword($newPassword);
-        if ($passwordFormatError) {
+        if ($passwordFormatError !== null) {
             return ServiceResult::failure(['password' => $passwordFormatError]);
         }
 
