@@ -28,26 +28,39 @@ abstract class Controller {
     }
 
     protected function render(array $props = [], ?string $template = null): string {
-        $view = new View(__DIR__ . '/../Views');
-        if ($template === null) {
-            $template = $this->actionName;
-        }
-
-        $props['user'] = User::getCurrentUser();
-
-        $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
-        $path = $controllerName . '/' . $template;
+        [$path, $controllerName, $props] = $this->prepareRender($props, $template);
 
         $props['pageTitle'] = isset($props['pageTitle'])
             ? Application::APP_NAME . ' | ' . $props['pageTitle']
             : Application::APP_NAME . ' | ' . ucfirst($controllerName);
+
+        return (new View(__DIR__ . '/../Views'))->render($path, $props);
+    }
+
+    protected function renderContent(array $props = [], ?string $template = null): string {
+        [$path, , $props] = $this->prepareRender($props, $template);
+
+        return (new View(__DIR__ . '/../Views'))->renderContent($path, $props);
+    }
+
+    /**
+     * Shared setup for render()/renderContent(): resolves the controller-namespaced
+     * template path and fills in the props common to both a full page and a partial.
+     * @return array{0: string, 1: string, 2: array<string, mixed>}
+     */
+    private function prepareRender(array $props, ?string $template): array {
+        $template ??= $this->actionName;
+        $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
+        $path = $controllerName . '/' . $template;
+
+        $props['user'] = User::getCurrentUser();
 
         // Auto-set pageScript based on controller name if not already set
         if (!isset($props['pageScript'])) {
             $props['pageScript'] = $controllerName;
         }
 
-        return $view->render($path, $props);
+        return [$path, $controllerName, $props];
     }
 
     protected function methodNotAllowed(): string {

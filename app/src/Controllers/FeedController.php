@@ -11,24 +11,15 @@ final class FeedController extends Controller {
 
         $user = User::getCurrentUser();
 
-        $posts = Post::all();
+        $posts = Post::allOrderedByCreationDesc();
         $postData = array_map(function (Post $post) {
             $author = User::find($post->user_id);
             if (!$author) {
                 throw new RuntimeException("Author not found for post ID {$post->id}");
             }
 
-            $comments = Comment::findByPostId($post->id);
-            $commentData = array_map(function (Comment $comment) {
-                $commentAuthor = User::find($comment->author_id);
-                if (!$commentAuthor) {
-                    throw new RuntimeException("Author not found for comment ID {$comment->id}");
-                }
-                return new PostCommentData(
-                    author_name: $commentAuthor->username,
-                    text: $comment->content
-                );
-            }, $comments);
+            $commentCount = Comment::countByPostId($post->id);
+            error_log("Post ID {$post->id} has {$commentCount} comments.");
 
             return new PostData(
                 id: $post->id,
@@ -36,10 +27,10 @@ final class FeedController extends Controller {
                 author_id: $author->id,
                 author_avatar: $author->avatar,
                 image_path: $post->image_path,
-                created_at: $post->created_at,
+                created_at: $post->created_at ?? '',
                 likes_count: Like::countByPostId($post->id),
-                comments_count: count($comments),
-                comments: $commentData
+                comments_count: Comment::countByPostId($post->id),
+                comments: [],
             );
         }, $posts);
 

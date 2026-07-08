@@ -8,7 +8,7 @@
     require_once __DIR__ . '/components/navLink.php';
 ?>
 
-<header >
+<header class="bg-frosted-glass-300">
     <div class="flex align-center px-4 pt-1 gap-4 relative">
         <a href="/" class="logo-link">
             <img src="/assets/img/logo.png" alt="Camagru Logo" class="logo">

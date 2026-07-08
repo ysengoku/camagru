@@ -12,7 +12,7 @@ if (!function_exists('render_post_reactions')) {
         $commentsCountHtml = $commentsCount > 0 ? htmlspecialchars((string)$commentsCount, ENT_QUOTES) : '';
 
         return <<<HTML
-        <div class="flex items-center mt-4 gap-4">
+        <div class="flex items-center px-4 mt-4 gap-4">
             <div class="post-reactions">
                 <button
                   type="button"

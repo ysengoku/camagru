@@ -109,6 +109,34 @@ abstract class Model {
     }
 
     /**
+     * @param string $field
+     * @param mixed $value
+     * @return list<static>
+     */
+    protected static function findByFieldWithPagination(string $field, mixed $value, int $offset, int $limit): array {
+        $db = self::getDb();
+        $table = static::$name;
+        $sql = "SELECT * FROM `$table` WHERE `$field` = :value LIMIT $limit OFFSET $offset";
+
+        $rows = $db->fetchAll($sql, ['value' => $value]);
+    
+        return array_values(array_map(
+            fn(array $row): self => static::fromRow($row),
+            $rows
+        ));
+    }
+
+    protected static function countByField(string $field, mixed $value): int {
+        $db = self::getDb();
+        $table = static::$name;
+        $sql = "SELECT COUNT(*) as count FROM `$table` WHERE `$field` = :value";
+
+        $result = $db->fetch($sql, ['value' => $value]);
+
+        return (int) ($result['count'] ?? 0);
+    }
+
+    /**
      * Save the current instance to the database. (insert or update)
      * @return bool
      */

@@ -16,7 +16,7 @@
 ?>
 
 <div id="studio-container">
-    <div id="studio-canvas" class="flex-col align-center justify-center">
+    <div id="studio-canvas" class="flex-col align-center justify-center bg-frosted-glass-200">
         <div id="studio-tools" class="disabled">
             <?php echo render_tool_menu(); ?>
             <?php echo render_stickers_tool($stickers); ?>

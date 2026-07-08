@@ -20,14 +20,35 @@ final class Comment extends Model {
     public string $content = '';
     public ?string $created_at = '';
 
-    public function __construct() {
+    public function __construct(int $potId = 0, int $authorId = 0, string $content = '') {
+        $this->post_id = $potId ;
+        $this->author_id = $authorId;
+        $this->content = $content;
     }
 
-    public static function findByPostId(int $postId): array {
+    public static function countByPostId(int $postId): int {
+        if ($postId <= 0) {
+            return 0;
+        }
+
+        return self::countByField('post_id', $postId);
+    }
+
+    public static function findByPostIdWithPagination(int $postId, int $offset = 0, int $limit = 5): array {
         if ($postId <= 0) {
             return [];
         }
 
-        return self::findAllByField('post_id', $postId);
+        return self::findByFieldWithPagination('post_id', $postId, $offset, $limit);
+    }
+
+    public function toArray(): array {
+        return [
+            'id' => $this->id,
+            'post_id' => $this->post_id,
+            'author_id' => $this->author_id,
+            'content' => $this->content,
+            'created_at' => $this->created_at,
+        ];
     }
 }

@@ -30,6 +30,7 @@ function seedPosts(User $user): array {
         copy(FIXTURES_DIR . '/' . $filename, Path::join($mediaDir, $seededFilename));
 
         $post = new Post($publicPath, $user->id);
+        sleep(random_int(1, 3)); // Sleep 1-3 seconds to simulate more realistic timing
         if ($post->save()) {
             $posts[] = $post;
         } else {

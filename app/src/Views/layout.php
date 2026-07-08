@@ -23,7 +23,7 @@ $css = $isProd ? viteEntryCSS('js/main.js') : null;
         <title>
             <?php echo htmlspecialchars($pageTitle); ?>
         </title>
-        <?php if ($css): ?>
+        <?php if ($css !== null): ?>
             <link rel="stylesheet" href="<?php echo $css; ?>">
         <?php endif; ?>
         <link rel="icon" href="/favicon.ico" type="image/x-icon">

@@ -99,7 +99,7 @@ final class ProfileService {
     }
 
     private function isUsernameAvailable(string $username, User $user): bool {
-        if ($user->username === $username) {
+        if (strtolower($user->username) === strtolower($username)) {
             return true;
         }
 
@@ -111,7 +111,7 @@ final class ProfileService {
     }
 
     private function isEmailAvailable(string $email, User $user): bool {
-        if ($user->email === $email) {
+        if (strtolower($user->email) === strtolower($email)) {
             return true;
         }
 

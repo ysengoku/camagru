@@ -37,11 +37,14 @@ final class Post extends Model {
         return self::findById((string) $id);
     }
 
-    /**
-     * @return list<self>
-     */
-    public static function all(): array {
-        return self::findAll();
+    public static function allOrderedByCreationDesc(): array {
+        $db = self::getDb();
+        $sql = 'SELECT * FROM posts ORDER BY created_at DESC';
+
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $db->fetchAll($sql);
+
+        return array_map(fn(array $row): self => static::fromRow($row), $rows);
     }
 
     /**
@@ -75,7 +78,7 @@ final class Post extends Model {
         /** @var array<string, mixed>|null $row */
         $row = $db->fetch($sql, ['image_path' => $imagePath]);
 
-        return $row ? static::fromRow($row) : null;
+        return $row === null ? null : static::fromRow($row);
     }
 
     #[Override]

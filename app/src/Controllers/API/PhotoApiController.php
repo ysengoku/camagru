@@ -49,7 +49,12 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Image save failed'], Response::INTERNAL_ERROR);
         }
 
-        $post = new Post($publicImagePath, 1); // TODO: replace 1 with session user ID
+        $user = User::getCurrentUser();
+        if ($user === null) {
+            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
+        }
+
+        $post = new Post($publicImagePath, $user->id);
         if (!$post->save()) {
             return $this->json(
                 ['error' => 'Post could not be saved', 'details' => $post->getErrors()],

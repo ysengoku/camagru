@@ -18,8 +18,8 @@ if (!function_exists('render_studio_gallery')) {
         }
 
         return <<<HTML
-        <div id="studio-gallery" class="studio-section">
-            <h2 class="text-center text-lg font-bold mb-4">Your Gallery</h2>
+        <div id="studio-gallery" class="bg-frosted-glass-200">
+            <h2 class="text-center font-size-5 my-4 pt-4 color-secondary-400 font-bold">Your Gallery</h2>
             $galleryItemsHtml
         </div>
         HTML;

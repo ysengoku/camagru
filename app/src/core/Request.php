@@ -5,6 +5,10 @@ final class Request {
         return $_SERVER['PATH_INFO'] ?? '';
     }
 
+    public static function isXmlHttpRequest(): bool {
+        return ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+    }
+
     public static function getMethod(): string {
         return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }

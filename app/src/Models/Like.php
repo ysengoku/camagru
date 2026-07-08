@@ -25,7 +25,9 @@ final class Like extends Model {
     public int $author_id = 0;
     public ?string $created_at = '';
 
-    public function __construct() {
+    public function __construct(int $author_id = 0, int $post_id = 0) {
+        $this->author_id = $author_id;
+        $this->post_id = $post_id;
     }
 
     public function find(int $id): ?self {
@@ -41,10 +43,22 @@ final class Like extends Model {
             return 0;
         }
 
-        $db = Database::getInstance();
-        $sql = 'SELECT COUNT(*) as like_count FROM likes WHERE post_id = :post_id';
-        $result = $db->fetch($sql, ['post_id' => $postId]);
+        return self::countByField('post_id', $postId);
+    }
 
-        return (int) ($result['like_count'] ?? 0);
+    public static function findByUserAndPost(int $userId, int $postId): ?self {
+        if ($userId <= 0 || $postId <= 0) {
+            return null;
+        }
+
+        $db = Database::getInstance();
+        $sql = 'SELECT * FROM likes WHERE author_id = :author_id AND post_id = :post_id LIMIT 1';
+        $result = $db->fetch($sql, ['author_id' => $userId, 'post_id' => $postId]);
+
+        if ($result === false) {
+            return null;
+        }
+
+        return self::fromRow($result);
     }
 }

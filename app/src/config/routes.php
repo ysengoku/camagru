@@ -5,7 +5,7 @@ $routes = [
     ['path' => '', 'controller' => 'feed', 'action' => 'index'],
 
     // Post routes
-    ['path' => '/post', 'controller' => 'post', 'action' => 'view'],
+    ['path' => '/post', 'method' => 'GET','controller' => 'post', 'action' => 'view'],
 
     // Auth routes
     ['path' => '/signup', 'method' => 'GET', 'controller' => 'auth', 'action' => 'signup'],
@@ -34,6 +34,10 @@ $routes = [
     ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'DELETE', 'controller' => 'photoApi', 'action' => 'delete', 'auth' => true],
+
+    ['path' => '/api/like', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'toggleLike', 'auth' => true],
+    ['path' => '/api/comments', 'method' => 'GET', 'controller' => 'postReactions', 'action' => 'getComments'],
+    ['path' => '/api/comments', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'addComment', 'auth' => true],
 ];
 
 return $routes;

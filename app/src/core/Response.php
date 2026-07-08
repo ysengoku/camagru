@@ -47,7 +47,7 @@ final class Response {
         $this->statusText = self::STATUS_TEXTS[$statusCode] ?? 'Unknown Status';
     }
 
-    public static function redirect(string $url): void {
+    public static function redirect(string $url): never {
         header('Location: ' . $url);
         exit;
     }

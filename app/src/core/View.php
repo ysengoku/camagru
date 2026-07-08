@@ -31,26 +31,18 @@ final class View {
      * and wraps it inside the global layout skeleton.
      * * @psalm-suppress UnusedParam - Suppressed because $template and $props are utilized 
      * indirectly within the isolated scope of the included templates.
-     * * @param string $template The relative path to the template file (e.g., 'posts/index').
+     * @param string $template The relative path to the template file (e.g., 'posts/index').
      * @param array<string, mixed> $props An associative array of data to expand into variables within the templates.
      * @return string The fully assembled and compiled HTML raw content.
      * @throws HTTPNotFoundException If the requested template file cannot be found on the filesystem.
      * @psalm-suppress UnusedParam - Variables are used inside the included template files
      */
     public function render(string $template, array $props = []): string {
-        /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
-        $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';
-        if (!file_exists($templatePath)) {
-            throw new HTTPNotFoundException("View template not found: " . htmlspecialchars($template));
-        }
-
         extract($props);
         ob_start();
         $title = self::TITLE;
 
-        ob_start();
-        include $templatePath;
-        $content = (string) ob_get_clean();
+        $content = $this->renderContent($template, $props);
 
         ob_start();
         /** @psalm-suppress UnresolvableInclude - Path is set in constructor */
@@ -68,5 +60,18 @@ final class View {
         $layout = (string) ob_get_clean();
 
         return $layout;
+    }
+
+    public function renderContent(string $template, array $props = []): string {
+        /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
+        $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';
+        if (!file_exists($templatePath)) {
+            throw new HTTPNotFoundException("View template not found: " . htmlspecialchars($template));
+        }
+
+        extract($props);
+        ob_start();
+        include $templatePath;
+        return (string) ob_get_clean();
     }
 }

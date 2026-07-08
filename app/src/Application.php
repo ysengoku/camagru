@@ -45,7 +45,6 @@ final class Application {
             if ($authRequired === true) {
                 if (SessionStore::activeSession() === false) {
                     $this->response->redirect('/login');
-                    return;
                 }
             }
 

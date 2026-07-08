@@ -97,6 +97,8 @@
 .color-primary-700 { color: var(--primary-700); }
 .color-primary-800 { color: var(--primary-800); }
 .color-secondary-400 { color: var(--secondary-400); }
+.color-secondary-500 { color: var(--secondary-500); }
+.color-gray-400 { color: var(--gray-400); }
 .color-gray-500 { color: var(--gray-500); }
 .color-gray-600 { color: var(--gray-600); }
 .color-gray-700 { color: var(--gray-700); }
@@ -125,6 +127,21 @@
 .bg-transparent { background-color: transparent; }
 .bg-primary-100 { background-color: var(--primary-100); }
 .bg-gray-200 { background-color: var(--gray-200); }
+.bg-frosted-glass-200 {
+  background-color: rgba(var(--primary-100-rgb), 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.bg-frosted-glass-300 {
+  background-color: rgba(var(--primary-100-rgb), 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+.bg-frosted-glass-dark {
+  background-color: rgba(var(--primary-700-rgb), 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
 
 .text-decoration-none { text-decoration: none; }
 .border-none { border: none; }
