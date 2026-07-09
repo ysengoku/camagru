@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/../components/icon.php';
-require_once __DIR__ . '/../components/avatar.php';
-require_once __DIR__ . '/../feed/postHeader.php';
-require_once __DIR__ . '/../feed/postReactions.php';
+require_once __DIR__ . '/postHeader.php';
+require_once __DIR__ . '/reactions.php';
 require_once __DIR__ . '/comments.php';
 require_once __DIR__ . '/commentForm.php';
 
@@ -13,16 +12,17 @@ $postHeaderHtml = render_post_header($postData->author_name, $postData->author_a
 $postReactionsHtml = render_post_reactions($postData->id, $postData->likes_count, $postData->comments_count);
 ?>
 
-<div class="flex justify-center bg-frosted-glass-200 p-4">
-    <div class="post-view">
-        <?= $postHeaderHtml ?>
+<div class="post-view-container">
+    <div class="post-view bg-frosted-glass-200">
         <div class="post-view-image">
-            <img src="<?= htmlspecialchars($postData->image_path) ?>" alt="Post Image" />
+            <img src="<?= htmlspecialchars($postData->image_path) ?>" alt="PostImage" />
         </div>
-        <?= $postReactionsHtml ?>
-        <div class="post-view-comments mt-4 pt-4">
+        <div class="post-view-details">
+            <?= $postHeaderHtml ?>
+            <?= $postReactionsHtml ?>
             <?= render_comments($postData->comments) ?>
+            <hr class="my-2 border-gray-300 w-100" />
+            <?= render_comment_form($postData->id) ?>
         </div>
-        <?= render_comment_form($postData->id) ?>
     </div>
 </div>

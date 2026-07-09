@@ -107,16 +107,21 @@ class StudioManager {
   }
 
   initCanvas() {
+    this.canvasContext = this.editor.canvas.getContext('2d');
+  }
+
+  // Must run only once #studio-editor is actually visible
+  measureCanvas() {
     const computedStyle = getComputedStyle(this.editor.canvas);
     const cssWidth = parseInt(computedStyle.width);
     const cssHeight = parseInt(computedStyle.height);
+    if (!cssWidth || !cssHeight) {
+      return;
+    }
 
     this.editor.canvas.width = cssWidth;
     this.editor.canvas.height = cssHeight;
     studioConfig.canvasAspectRatio = cssWidth / cssHeight;
-    studioConfig.stickerInitialPosX = cssWidth * 0.25;
-    studioConfig.stickerInitialPosY = cssHeight * 0.25;
-    this.canvasContext = this.editor.canvas.getContext('2d');
   }
 
   initStudioMenu() {
@@ -171,10 +176,15 @@ class StudioManager {
       this.tool.menu.container.classList.add('disabled');
       this.tool.container.classList.add('disabled');
     } else {
+      // Only measure on menu -> editor; re-running mid-edit would wipe the canvas.
+      const wasHidden = this.editor.container.classList.contains('display-none');
       this.editor.container.classList.remove('display-none');
       this.studioMenu.container.classList.add('display-none');
       this.tool.menu.container.classList.remove('disabled');
       this.tool.container.classList.remove('disabled');
+      if (wasHidden) {
+        this.measureCanvas();
+      }
     }
   }
 
@@ -266,10 +276,7 @@ class StudioManager {
   async initWebcam() {
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: this.editor.canvas.width,
-          height: this.editor.canvas.height,
-        },
+        video: true,
       });
       this.editor.video.srcObject = this.stream;
       this.videoStream = this.stream;
@@ -304,13 +311,16 @@ class StudioManager {
   }
 
   capture(e) {
-    this.canvasContext.drawImage(
-      this.editor.video,
-      0,
-      0,
-      this.editor.canvas.width,
-      this.editor.canvas.height
-    );
+    const ctx = this.canvasContext;
+    const width = this.editor.canvas.width;
+    const height = this.editor.canvas.height;
+
+    // Mirror to match #webcam's CSS mirror — drawImage() ignores CSS transforms.
+    ctx.save();
+    ctx.translate(width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(this.editor.video, 0, 0, width, height);
+    ctx.restore();
 
     const data = this.editor.canvas.toDataURL('image/png');
     this.editor.photo.setAttribute('src', data);
@@ -378,15 +388,12 @@ class StudioManager {
     const offsetY = this.state.uploadedImage.offsetY;
     const zoom = this.state.uploadedImage.zoom;
 
-    this.canvasContext.clearRect(
-      0,
-      0,
-      this.editor.canvas.width,
-      this.editor.canvas.height
-    );
-
     const canvasWidth = this.editor.canvas.width;
     const canvasHeight = this.editor.canvas.height;
+
+    // Fill so that mismatched-ratio uploads don't turn black on JPEG export
+    this.canvasContext.fillStyle = '#f2fcfa';
+    this.canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);
     const imgAspectRatio = img.naturalWidth / img.naturalHeight;
     const canvasAspectRatio = canvasWidth / canvasHeight;
 
@@ -432,12 +439,36 @@ class StudioManager {
   // ======== Capture, Share, Reset =====================================
 
   async sharePhoto() {
+    // Convert stored fractions to canvas pixels for the server
+    const canvasWidth = this.editor.canvas.width;
+    const canvasHeight = this.editor.canvas.height;
+    const stickers = this.state.selectedStickers.map((sticker) => ({
+      path: sticker.path,
+      x: sticker.xFraction * canvasWidth,
+      y: sticker.yFraction * canvasHeight,
+      width: sticker.widthFraction * canvasWidth,
+      height: sticker.heightFraction * canvasHeight,
+    }));
+
+    // Same fraction -> pixel conversion as stickers, plus fontSize scaled by canvas/editor ratio.
+    let textOverlay = null;
+    if (this.state.textOverlay) {
+      const editorRect = this.editor.container.getBoundingClientRect();
+      const t = this.state.textOverlay;
+      textOverlay = {
+        content: t.content,
+        fontFamily: t.fontFamily,
+        color: t.color,
+        x: t.xFraction * canvasWidth,
+        y: t.yFraction * canvasHeight,
+        fontSize: t.fontSize * (canvasHeight / editorRect.height),
+      };
+    }
+
     const finalImageData = {
-      baseImage: this.state.uploadedImage.img
-        ? this.editor.canvas.toDataURL('image/jpeg')
-        : null,
-      stickers: this.state.selectedStickers,
-      textOverlay: this.state.textOverlay,
+      baseImage: this.editor.canvas.toDataURL('image/jpeg'),
+      stickers,
+      textOverlay,
       filter: this.state.selectedFilter,
     };
 

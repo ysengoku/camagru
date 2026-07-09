@@ -6,7 +6,7 @@ if (!function_exists('render_gallery_item')) {
 
         return <<<HTML
         <div class="gallery-item px-4">
-            <a href="/post?id={$postIdHtml}">
+            <a href="/post?postId={$postIdHtml}">
                 <img
                   src="{$imagePathHtml}"
                   alt="Photo"

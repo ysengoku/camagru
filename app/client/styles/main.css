@@ -105,8 +105,6 @@
   --danger-dark: #b04848;
   --info: #406eff;
   --info-dark: #2a47b0;
-
-  --footer-height: 20px;
 }
 
 /* Breakpoints 
@@ -138,7 +136,19 @@ body {
   background-attachment: fixed;
 }
 
-/* Ensure form controls and buttons inherit the page font */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (min-width: 1100px) {
+  body:has(#studio) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
 button,
 input,
 select,
@@ -153,23 +163,87 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
+  flex-shrink: 0;
 }
 
 footer {
   position: sticky;
-  height: var(--footer-height);
-  bottom: 0;
+  align-self: center;
+  width: 600px;
+  height: 20px;
   padding: 0.5rem 1rem;
+  flex-shrink: 0;
+  bottom: 12px;
+  border-radius: 2rem;
+}
+
+.footer-nav {
+  display: none;
+}
+
+.header-nav-links {
+  display: contents;
 }
 
 main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 0.5rem 3rem;
-  min-height: calc(100vh - 72px - var(--footer-height));
 }
 
 @media (max-width: 768px) {
   main {
     padding: 0.5rem 1rem;
+  }
+
+  .header-nav-links {
+    display: none;
+  }
+
+  .navbar {
+    bottom: 12px;
+  }
+
+  footer {
+    height: 56px;
+    padding: 0 0 env(safe-area-inset-bottom) 0;
+    width: 360px;
+  }
+
+  .footer-nav {
+    display: flex;
+    height: 100%;
+  }
+
+  .footer-nav nav {
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  .footer-nav .nav-link-container {
+    padding: 0;
+  }
+
+  .footer-nav .nav-link-active {
+    border-bottom: none;
+  }
+
+  .footer-nav .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .footer-copyright {
+    display: none;
   }
 }
 
@@ -209,11 +283,11 @@ p {
   background-image: linear-gradient(
     to left bottom,
     rgba(0, 192, 176, 1) 0%,
-    rgba(0, 150, 137, 1) 50%,
+    rgba(0, 150, 137, 1) 20%,
     rgba(217, 13, 112, 1) 100%
   );
   color: var(--primary-100);
-  font-family: PrincessSofia, 'Arial', sans-serif;
+  font-family: 'PrincessSofia', sans-serif;
   font-weight: bold;
   margin-bottom: 0.3rem;
 }
@@ -254,6 +328,11 @@ p {
   }
 }
 
+button:hover {
+  transform: scale(1.1, 1.1);
+  cursor: pointer;
+}
+
 .button-primary {
   display: flex;
   justify-content: center;
@@ -273,7 +352,6 @@ p {
     #00c0b0
   );
   color: var(--primary-100);
-  cursor: pointer;
 
   svg {
     width: 24px;
@@ -285,7 +363,6 @@ p {
   border: none;
   background-color: transparent;
   color: var(--primary-600);
-  cursor: pointer;
 }
 
 .toast {
@@ -320,7 +397,7 @@ p {
   background: rgba(var(--primary-100-rgb), 0.6);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--primary-600-rgb), 0.9);
+  background: rgba(var(--primary-600-rgb), 0.4);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(var(--primary-400-rgb), 0.9);
@@ -328,7 +405,7 @@ p {
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--primary-600-rgb), 0.9) rgba(var(--primary-100-rgb), 0.6);
+  scrollbar-color: rgba(var(--primary-600-rgb), 0.4) rgba(var(--primary-100-rgb), 0.6);
 }
 
 hr {
@@ -526,6 +603,67 @@ hr {
   padding: 1rem 0;
 }
 
+.post-view-container {
+  container-type: inline-size;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-view {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow: hidden;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+}
+
+.post-view-image {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--gray-700);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.post-view-details {
+  flex: 0 1 460px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0 0.5rem 0.5rem;
+}
+
+/* Reacts to .post-view-container's own available width. 
+   This lays out correctly if the component ends up in a modal/overlay
+   narrower than the page instead of the full-width layout it has today. */
+@container (max-width: 1000px) {
+  .post-view {
+    flex-direction: column;
+  }
+
+  .post-view-image {
+    flex: none;
+    height: auto;
+
+    img {
+      height: auto;
+    }
+  }
+
+  .post-view-details {
+    flex: 1;
+  }
+}
+
 .post-reactions {
   display: flex;
   align-items: center;
@@ -534,7 +672,6 @@ hr {
   button {
     color: var(--gray-500) !important;
   }
-
   svg {
     width: 24px;
     height: 24px;
@@ -542,67 +679,55 @@ hr {
   }
 }
 
-.post-view {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 75vw;
-  overflow: hidden;
-}
-
-.post-view-image img {
-  display: block;
-  width: 100%;
-  object-fit: cover;
-}
-
-.post-view-comments {
-  overflow-y: auto;
-}
-
 .post-comments {
   overflow-y: auto;
-  max-height: 240px;
+  flex: 1;
+  padding: 1rem 0 0 0.5rem;
 }
 
 .comment-form {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(var(--primary-600-rgb), 0.15);
+  margin: 0.5rem 1rem 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(var(--primary-600-rgb), 0.2);
+  border-radius: 0.5rem;
+  background-color: rgba(var(--primary-100-rgb), 0.5);
 
   textarea {
     flex: 1;
     resize: none;
     min-height: 2.5rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid rgba(var(--primary-600-rgb), 0.2);
-    border-radius: 0.5rem;
+    padding: 0.5rem;
     font-family: inherit;
-  }
-
-  button {
+    background-color: transparent;
     border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-500);
-    color: var(--primary-100);
-    font-weight: bold;
-    cursor: pointer;
   }
 }
 
 /* -------- Studio -------- */
+#studio {
+  container-type: inline-size;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 #studio-container {
+  flex: 1;
+  min-height: 0;
   display: flex;
   justify-content: center;
   margin: 2rem 0;
   gap: 2rem;
-  height: calc(100vh - 72px - 32px - 4rem) !important;
 }
 
 #studio-canvas {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -614,12 +739,18 @@ hr {
 
 #studio-editor,
 #studio-menu {
-  width: 640px;
-  height: 480px;
+  flex: 1;
+  min-height: 0;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
 }
 
 #studio-editor {
   position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(var(--primary-800-rgb), 0.1);  
 }
 
 #studio-menu {
@@ -649,25 +780,28 @@ hr {
   }
 }
 
+video {
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+}
+
 #webcam,
 #studio-preview {
   position: absolute;
   top: 0;
   left: 0;
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 #webcam {
-  width: 100%;
-  height: 100%;
   transform: scaleX(-1);
   object-fit: cover;
   z-index: 1;
 }
 
 #studio-preview {
-  width: 640px;
-  height: 480px;
   z-index: 2;
 }
 
@@ -680,41 +814,41 @@ hr {
 }
 
 #studio-gallery {
-  width: 300px;
+  flex: 0 1 360px;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   border-radius: 0.5rem;
 }
 
-@media (max-width: 576px) {
+@container (max-width: 1000px) {
   #studio-container {
     flex-direction: column;
   }
 
-  #studio-menu,
-  #webcam,
-  #studio-preview {
-    width: 100%;
-    height: auto;
-  }
-}
-
-@media (min-width: 577px) and (max-width: 768px) {
-  #studio-container {
-    flex-direction: column;
+  #studio-canvas {
+    flex: none;
   }
 
-  #studio-menu,
-  #webcam,
-  #studio-preview {
+  #studio-editor,
+  #studio-menu {
+    flex: none;
     width: 100%;
+    max-width: none;
     height: auto;
+  }
+
+  #studio-gallery {
+    flex: 1;
+    overflow-y: visible;
   }
 }
 
 #studio-tools {
-  width: 640px;
+  width: 100%;
 }
 
 #studio-tools-menu {
@@ -739,7 +873,7 @@ hr {
 .tool-container {
   display: flex;
   align-items: center;
-  width: 640px;
+  width: 100%;
   height: 96px;
 }
 
@@ -807,8 +941,8 @@ hr {
 
 .sticker-overlay.sticker-editing,
 #text-preview-container.overlay-editing {
-  border: 2px dashed var(--primary-100);
-  padding: 0.25rem 0.5rem;
+  outline: 2px dashed var(--primary-100);
+  outline-offset: 2px;
 }
 
 #text-input-overlay {
@@ -828,7 +962,7 @@ hr {
     background-color: transparent;
     color: var(--gray-100);
     font-size: 1.5rem;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Raleway', sans-serif;
     caret-color: var(--gray-100);
     line-height: 1.4;
 
@@ -999,33 +1133,4 @@ hr {
   background-color: transparent;
   color: var(--primary-600);
   font-size: 1rem;
-}
-
-.confirmation-message {
-  background-color: rgba(var(--primary-600-rgb), 0.1);
-  border-radius: 0.5rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.flash-dialog {
-  all: unset;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-}
-
-.flash-message {
-  background-color: whitesmoke;
-  padding: 5rem;
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 360px;
 }

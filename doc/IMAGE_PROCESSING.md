@@ -189,6 +189,19 @@ imagefttext(
 );
 ```
 
+`imagefttext()` positions text by its **baseline**, not the top of the
+glyphs, but `x`/`y` arrive from the client as the top-left corner of the CSS
+text box shown in the editor preview (see `CLIENT_IMAGE_PROCESSING.md`).
+Passing that `y` straight through would draw text lower than the preview
+showed, and clip ascenders off entirely for text placed near the top edge.
+`imagettfbbox()` gives the font's ascent for the given size/content, which
+is added to `y` before drawing to convert "top of box" into "baseline":
+
+```php
+$bbox = imagettfbbox((float)$fontSize, 0.0, $fontPath, $content);
+$ascent = -$bbox[7];
+```
+
 ## Saving
 
 The final image is saved as a JPEG:

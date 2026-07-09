@@ -139,15 +139,21 @@ final class ImageComposer {
             $color = (int)hexdec('009689'); // Fallback
         }
 
+        $content = $textOverlay['content'] ?? '';
+
+        // Convert the client's "top of box" y into the baseline y imagefttext() expects.
+        $bbox = imagettfbbox((float)$fontSize, 0.0, $fontPath, $content);
+        $ascent = -$bbox[7];
+
         imagefttext(
             $this->canvas,
             (float)$fontSize,
             0.0,
             (int) round((float) ($textOverlay['x'] ?? 0)),
-            (int) round((float) ($textOverlay['y'] ?? 0)),
+            (int) round((float) ($textOverlay['y'] ?? 0) + $ascent),
             $color,
             $fontPath,
-            $textOverlay['content'] ?? ''
+            $content
         );
     }
 

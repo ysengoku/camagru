@@ -4,7 +4,9 @@ if (!function_exists('render_comment_form')) {
         return <<<HTML
             <form action="/post/{$postId}/comment" method="POST" class="comment-form">
                 <textarea name="content" placeholder="Write a comment..." required></textarea>
-                <button type="submit">Post Comment</button>
+                <button type="submit" class="button-no-border">
+                    Send
+                </button>
             </form>
         HTML;
     }

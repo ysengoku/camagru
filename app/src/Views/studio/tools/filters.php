@@ -1,5 +1,5 @@
 <?php
-    const SAMPLE_IMAGE  = '/assets/img/sample-pic2.jpg';
+    const SAMPLE_IMAGE  = '/assets/img/sample.jpg';
     const FILTERS = ['none', 'grayscale', 'sepia', 'vintage', 'dream'];
     const DEFAULT_FILTER = 'none';
 ?>

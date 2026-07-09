@@ -62,6 +62,27 @@ export class TextManager extends ToolManager {
     });
 
     this.setupStoreSubscriptions();
+    this.setupResizeObserver();
+  }
+
+  // Position is stored as a fraction (0-1) of the editor 
+  // so that it stays correctly placed as the responsive layout resizes.
+  setupResizeObserver() {
+    const observer = new ResizeObserver(() => this.repositionText());
+    observer.observe(this.editor.container);
+  }
+
+  repositionText() {
+    if (!this.hasTextOverlay) {
+      return;
+    }
+    this.applyTextGeometry(this.state.textOverlay);
+  }
+
+  applyTextGeometry(textData) {
+    const rect = this.editor.container.getBoundingClientRect();
+    this.textPreviewContainer.style.left = `${textData.xFraction * rect.width}px`;
+    this.textPreviewContainer.style.top = `${textData.yFraction * rect.height}px`;
   }
 
   // ====== Text tools handling ===============================================
@@ -120,24 +141,24 @@ export class TextManager extends ToolManager {
     this.updateTextPreviewElement(textData);
     this.hideTextInput();
 
+    // Converts the initial CSS-centered position into a fraction
     const containerRect = this.editor.container.getBoundingClientRect();
     const previewRect = this.textPreviewContainer.getBoundingClientRect();
-    const x = previewRect.left - containerRect.left;
-    const y = previewRect.top - containerRect.top;
+    const xFraction = (previewRect.left - containerRect.left) / containerRect.width;
+    const yFraction = (previewRect.top - containerRect.top) / containerRect.height;
 
-    this.textPreviewContainer.style.left = `${x}px`;
-    this.textPreviewContainer.style.top = `${y}px`;
     this.textPreviewContainer.style.transform = 'none';
 
     this.state = (s) => ({
       ...s,
       textOverlay: {
         ...textData,
-        x,
-        y,
+        xFraction,
+        yFraction,
       },
     });
 
+    this.applyTextGeometry(this.state.textOverlay);
     this.bindTextOverlayEvents();
   }
 
@@ -178,8 +199,8 @@ export class TextManager extends ToolManager {
             ...s,
             textOverlay: {
               ...s.textOverlay,
-              x: elRect.left - containerRect.left,
-              y: elRect.top - containerRect.top,
+              xFraction: (elRect.left - containerRect.left) / containerRect.width,
+              yFraction: (elRect.top - containerRect.top) / containerRect.height,
             },
           });
         },

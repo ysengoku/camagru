@@ -34,6 +34,22 @@ export class StickerManager extends ToolManager {
 
     this.bindStickerEvents();
     this.setupStoreSubscriptions();
+    this.setupResizeObserver();
+  }
+
+  // Keeps stickers correctly placed as the responsive editor resizes.
+  setupResizeObserver() {
+    const observer = new ResizeObserver(() => this.repositionStickers());
+    observer.observe(this.editor.container);
+  }
+
+  repositionStickers() {
+    this.state.selectedStickers.forEach((sticker) => {
+      const overlay = document.getElementById(sticker.id);
+      if (overlay) {
+        this.applyStickerGeometry(overlay, sticker);
+      }
+    });
   }
 
   updateScrollButtons() {
@@ -89,22 +105,23 @@ export class StickerManager extends ToolManager {
     img.onload = () => {
       const aspectRatio = img.naturalWidth / img.naturalHeight;
 
-      let drawWidth, drawHeight;
+      // Fractions of the editor's size, not px — see CLIENT_IMAGE_PROCESSING.md.
+      let widthFraction, heightFraction;
       if (aspectRatio > this.config.canvasAspectRatio) {
-        drawWidth = this.editor.canvas.width * 0.5;
-        drawHeight = (this.editor.canvas.width / aspectRatio) * 0.5;
+        widthFraction = 0.5;
+        heightFraction = 0.5 * (this.config.canvasAspectRatio / aspectRatio);
       } else {
-        drawHeight = this.editor.canvas.height * 0.5;
-        drawWidth = this.editor.canvas.height * aspectRatio * 0.5;
+        heightFraction = 0.5;
+        widthFraction = 0.5 * (aspectRatio / this.config.canvasAspectRatio);
       }
 
       const stickerData = {
         id: `sticker-${Date.now()}`,
         path: stickerPath,
-        x: this.config.stickerInitialPosX,
-        y: this.config.stickerInitialPosY,
-        width: drawWidth,
-        height: drawHeight,
+        xFraction: 0.25,
+        yFraction: 0.25,
+        widthFraction,
+        heightFraction,
         aspectRatio: aspectRatio,
       };
       this.drawSticker(stickerData);
@@ -122,13 +139,18 @@ export class StickerManager extends ToolManager {
 
     overlay.id = stickerData.id;
     overlay.dataset.aspectRatio = stickerData.aspectRatio;
-    overlay.style.left = `${this.config.stickerInitialPosX}px`;
-    overlay.style.top = `${this.config.stickerInitialPosY}px`;
-    overlay.style.width = `${stickerData.width}px`;
-    overlay.style.height = `${stickerData.height}px`;
     overlay.style.backgroundImage = `url(${stickerData.path})`;
 
     this.editor.container.appendChild(overlay);
+    this.applyStickerGeometry(overlay, stickerData);
+  }
+
+  applyStickerGeometry(overlay, stickerData) {
+    const rect = this.editor.container.getBoundingClientRect();
+    overlay.style.left = `${stickerData.xFraction * rect.width}px`;
+    overlay.style.top = `${stickerData.yFraction * rect.height}px`;
+    overlay.style.width = `${stickerData.widthFraction * rect.width}px`;
+    overlay.style.height = `${stickerData.heightFraction * rect.height}px`;
   }
 
   selectStickerForEditing(target) {
@@ -175,15 +197,12 @@ export class StickerManager extends ToolManager {
       },
       onDragEnd: ({ target }) => {
         const id = target.id;
+        const rect = this.editor.container.getBoundingClientRect();
+        const xFraction = parseFloat(target.style.left) / rect.width;
+        const yFraction = parseFloat(target.style.top) / rect.height;
         this.state = (s) => ({
           selectedStickers: s.selectedStickers.map((sticker) =>
-            sticker.id === id
-              ? {
-                  ...sticker,
-                  x: parseFloat(target.style.left),
-                  y: parseFloat(target.style.top),
-                }
-              : sticker
+            sticker.id === id ? { ...sticker, xFraction, yFraction } : sticker
           ),
         });
       },
@@ -204,14 +223,13 @@ export class StickerManager extends ToolManager {
       },
       onDragEnd: ({ target }) => {
         const overlay = target.closest('.sticker-overlay');
+        const rect = this.editor.container.getBoundingClientRect();
+        const widthFraction = parseFloat(overlay.style.width) / rect.width;
+        const heightFraction = parseFloat(overlay.style.height) / rect.height;
         this.state = (s) => ({
           selectedStickers: s.selectedStickers.map((sticker) =>
             sticker.id === overlay.id
-              ? {
-                  ...sticker,
-                  width: parseFloat(overlay.style.width),
-                  height: parseFloat(overlay.style.height),
-                }
+              ? { ...sticker, widthFraction, heightFraction }
               : sticker
           ),
         });
