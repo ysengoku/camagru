@@ -19,7 +19,6 @@ final class FeedController extends Controller {
             }
 
             $commentCount = Comment::countByPostId($post->id);
-            error_log("Post ID {$post->id} has {$commentCount} comments.");
 
             return new PostData(
                 id: $post->id,

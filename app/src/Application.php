@@ -24,11 +24,13 @@ final class Application {
         try {
             $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
             if (!in_array($method, self::ALLOWED_METHODS)) {
+                error_log("Method not allowed: " . $method);
                 throw new HTTPNotFoundException();
             }
 
             $params = $this->router->resolve($this->getPathInfo(), $_SERVER['REQUEST_METHOD'] ?? 'GET');
             if ($params === null) {
+                error_log("Route not found for URI: " . $this->getPathInfo());
                 throw new HTTPNotFoundException();
             }
 
@@ -62,6 +64,7 @@ final class Application {
     private function runAction(string $controller, string $action): void {
         $controllerClass = ucfirst($controller) . 'Controller';
         if (!class_exists($controllerClass)) {
+            error_log("Controller class not found: " . htmlspecialchars($controllerClass));
             throw new HTTPNotFoundException();
         }
 

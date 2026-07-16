@@ -5,7 +5,7 @@ $routes = [
     ['path' => '', 'controller' => 'feed', 'action' => 'index'],
 
     // Post routes
-    ['path' => '/post', 'method' => 'GET','controller' => 'post', 'action' => 'view'],
+    ['path' => '/post', 'method' => 'GET', 'controller' => 'post', 'action' => 'view'],
 
     // Auth routes
     ['path' => '/signup', 'method' => 'GET', 'controller' => 'auth', 'action' => 'signup'],

@@ -74,6 +74,8 @@
   --primary-700: #004942;
   --primary-800: #002722;
   --primary-100-rgb: 242, 252, 250;
+  --primary-200-rgb: 179, 255, 244;
+  --primary-300-rgb: 0, 235, 216;
   --primary-400-rgb: 0, 192, 176;
   --primary-500-rgb: 0, 150, 137;
   --primary-600-rgb: 0, 110, 100;
@@ -169,12 +171,19 @@ header {
 footer {
   position: sticky;
   align-self: center;
+  text-align: center;
   width: 600px;
   height: 20px;
   padding: 0.5rem 1rem;
   flex-shrink: 0;
   bottom: 12px;
   border-radius: 2rem;
+  z-index: 1000;
+}
+
+.footer-copyright {
+  display: inline;
+  font-size: 0.8rem;
 }
 
 .footer-nav {
@@ -186,6 +195,7 @@ footer {
 }
 
 main {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
@@ -207,9 +217,12 @@ main {
   }
 
   footer {
+    width: 360px;
+  }
+
+  footer.footer-authenticated {
     height: 56px;
     padding: 0 0 env(safe-area-inset-bottom) 0;
-    width: 360px;
   }
 
   .footer-nav {
@@ -224,11 +237,18 @@ main {
   }
 
   .footer-nav .nav-link-container {
-    padding: 0;
+    padding: 8px 12px;
+    color: var(--gray-200);
+  }
+
+  .footer-nav .nav-link-container.nav-link-active {
+    background-color: rgba(var(--gray-800-rgb), 0.2);
+    border-radius: 1.5rem;
   }
 
   .footer-nav .nav-link-active {
     border-bottom: none;
+    color: var(--primary-400);
   }
 
   .footer-nav .nav-link {
@@ -242,7 +262,7 @@ main {
     }
   }
 
-  .footer-copyright {
+  footer.footer-authenticated .footer-copyright {
     display: none;
   }
 }
@@ -603,21 +623,58 @@ hr {
   padding: 1rem 0;
 }
 
+.post-view-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: flex;
+  overflow: hidden;
+}
+
 .post-view-container {
   container-type: inline-size;
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .post-view {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: row;
   width: 100%;
   overflow: hidden;
-  margin: 1rem 0;
+  margin: 1rem 0 1.5rem 0;
   border-radius: 0.5rem;
+}
+
+.post-view-overlay .post-view {
+  margin: 0;
+  border-radius: 0;
+}
+
+#close-post-view-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--primary-800-rgb), 0.5);
+  border: none;
+  border-radius: 50%;
+  color: var(--gray-300);
+  cursor: pointer;
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .post-view-image {
@@ -636,16 +693,17 @@ hr {
 }
 
 .post-view-details {
-  flex: 0 1 460px;
+  flex: 0 1 400px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 0 0.5rem 0.5rem;
+  padding: 1.5rem 0 48px 0.5rem;
 }
 
 /* Reacts to .post-view-container's own available width. 
    This lays out correctly if the component ends up in a modal/overlay
    narrower than the page instead of the full-width layout it has today. */
-@container (max-width: 1000px) {
+@container (max-width: 800px) {
   .post-view {
     flex-direction: column;
   }
@@ -653,14 +711,17 @@ hr {
   .post-view-image {
     flex: none;
     height: auto;
-
+    
     img {
       height: auto;
+      object-fit: contain;
+      max-height: 40vh;
     }
   }
 
   .post-view-details {
     flex: 1;
+    padding: 1rem 0 78px 0;
   }
 }
 
@@ -682,6 +743,7 @@ hr {
 .post-comments {
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
   padding: 1rem 0 0 0.5rem;
 }
 

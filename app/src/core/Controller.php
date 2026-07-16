@@ -7,6 +7,7 @@ abstract class Controller {
 
     public function run(string $action): string {
         if (!method_exists($this, $action)) {
+            error_log("Action method not found: " . htmlspecialchars($action) . " in controller " . get_class($this));
             throw new HTTPNotFoundException();
         }
         $this->actionName = $action;

@@ -1,4 +1,4 @@
 // Feed page entry point
 import '../main.js'; // Common dependencies
 
-import './openPostView.js';
+import '../post/comments.js';

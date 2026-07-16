@@ -66,7 +66,8 @@ final class View {
         /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
         $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';
         if (!file_exists($templatePath)) {
-            throw new HTTPNotFoundException("View template not found: " . htmlspecialchars($template));
+            error_log("View template not found: " . htmlspecialchars($template));
+            throw new HTTPNotFoundException();
         }
 
         extract($props);

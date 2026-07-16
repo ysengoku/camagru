@@ -44,7 +44,7 @@ final class PostReactionsController extends Controller {
         $postId = Request::getQueryParam('postId');
         if (is_numeric($postId) === false) {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
-            }
+        }
             
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 5);

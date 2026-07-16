@@ -177,7 +177,8 @@ class StudioManager {
       this.tool.container.classList.add('disabled');
     } else {
       // Only measure on menu -> editor; re-running mid-edit would wipe the canvas.
-      const wasHidden = this.editor.container.classList.contains('display-none');
+      const wasHidden =
+        this.editor.container.classList.contains('display-none');
       this.editor.container.classList.remove('display-none');
       this.studioMenu.container.classList.add('display-none');
       this.tool.menu.container.classList.remove('disabled');

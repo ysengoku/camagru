@@ -43,7 +43,6 @@ $css = $isProd ? viteEntryCSS('js/main.js') : null;
             <?php endif; ?>
         <?php else: ?>
             <script type="module" src="/@vite/client"></script>
-            <script type="module" src="/js/main.js"></script>
             <?php if ($pageScript !== null): ?>
                 <script type="module" src="/js/<?php echo htmlspecialchars($pageScript); ?>/entry.js"></script>
             <?php endif; ?>

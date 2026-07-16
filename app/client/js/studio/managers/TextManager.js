@@ -65,7 +65,7 @@ export class TextManager extends ToolManager {
     this.setupResizeObserver();
   }
 
-  // Position is stored as a fraction (0-1) of the editor 
+  // Position is stored as a fraction (0-1) of the editor
   // so that it stays correctly placed as the responsive layout resizes.
   setupResizeObserver() {
     const observer = new ResizeObserver(() => this.repositionText());
@@ -144,8 +144,10 @@ export class TextManager extends ToolManager {
     // Converts the initial CSS-centered position into a fraction
     const containerRect = this.editor.container.getBoundingClientRect();
     const previewRect = this.textPreviewContainer.getBoundingClientRect();
-    const xFraction = (previewRect.left - containerRect.left) / containerRect.width;
-    const yFraction = (previewRect.top - containerRect.top) / containerRect.height;
+    const xFraction =
+      (previewRect.left - containerRect.left) / containerRect.width;
+    const yFraction =
+      (previewRect.top - containerRect.top) / containerRect.height;
 
     this.textPreviewContainer.style.transform = 'none';
 
@@ -199,8 +201,10 @@ export class TextManager extends ToolManager {
             ...s,
             textOverlay: {
               ...s.textOverlay,
-              xFraction: (elRect.left - containerRect.left) / containerRect.width,
-              yFraction: (elRect.top - containerRect.top) / containerRect.height,
+              xFraction:
+                (elRect.left - containerRect.left) / containerRect.width,
+              yFraction:
+                (elRect.top - containerRect.top) / containerRect.height,
             },
           });
         },

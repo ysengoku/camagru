@@ -11,7 +11,7 @@ if (!function_exists('render_post_preview')) {
         $imagePath = htmlspecialchars($post->image_path, ENT_QUOTES);
 
         return <<<HTML
-            <a href="/post?postId={$post->id}" class="text-decoration-none color-gray-700">
+            <a href="/post?postId={$post->id}" class="post-preview text-decoration-none color-gray-700" data-post-id="{$post->id}">
                 <div class="post-preview-card bg-frosted-glass-200 gap-2">
                     {$header}
                     <img src="{$imagePath}" alt="Post Image" class="w-full h-auto object-cover rounded">
