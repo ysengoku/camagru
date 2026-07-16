@@ -4,13 +4,69 @@
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
 final class PostReactionsController extends Controller {
-    final public function toggleLike(): string {
+    final public function like(): string {
         if (Request::getMethod() !== 'POST') {
             return $this->methodNotAllowed();
         }
 
-        $data = Request::getPostData();
-        $postId = $data['postId'] ?? null;
+        $context = $this->resolveLikeContext();
+        if (is_string($context)) {
+            return $context;
+        }
+        [$postId, $user, $like] = $context;
+
+        if ($like !== null) {
+            return $this->json(['error' => 'The user has already liked this post'], Response::BAD_REQUEST);
+        }
+
+        $newLike = new Like($user->id, $postId);
+        if ($newLike->save()) {
+            $likesCount = Like::countByPostId($postId);
+
+            return $this->json([
+                    'message' => 'Like added',
+                    'likesCount' => $likesCount
+                ], Response::CREATED);
+        }
+
+        return $this->json(['error' => 'Failed to add like'], Response::INTERNAL_ERROR);
+    }
+
+    final public function removeLike(): string {
+        if (Request::getMethod() !== 'DELETE') {
+            return $this->methodNotAllowed();
+        }
+
+        $context = $this->resolveLikeContext();
+        if (is_string($context)) {
+            return $context;
+        }
+        [$postId, , $like] = $context;
+
+        if ($like === null) {
+            return $this->json(['error' => 'The user has not liked this post. Cannot remove like.'], Response::BAD_REQUEST);
+        }
+
+        if ($like->delete()) {
+            $likesCount = Like::countByPostId($postId);
+    
+            return $this->json([
+                'message' => 'Like removed',
+                'likesCount' => $likesCount
+            ], Response::OK);
+        }
+
+        return $this->json(['error' => 'Failed to remove like'], Response::INTERNAL_ERROR);
+    }
+
+    /**
+     * Resolves the postId, current user, and any existing Like shared by like()/removeLike().
+     * @return array{0: int, 1: User, 2: ?Like}|string A JSON error response string on failure.
+     */
+    private function resolveLikeContext(): array|string {
+        $postId = Request::getMethod() === 'DELETE'
+            ? Request::getQueryParam('postId')
+            : (Request::getPostData()['postId'] ?? null);
 
         if (is_numeric($postId) === false) {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
@@ -20,20 +76,10 @@ final class PostReactionsController extends Controller {
         if ($user === null) {
             return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
         }
+
         $like = Like::findByUserAndPost($user->id, (int)$postId);
 
-        if ($like !== null) {
-            if ($like->delete()) {
-                return $this->json(['message' => 'Like removed'], Response::OK);
-            } 
-            return $this->json(['error' => 'Failed to remove like'], Response::INTERNAL_ERROR);
-        }
-
-        $newLike = new Like($user->id, (int)$postId);
-        if ($newLike->save()) {
-            return $this->json(['message' => 'Like added'], Response::CREATED);
-        } 
-        return $this->json(['error' => 'Failed to add like'], Response::INTERNAL_ERROR);    
+        return [(int)$postId, $user, $like];
     }
 
     final public function getComments(): string {

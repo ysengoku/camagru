@@ -7,9 +7,10 @@ require_once __DIR__ . '/commentForm.php';
 
 /**
  * @var PostData $postData
+ * @var User|null $user
  */
 $postHeaderHtml = render_post_header($postData->author_name, $postData->author_avatar, $postData->created_at, 'large');
-$postReactionsHtml = render_post_reactions($postData->id, $postData->likes_count, $postData->comments_count);
+$postReactionsHtml = render_post_reactions($postData->id, $postData->likes_count, $postData->is_liked_by_current_user, $postData->comments_count, $user !== null);
 ?>
 
 <div class="post-view-container">

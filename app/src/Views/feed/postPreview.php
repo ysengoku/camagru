@@ -7,7 +7,7 @@ require_once __DIR__ . '/../post/reactions.php';
 if (!function_exists('render_post_preview')) {
     function render_post_preview(PostData $post): string {
         $header    = render_post_header($post->author_name, $post->author_avatar, $post->created_at);
-        $reactions = render_post_reactions($post->id, $post->likes_count, $post->comments_count);
+        $reactions = render_post_reactions($post->id, $post->likes_count, $post->is_liked_by_current_user, $post->comments_count);
         $imagePath = htmlspecialchars($post->image_path, ENT_QUOTES);
 
         return <<<HTML

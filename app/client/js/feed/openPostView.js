@@ -1,4 +1,5 @@
 import { showToast, ToastType, ToastMessage } from '../toast.js';
+import { initLikeButton } from '../post/like.js';
 
 let isOpeningPostView = false;
 let previousUrl;
@@ -39,6 +40,7 @@ async function openPostViewOverlay(postId) {
     previousUrl = window.location.href;
     history.pushState({ postId }, '', `/post?postId=${postId}`);
     document.body.style.overflow = 'hidden';
+    initLikeButton();
   } finally {
     isOpeningPostView = false;
   }

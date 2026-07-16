@@ -35,7 +35,8 @@ $routes = [
     ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'DELETE', 'controller' => 'photoApi', 'action' => 'delete', 'auth' => true],
 
-    ['path' => '/api/like', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'toggleLike', 'auth' => true],
+    ['path' => '/api/like', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'like', 'auth' => true],
+    ['path' => '/api/like', 'method' => 'DELETE', 'controller' => 'postReactions', 'action' => 'removeLike', 'auth' => true],
     ['path' => '/api/comments', 'method' => 'GET', 'controller' => 'postReactions', 'action' => 'getComments'],
     ['path' => '/api/comments', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'addComment', 'auth' => true],
 ];

@@ -9,7 +9,7 @@ final class Application {
     protected Response $response;
 
     public  const string APP_NAME            = 'Camagru';
-    private const array  ALLOWED_METHODS     = ['GET', 'POST'];
+    private const array  ALLOWED_METHODS     = ['GET', 'POST', 'DELETE'];
     private const array  CSRF_EXEMPT_METHODS = ['GET'];
 
     public function __construct() {

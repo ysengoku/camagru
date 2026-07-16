@@ -46,6 +46,18 @@ final class Like extends Model {
         return self::countByField('post_id', $postId);
     }
 
+    public static function likedByUser(int $userId, int $postId): bool {
+        if ($userId <= 0 || $postId <= 0) {
+            return false;
+        }
+
+        $db = Database::getInstance();
+        $sql = 'SELECT COUNT(*) as count FROM likes WHERE author_id = :author_id AND post_id = :post_id';
+        $result = $db->fetch($sql, ['author_id' => $userId, 'post_id' => $postId]);
+
+        return $result !== null && (int) $result['count'] > 0;
+    }
+
     public static function findByUserAndPost(int $userId, int $postId): ?self {
         if ($userId <= 0 || $postId <= 0) {
             return null;
@@ -55,7 +67,7 @@ final class Like extends Model {
         $sql = 'SELECT * FROM likes WHERE author_id = :author_id AND post_id = :post_id LIMIT 1';
         $result = $db->fetch($sql, ['author_id' => $userId, 'post_id' => $postId]);
 
-        if ($result === false) {
+        if ($result === false || $result === null) {
             return null;
         }
 

@@ -535,7 +535,6 @@ hr {
   padding-bottom: 0.5rem;
 }
 
-
 .avatar-selection-option {
   cursor: pointer;
 }
@@ -621,6 +620,16 @@ hr {
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(var(--primary-800-rgb), 0.1);
   padding: 1rem 0;
+}
+
+.post-preview-card:hover {
+  filter: brightness(120%);
+  cursor: pointer;
+}
+
+.post-preview-card button {
+  transform: none !important;
+  cursor: none !important;
 }
 
 .post-view-overlay {
@@ -736,7 +745,17 @@ hr {
   svg {
     width: 24px;
     height: 24px;
-    cursor: pointer;
+  }
+}
+
+#like-button:hover {
+  cursor: pointer;
+  transform: scale(1.1, 1.1);
+}
+
+.liked {
+  svg {
+    color: var(--secondary-400) !important;
   }
 }
 

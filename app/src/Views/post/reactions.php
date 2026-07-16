@@ -4,8 +4,15 @@
 
 <?php
 if (!function_exists('render_post_reactions')) {
-    function render_post_reactions(int $postId, int $likesCount, int $commentsCount): string {
-        $heartIcon = render_icon('heart');
+    function render_post_reactions(int $postId, int $likesCount, bool $is_liked_by_current_user, int $commentsCount, bool $interactive = false): string {
+        $likeTag = $interactive ? 'button' : 'div';
+        $likeButtonId = $interactive ? 'id="like-button"' : '';
+        $likeTypeAttr = $interactive ? 'type="button"' : '';
+        $likeDataAttr = 'data-like="' . htmlspecialchars((string)$postId, ENT_QUOTES) . '"';
+
+        $heartIcon = $is_liked_by_current_user ? render_icon('heartfill') : render_icon('heart');
+        $heartIconClass = $is_liked_by_current_user ? 'liked' : '';
+
         $commentIcon = render_icon('bubble');
         $postIdHtml = htmlspecialchars((string)$postId, ENT_QUOTES);
         $likesCountHtml = $likesCount > 0 ? htmlspecialchars((string)$likesCount, ENT_QUOTES) : '';
@@ -14,29 +21,26 @@ if (!function_exists('render_post_reactions')) {
         return <<<HTML
         <div class="flex items-center px-4 mt-2 gap-4">
             <div class="post-reactions">
-                <button
-                  type="button"
-                  class="flex align-center gap-1 border-none bg-transparent p-0 cursor-pointer hover-scale"
-                  data-like="<?php echo $postId; ?>"
+                <{$likeTag}
+                  {$likeTypeAttr}
+                  {$likeButtonId}
+                  class="flex align-center gap-1 border-none bg-transparent p-0 {$heartIconClass}"
+                  {$likeDataAttr}
                 >
                     {$heartIcon}
-                    <p class="text-gray-500">
+                    <p>
                         {$likesCountHtml}
                     </p>
-                </button>
+                </{$likeTag}    >
             </div>
 
             <div class="post-reactions">
-                <button 
-                  type="button"
-                  class="flex align-center gap-1 border-none bg-transparent p-0 cursor-pointer hover-scale"
-                  data-comment={$postIdHtml}
-                >
+                <div class="flex align-center gap-1 border-none bg-transparent p-0 color-gray-500">
                     {$commentIcon}
-                        <p class="text-gray-500">
+                        <p>
                             {$commentsCountHtml}
                         </p>
-                </button>
+                </div>
             </div>
         </div>
         HTML;

@@ -29,6 +29,11 @@ final class PostController extends Controller {
             throw new RuntimeException("Author not found for post ID {$post->id}");
         }
 
+        $is_liked_by_current_user = false;
+        if ($user !== null) {
+            $is_liked_by_current_user = Like::likedByUser($user->id, $post->id);
+        }
+
         $comments = Comment::findByPostIdWithPagination($post->id, 0, 10);
         $commentsData = array_map(function (Comment $comment): PostCommentData {
             $author = User::find($comment->author_id);
@@ -51,6 +56,7 @@ final class PostController extends Controller {
             image_path: $post->image_path,
             created_at: $post->created_at ?? '',
             likes_count: Like::countByPostId($post->id),
+            is_liked_by_current_user: $is_liked_by_current_user,
             comments_count: Comment::countByPostId($post->id),
             comments: $commentsData,
         );
