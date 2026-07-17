@@ -46,6 +46,8 @@ export class FilterManager extends ToolManager {
     });
 
     this.state = (s) => ({ ...s, selectedFilter: filterName });
-    this.editor.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
+    const filterValue = selectedFilterObj?.filterValue || 'none';
+    this.editor.canvas.style.filter = filterValue;
+    this.editor.video.style.filter = filterValue;
   }
 }

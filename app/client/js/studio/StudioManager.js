@@ -248,7 +248,9 @@ class StudioManager {
   }
 
   clearEditor() {
+    this.clearPhoto();
     this.stickerManager.clearStickers();
+    this.textManager.removeText();
     studioStore.setState({
       uploadedImage: {
         offsetX: 0,
@@ -260,7 +262,7 @@ class StudioManager {
       textOverlays: [],
       selectedFilter: 'none',
     });
-    this.editor.canvas.style.filter = 'none';
+    this.filterManager.applyFilter('none');
   }
 
   clearCanvas() {
@@ -336,8 +338,11 @@ class StudioManager {
   }
 
   resetCapture() {
+    this.clearCanvas();
     this.clearPhoto();
     this.stickerManager.clearStickers();
+    this.textManager.removeText();
+    this.filterManager.applyFilter('none');
     this.startWebcam();
     studioStore.setState({ editorMode: 'webcam' });
   }
