@@ -96,10 +96,16 @@ final class ImageComposer {
             $roundedWidth = (int) round((float) ($sticker['width'] ?? 0));
             $roundedHeight = (int) round((float) ($sticker['height'] ?? 0));
 
-            $resizedSticker = imagescale($stickerImage, $roundedWidth, $roundedHeight);
+            imagealphablending($stickerImage, false);
+            imagesavealpha($stickerImage, true);
+
+            $resizedSticker = imagescale($stickerImage, $roundedWidth, $roundedHeight, IMG_BICUBIC);
             if ($resizedSticker === false) {
                 throw new \RuntimeException("Failed to resize sticker image.");
             }
+
+            imagealphablending($resizedSticker, true);
+            imagesavealpha($resizedSticker, true);
 
             imagecopy(
                 $this->canvas,
