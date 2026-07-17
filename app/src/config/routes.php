@@ -39,6 +39,7 @@ $routes = [
     ['path' => '/api/like', 'method' => 'DELETE', 'controller' => 'postReactions', 'action' => 'removeLike', 'auth' => true],
     ['path' => '/api/comments', 'method' => 'GET', 'controller' => 'postReactions', 'action' => 'getComments'],
     ['path' => '/api/comments', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'addComment', 'auth' => true],
+    ['path' => '/api/comments', 'method' => 'DELETE', 'controller' => 'postReactions', 'action' => 'deleteComment', 'auth' => true],
 ];
 
 return $routes;

@@ -41,6 +41,8 @@ final class PostController extends Controller {
                 throw new RuntimeException("Author not found for comment ID {$comment->id}");
             }
             return new PostCommentData(
+                id: $comment->id,
+                author_id: $author->id,
                 author_name: $author->username,
                 author_avatar: $author->avatar,
                 created_at: $comment->created_at ?? '',

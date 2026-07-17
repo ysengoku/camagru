@@ -787,6 +787,24 @@ hr {
   }
 }
 
+.delete-comment-button {
+  color: var(--danger);
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0.5rem 1rem 0 0;
+  opacity: 0.4;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.delete-comment-button:hover {
+  opacity: 1;
+}
+
 /* -------- Studio -------- */
 #studio {
   container-type: inline-size;

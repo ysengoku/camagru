@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../Views/post/comments.php';
+
 /**
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
@@ -94,12 +96,23 @@ final class PostReactionsController extends Controller {
             
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 5);
+        $user = User::getCurrentUser();
 
         $comments = Comment::findByPostIdWithPagination((int)$postId, $offset, $limit);
-        return $this->json([
-            'comments' => array_map(fn(Comment $comment): array => $comment->toArray(), $comments)],
-            Response::OK
-        );
+        $html = '';
+        foreach ($comments as $comment) {
+            $commentData = new PostCommentData(
+                id: $comment->id,
+                author_id: $comment->author_id,
+                author_name: $comment->author_name,
+                author_avatar: $comment->author_avatar,
+                created_at: $comment->created_at ?? '',
+                content: $comment->content
+            );
+            $html .= render_comment($commentData, $user?->id);
+        }
+
+        return $this->json(['html' => $html], Response::OK);
     }
 
     final public function addComment(): string {
@@ -122,8 +135,48 @@ final class PostReactionsController extends Controller {
 
         $comment = new Comment((int)$postId, $user->id, trim($content));
         if ($comment->save()) {
-            return $this->json(['message' => 'Comment added', 'comment' => $comment->toArray()], Response::CREATED);
-        } 
+            $commentData = new PostCommentData(
+                id: $comment->id,
+                author_id: $user->id,
+                author_name: $user->username,
+                author_avatar: $user->avatar,
+                created_at: $comment->created_at ?? '',
+                content: $comment->content
+            );
+
+            return $this->json([
+                'message' => 'Comment added',
+                'html' => render_comment($commentData, $user->id)
+            ], Response::CREATED);
+        }
+
         return $this->json(['error' => 'Failed to add comment'], Response::INTERNAL_ERROR);
+    }
+
+    final public function deleteComment(): string {
+        if (Request::getMethod() !== 'DELETE') {
+            return $this->methodNotAllowed();
+        }
+
+        $commentId = Request::getQueryParam('commentId');
+        if (is_numeric($commentId) === false) {
+            return $this->json(['error' => 'Invalid comment ID'], Response::BAD_REQUEST);
+        }
+
+        $user = User::getCurrentUser();
+        if ($user === null) {
+            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
+        }
+
+        $comment = Comment::find((int)$commentId);
+        if ($comment === null || $comment->author_id !== $user->id) {
+            return $this->json(['error' => 'Comment not found or user not authorized to delete it'], Response::FORBIDDEN);
+        }
+
+        if ($comment->delete()) {
+            return $this->json(['message' => 'Comment deleted'], Response::OK);
+        }
+        
+        return $this->json(['error' => 'Failed to delete comment'], Response::INTERNAL_ERROR);
     }
 }

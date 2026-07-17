@@ -26,6 +26,14 @@ final class Comment extends Model {
         $this->content = $content;
     }
 
+    public static function find(int $commentId): self|null {
+        if ($commentId <= 0) {
+            return null;
+        }
+
+        return self::findById($commentId);
+    }
+
     public static function countByPostId(int $postId): int {
         if ($postId <= 0) {
             return 0;
