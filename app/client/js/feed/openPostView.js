@@ -1,4 +1,5 @@
 import { showToast, ToastType, ToastMessage } from '../toast.js';
+import { adjustPostViewHeight } from '../post/postView.js';
 import { initLikeButton } from '../post/like.js';
 import { initCommentForm } from '../post/comments.js';
 
@@ -12,14 +13,6 @@ async function openPostViewOverlay(postId) {
   isOpeningPostView = true;
 
   try {
-    const postViewOverlay = document.createElement('div');
-    postViewOverlay.classList.add('post-view-overlay');
-
-    const headerHeight = document.querySelector('header')?.offsetHeight || 0;
-    const overlayHeight = window.innerHeight - headerHeight;
-    postViewOverlay.style.top = `${headerHeight}px`;
-    postViewOverlay.style.height = `${overlayHeight}px`;
-
     const res = await fetch(`/post?postId=${postId}`, {
       headers: { 'X-Requested-With': 'XMLHttpRequest' },
     });
@@ -27,12 +20,13 @@ async function openPostViewOverlay(postId) {
       showToast(ToastType.ERROR, ToastMessage['post-not-found']);
       return;
     }
+
     const postViewHTML = await res.text();
-    postViewOverlay.innerHTML = postViewHTML;
+    document.querySelector('main')?.insertAdjacentHTML('beforeend', postViewHTML);
 
-    document.querySelector('main')?.appendChild(postViewOverlay);
+    adjustPostViewHeight();
 
-    const closeButton = document.getElementById('close-post-view-button');
+    const closeButton = document.getElementById('back-to-feed-button');
     if (closeButton) {
       closeButton.classList.remove('display-none');
       closeButton.addEventListener('click', () => closePostViewOverlay());
@@ -51,7 +45,7 @@ async function openPostViewOverlay(postId) {
 function removePostViewOverlay() {
   const postViewOverlay = document.querySelector('.post-view-overlay');
   if (postViewOverlay) {
-    document.querySelector('main')?.removeChild(postViewOverlay);
+    postViewOverlay.remove();
     document.body.style.overflow = '';
   }
 }

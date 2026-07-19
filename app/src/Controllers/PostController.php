@@ -10,7 +10,7 @@ final class PostController extends Controller {
         }
 
         $user = User::getCurrentUser();
-        $isFullPageRendering = Request::isXmlHttpRequest() === false;
+        $isOverlay = Request::isXmlHttpRequest() === true;
 
         $postId = Request::getQueryParam('postId');
         if (is_numeric($postId) === false) {
@@ -67,10 +67,11 @@ final class PostController extends Controller {
             'pageTitle' => 'Post View',
             'user' => $user,
             'postData' => $postData,
+            'isOverlay' => $isOverlay,
         ];
 
-        return $isFullPageRendering 
-            ? $this->render($params, 'view')
-            : $this->renderContent($params, 'view');
+        return $isOverlay 
+            ? $this->renderContent($params, 'view')
+            : $this->render($params, 'view');
     }
 }
