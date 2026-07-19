@@ -211,6 +211,39 @@ foreach ($users as $data) {
     }
 }
 
+/**
+ * Tops up the given post's comment count to exactly $targetCount, so there's a
+ * predictable post to exercise the "load more comments" pagination against.
+ * @param list<User> $verifiedUsers
+ */
+function seedCommentsForPagination(Post $post, array $verifiedUsers, int $targetCount): void {
+    $existingCount = Comment::countByPostId($post->id);
+    $toAdd = $targetCount - $existingCount;
+    if ($toAdd <= 0) {
+        return;
+    }
+
+    $possibleCommenters = array_values(array_filter(
+        $verifiedUsers,
+        fn(User $user): bool => $user->id !== $post->user_id
+    ));
+    if (empty($possibleCommenters)) {
+        return;
+    }
+
+    for ($i = 0; $i < $toAdd; $i++) {
+        $commenter = $possibleCommenters[array_rand($possibleCommenters)];
+        $comment = new Comment();
+        $comment->post_id = $post->id;
+        $comment->author_id = $commenter->id;
+        $comment->content = COMMENT_POOL[array_rand(COMMENT_POOL)];
+        $comment->save();
+    }
+
+    echo "Post #{$post->id} now has " . Comment::countByPostId($post->id) . " comment(s) (pagination test)\n";
+}
+
 if (!empty($newPosts) && count($newVerifiedUsers) > 1) {
     seedEngagement($newPosts, $newVerifiedUsers);
+    seedCommentsForPagination($newPosts[0], $newVerifiedUsers, 11);
 }

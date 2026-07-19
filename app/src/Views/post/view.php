@@ -38,10 +38,10 @@ $postReactionsHtml = render_post_reactions($postData->id, $postData->likes_count
                 <?= $postHeaderHtml ?>
                 <?= $postReactionsHtml ?>
                 <hr class="my-2 border-gray-300 w-100" />
-                <?= render_comments($postData->comments, $user ? $user->id : null, $postData->comments_count) ?>
+                <?= render_comments($postData->id, $postData->comments, $user ? $user->id : null, $postData->comments_count) ?>
                 <?php if (isset($user) && $user !== null) : ?>
                     <hr class="my-2 border-gray-300 w-100" />
-                    <?= render_comment_form($postData->id) ?>
+                    <?= render_comment_form() ?>
                 <?php endif; ?>
             </div>
         </div>

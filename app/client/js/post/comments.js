@@ -77,11 +77,11 @@ async function loadMoreComments(postId, curentCount, commentsContainer) {
 export function initComments() {
   const commentsContainer = document.querySelector('.post-comments');
   const commentForm = document.querySelector('.comment-form');
-  if (!commentsContainer || !commentForm) {
+  if (!commentsContainer) {
     return;
   }
 
-  const postId = parseInt(commentForm.dataset.postId, 10);
+  const postId = parseInt(commentsContainer.dataset.postId, 10);
 
   commentsContainer.addEventListener('click', async (event) => {
     const deleteButton = event.target.closest('.delete-comment-button');
@@ -100,7 +100,7 @@ export function initComments() {
     await deleteComment(commentId);
   });
 
-  commentForm.addEventListener('submit', async (event) => {
+  commentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const content = commentForm.querySelector('textarea').value;
     await addComment(postId, content, commentsContainer);
