@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../Views/post/comments.php';
+require_once __DIR__ . '/../../helper/mailer.php';
 
 /**
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
@@ -133,6 +134,11 @@ final class PostReactionsController extends Controller {
             return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
         }
 
+        $post = Post::find((int)$postId);
+        if ($post === null) {
+            return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
+        }
+
         $comment = new Comment((int)$postId, $user->id, trim($content));
         if ($comment->save()) {
             $commentData = new PostCommentData(
@@ -144,9 +150,18 @@ final class PostReactionsController extends Controller {
                 content: $comment->content
             );
 
+            $commentCount = Comment::countByPostId((int)$postId);
+
+            $postAuthor = User::find($post->user_id);
+            if ($postAuthor !== null && $postAuthor->id !== $user->id) {
+                $this->sendNotification($postAuthor, $user->username, trim($content), (int)$postId);
+            }
+
             return $this->json([
                 'message' => 'Comment added',
-                'html' => render_comment($commentData, $user->id)
+                'html' => render_comment($commentData, $user->id),
+                'postId' => (int)$postId,
+                'commentCount' => $commentCount
             ], Response::CREATED);
         }
 
@@ -174,9 +189,27 @@ final class PostReactionsController extends Controller {
         }
 
         if ($comment->delete()) {
-            return $this->json(['message' => 'Comment deleted'], Response::OK);
+            $commentCount = Comment::countByPostId($comment->post_id);
+            return $this->json([
+                'message' => 'Comment deleted',
+                'postId' => $comment->post_id,
+                'commentCount' => $commentCount
+            ], Response::OK);
         }
         
         return $this->json(['error' => 'Failed to delete comment'], Response::INTERNAL_ERROR);
+    }
+
+    private function sendNotification(User $postAuthor, string $commentAuthorName, string $content, int $postId): void {
+        if (!$postAuthor->email_notifications_enabled) {
+            return;
+        }
+
+        sendNewCommentNotificationEmail(
+            $postAuthor->email,
+            $commentAuthorName,
+            $content,
+            $postId
+        );
     }
 }

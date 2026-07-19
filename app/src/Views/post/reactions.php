@@ -14,6 +14,8 @@ if (!function_exists('render_post_reactions')) {
         $heartIconClass = $is_liked_by_current_user ? 'liked' : '';
 
         $commentIcon = render_icon('bubble');
+        $commentDataAttr = 'data-comment="' . htmlspecialchars((string)$postId, ENT_QUOTES) . '"';
+
         $postIdHtml = htmlspecialchars((string)$postId, ENT_QUOTES);
         $likesCountHtml = $likesCount > 0 ? htmlspecialchars((string)$likesCount, ENT_QUOTES) : '';
         $commentsCountHtml = $commentsCount > 0 ? htmlspecialchars((string)$commentsCount, ENT_QUOTES) : '';
@@ -35,7 +37,7 @@ if (!function_exists('render_post_reactions')) {
             </div>
 
             <div class="post-reactions">
-                <div class="flex align-center gap-1 border-none bg-transparent p-0 color-gray-500">
+                <div class="flex align-center gap-1 border-none bg-transparent p-0 color-gray-500" {$commentDataAttr}>
                     {$commentIcon}
                         <p>
                             {$commentsCountHtml}

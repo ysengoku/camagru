@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Renders an email template with the given name and variables.
+ * Renders an email template's body content, then wraps it in the shared email layout
+ * (logo header + footer disclaimer) to produce the full HTML email.
  * @param string $templateName The name of the email template (without the .php extension).
  * @param array<string, mixed> $vars An associative array of variables to extract and use in the template.
+ *   Must include 'emailTitle' and 'logoUrl' for the layout; the rest are template-specific.
  * @return string The rendered email content.
  */
 function renderEmailTemplate(string $templateName, array $vars = []): string {
@@ -11,6 +13,10 @@ function renderEmailTemplate(string $templateName, array $vars = []): string {
     ob_start();
     /** @psalm-suppress UnresolvableInclude - Directory is fixed; only $templateName varies */
     include __DIR__ . '/../Views/emails/' . $templateName . '.php';
+    $content = (string) ob_get_clean();
+
+    ob_start();
+    include __DIR__ . '/../Views/emails/layout.php';
     return (string) ob_get_clean();
 }
 

@@ -12,6 +12,7 @@ async function addComment(postId, content, commentsContainer) {
     commentsContainer.appendChild(
       document.createRange().createContextualFragment(newCommentHTML)
     );
+    updateCommentCount(response.data.postId, response.data.commentCount);
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to add comment');
   }
@@ -32,9 +33,17 @@ async function deleteComment(commentId) {
     if (commentEl) {
       commentEl.remove();
     }
+    updateCommentCount(response.data.postId, response.data.commentCount);
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to delete comment');
   }
+}
+
+function updateCommentCount(postId, newCount) {
+  const commentEl = document.querySelectorAll(`[data-comment="${postId}"]`);
+  commentEl.forEach((el) => {
+    el.querySelector('p').textContent = newCount;
+  });
 }
 
 export function initCommentForm() {
