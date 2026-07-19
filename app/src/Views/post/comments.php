@@ -49,15 +49,23 @@ if (!function_exists('render_comment')) {
 }
 
 if (!function_exists('render_comments')) {
-    function render_comments(array $comments, ?int $userId): string {
+    function render_comments(array $comments, ?int $userId, int $commentCount): string {
         $commentsHtml = '';
         foreach ($comments as $comment) {
             $commentsHtml .= render_comment($comment, $userId);
         }
 
+        $renderShowMoreButton = $commentCount > count($comments);
+        $showMoreButtonDisplayClass = $renderShowMoreButton ? '' : 'display-none';
+
         return <<<HTML
-            <div class="post-comments">
-                {$commentsHtml}
+            <div class="post-comments-container" >
+                <div class="post-comments">
+                    {$commentsHtml}
+                </div>
+                <button id="show-more-comments-button" class="button-no-border my-2 w-100 font-size-3 {$showMoreButtonDisplayClass}">
+                    Show More Comments
+                </button>
             </div>
         HTML;
     }

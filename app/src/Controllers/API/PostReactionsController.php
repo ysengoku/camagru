@@ -94,26 +94,39 @@ final class PostReactionsController extends Controller {
         if (is_numeric($postId) === false) {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
         }
-            
+
+        $commentCount = Comment::countByPostId((int)$postId);
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
-        $limit = (int)(Request::getQueryParam('limit') ?? 5);
+        $limit = (int)(Request::getQueryParam('limit') ?? 10);
+
+        if ($offset < 0 || $limit <= 0 || $limit > 50) {
+            return $this->json(['error' => 'Invalid offset or limit'], Response::BAD_REQUEST);
+        }
+
+        $limit = min($limit, max($commentCount - $offset, 0));
+
         $user = User::getCurrentUser();
 
-        $comments = Comment::findByPostIdWithPagination((int)$postId, $offset, $limit);
+        $comments = $limit > 0
+            ? Comment::findByPostIdWithPagination((int)$postId, $offset, $limit)
+            : [];
         $html = '';
         foreach ($comments as $comment) {
+            $author = User::find($comment->author_id);
+            $authorName = $author ? htmlspecialchars($author->username, ENT_QUOTES) : 'Unknown';
+            $authorAvatar = $author ? htmlspecialchars($author->avatar, ENT_QUOTES) : null;
             $commentData = new PostCommentData(
                 id: $comment->id,
                 author_id: $comment->author_id,
-                author_name: $comment->author_name,
-                author_avatar: $comment->author_avatar,
+                author_name: $authorName,
+                author_avatar: $authorAvatar,
                 created_at: $comment->created_at ?? '',
                 content: $comment->content
             );
             $html .= render_comment($commentData, $user?->id);
         }
 
-        return $this->json(['html' => $html], Response::OK);
+        return $this->json(['html' => $html, 'count' => $commentCount], Response::OK);
     }
 
     final public function addComment(): string {

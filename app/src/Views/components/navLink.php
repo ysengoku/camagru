@@ -13,6 +13,11 @@
     if (!function_exists('render_nav_link')) {
         function render_nav_link(?User $user): string {
             $current = $_SERVER['REQUEST_URI'] ?? '/';
+            $queryPos = strpos($current, '?');
+            if ($queryPos !== false) {
+                $current = substr($current, 0, $queryPos);
+            }
+
             $profileIconHtml = $user ? render_avatar($user->username, 'medium', $user->avatar) : '';
 
             $navLinksHtml = '';
@@ -21,6 +26,9 @@
                     continue;
                 }
                 $active = $current === $link['href'] ? 'nav-link-active' : '';
+                if ($current === '/post' && $link['href'] === '/') {
+                    $active = 'nav-link-active';
+                }
                 $iconHtml = $link['href'] === '/profile' ? $profileIconHtml : render_icon($link['icon']);
                 $navLinksHtml .= <<<HTML
                 <div class="nav-link-container {$active}">

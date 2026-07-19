@@ -1,7 +1,7 @@
 import { showToast, ToastType, ToastMessage } from '../toast.js';
 import { adjustPostViewHeight } from '../post/postView.js';
 import { initLikeButton } from '../post/like.js';
-import { initCommentForm } from '../post/comments.js';
+import { initComments } from '../post/comments.js';
 
 let isOpeningPostView = false;
 let previousUrl;
@@ -22,7 +22,9 @@ async function openPostViewOverlay(postId) {
     }
 
     const postViewHTML = await res.text();
-    document.querySelector('main')?.insertAdjacentHTML('beforeend', postViewHTML);
+    document
+      .querySelector('main')
+      ?.insertAdjacentHTML('beforeend', postViewHTML);
 
     adjustPostViewHeight();
 
@@ -36,7 +38,7 @@ async function openPostViewOverlay(postId) {
     history.pushState({ postId }, '', `/post?postId=${postId}`);
     document.body.style.overflow = 'hidden';
     initLikeButton();
-    initCommentForm();
+    initComments();
   } finally {
     isOpeningPostView = false;
   }

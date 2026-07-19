@@ -1,8 +1,10 @@
-// Feed page entry point
+// Post page entry point
 import '../main.js'; // Common dependencies
 
+import { initComments } from '../post/comments.js';
+import { initLikeButton } from '../post/like.js';
 import { adjustPostViewHeight } from './postView.js';
-import '../post/comments.js';
-import '../post/like.js';
 
 adjustPostViewHeight();
+initComments();
+initLikeButton();
