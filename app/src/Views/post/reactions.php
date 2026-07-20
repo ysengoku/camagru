@@ -1,8 +1,6 @@
 <?php
     require_once __DIR__ . '/../components/icon.php';
-?>
 
-<?php
 if (!function_exists('render_post_reactions')) {
     function render_post_reactions(int $postId, int $likesCount, bool $is_liked_by_current_user, int $commentsCount, bool $interactive = false): string {
         $likeTag = $interactive ? 'button' : 'div';

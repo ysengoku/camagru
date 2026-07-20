@@ -43,7 +43,7 @@ final class Like extends Model {
             return 0;
         }
 
-        return self::countByField('post_id', $postId);
+        return self::count('post_id', $postId);
     }
 
     public static function likedByUser(int $userId, int $postId): bool {

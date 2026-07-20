@@ -128,9 +128,11 @@ class StudioManager {
     this.studioMenu.webcamButton?.addEventListener('click', () =>
       this.startWebcam()
     );
-    this.studioMenu.uploadInput?.addEventListener('change', async (e) =>
-      this.handleFileUpload(e.target.files[0])
-    );
+    this.studioMenu.uploadInput?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      await this.handleFileUpload(file);
+    });
   }
 
   initToolMenu() {
@@ -334,8 +336,11 @@ class StudioManager {
   }
 
   clearPhoto() {
-    this.editor.photo.setAttribute('src', '');
+      this.editor.photo.removeAttribute('src');
+      this.editor.photo.onload = null;
+      this.editor.photo.onerror = null;
   }
+
 
   resetCapture() {
     this.clearCanvas();
@@ -355,7 +360,7 @@ class StudioManager {
       studioConfig.maxUploadFileSize
     );
     if (validationError) {
-      alert(validationError);
+      showToast(ToastType.ERROR, validationError);
       return;
     }
 
@@ -376,7 +381,7 @@ class StudioManager {
         this.drawUploadedImage();
       };
       img.onerror = () => {
-        alert('Failed to load image');
+        showToast(ToastType.ERROR, 'Failed to load image');
       };
       img.src = e.target.result;
     };
@@ -483,8 +488,7 @@ class StudioManager {
       // TODO: Success flow
       this.backToMenu();
     } catch (error) {
-      // TODO: Show error message to user
-      console.error('Error sharing photo:', error);
+      showToast(ToastType.ERROR, 'Failed to share photo');
     }
   }
 

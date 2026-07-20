@@ -14,6 +14,7 @@ export const endpoints = {
   LIKE: `${API_BASE_URL}like`,
   COMMENTS: `${API_BASE_URL}comments`,
   PHOTOS: `${API_BASE_URL}photos`,
+  MY_PHOTOS: `${API_BASE_URL}photos/me`,
   STUDIO_CONFIG: `${API_BASE_URL}studio-config`,
 };
 

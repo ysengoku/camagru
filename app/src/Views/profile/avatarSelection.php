@@ -4,8 +4,8 @@ require_once __DIR__ . '/../components/avatar.php';
 
 if (!function_exists('render_avatar_selection')) {
     function render_avatar_selection(User $user): string {
-        $posts = Post::findByUserId($user->id);
-
+        $posts = Post::findByUserIdWithPagination($user->id);
+        // TODO Add sho more
         if (!$posts) {
             return <<<HTML
             <p class="color-gray-500 font-size-3 my-4">

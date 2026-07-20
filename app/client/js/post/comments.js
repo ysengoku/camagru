@@ -3,7 +3,7 @@ import { showToast, ToastType } from '../toast.js';
 
 const PAGE_SIZE = 10;
 
-async function addComment(postId, content, commentsContainer) {
+async function addComment(postId, content, commentsEl) {
   try {
     const response = await api.post(endpoints.COMMENTS, { postId, content });
     if (!response.ok) {
@@ -11,10 +11,10 @@ async function addComment(postId, content, commentsContainer) {
     }
 
     const newCommentHTML = response.data.html;
-    commentsContainer.appendChild(
-      document.createRange().createContextualFragment(newCommentHTML)
-    );
+    commentsEl.insertAdjacentHTML('afterbegin', newCommentHTML);
+
     updateCommentCount(response.data.postId, response.data.commentCount);
+    document.querySelector('.post-comments-container')?.scrollTo({ top: 0, behavior: 'smooth' });   
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to add comment');
   }
@@ -48,7 +48,7 @@ function updateCommentCount(postId, newCount) {
   });
 }
 
-async function loadMoreComments(postId, curentCount, commentsContainer) {
+async function loadMoreComments(postId, curentCount, commentsEl) {
   try {
     const url = `${endpoints.COMMENTS}?postId=${postId}&offset=${curentCount}&limit=${PAGE_SIZE}`;
     const response = await api.get(url);
@@ -58,7 +58,7 @@ async function loadMoreComments(postId, curentCount, commentsContainer) {
     }
 
     const newCommentsHTML = response.data.html;
-    commentsContainer.insertAdjacentHTML('beforeend', newCommentsHTML);
+    commentsEl.insertAdjacentHTML('beforeend', newCommentsHTML);
     updateCommentCount(postId, response.data.count);
 
     if (response.data.count <= curentCount + PAGE_SIZE) {
@@ -75,15 +75,15 @@ async function loadMoreComments(postId, curentCount, commentsContainer) {
 }
 
 export function initComments() {
-  const commentsContainer = document.querySelector('.post-comments');
+  const commentsEl = document.querySelector('.post-comments');
   const commentForm = document.querySelector('.comment-form');
-  if (!commentsContainer) {
+  if (!commentsEl) {
     return;
   }
 
-  const postId = parseInt(commentsContainer.dataset.postId, 10);
+  const postId = parseInt(commentsEl.dataset.postId, 10);
 
-  commentsContainer.addEventListener('click', async (event) => {
+  commentsEl.addEventListener('click', async (event) => {
     const deleteButton = event.target.closest('.delete-comment-button');
     if (!deleteButton) {
       return;
@@ -103,7 +103,7 @@ export function initComments() {
   commentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const content = commentForm.querySelector('textarea').value;
-    await addComment(postId, content, commentsContainer);
+    await addComment(postId, content, commentsEl);
     commentForm.querySelector('textarea').value = '';
   });
 
@@ -112,8 +112,8 @@ export function initComments() {
     showMoreButton.addEventListener('click', async () => {
       console.log('Show more comments button clicked');
       const currentCount =
-        commentsContainer.querySelectorAll('.comment').length;
-      await loadMoreComments(postId, currentCount, commentsContainer);
+        commentsEl.querySelectorAll('.comment').length;
+      await loadMoreComments(postId, currentCount, commentsEl);
     });
   }
 }

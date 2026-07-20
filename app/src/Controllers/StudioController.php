@@ -28,7 +28,7 @@ final class StudioController extends Controller {
             sort($stickers);
         }
 
-        $posts = Post::findByUserId($user->id);
+        $posts = Post::findByUserIdWithpagination($user->id);
         $postData = array_map(function (Post $post) {
             return [
                 'id' => $post->id,

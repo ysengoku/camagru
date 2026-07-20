@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../Views/feed/postPreview.php';
+
 /**
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
@@ -68,5 +70,39 @@ final class PhotoApiController extends Controller {
     final public function delete(): string {
         // TESTING PURPOSES ONLY
         return $this->json(['success' => true], Response::OK);
+    }
+
+    final public function getPhotos(): string {
+        if (Request::getMethod() !== 'GET') {
+            return $this->methodNotAllowed();
+        }
+
+        $offset = (int)(Request::getQueryParam('offset') ?? 0);
+        $limit = (int)(Request::getQueryParam('limit') ?? 10);
+
+        if ($offset < 0 || $limit <= 0 || $limit > 50) {
+            return $this->json(['error' => 'Invalid offset or limit'], Response::BAD_REQUEST);
+        }
+
+        $totalPostCount = Post::countAll();
+        $limit = min($limit, max($totalPostCount - $offset, 0));
+
+        $posts = $limit > 0 
+            ? Post::findAllWithPagination($offset, $limit)
+            : [];
+        error_log('limit: ' . $limit . ', offset: ' . $offset . ', totalPostCount: ' . $totalPostCount);
+        $html = '';
+        $user = User::getCurrentUser();
+        foreach ($posts as $post) {
+            $postData = PostDataFactory::fromPost($post, $user?->id);            
+            $html .= render_post_preview($postData);
+        }
+
+        return $this->json(['html' => $html, 'count' => $totalPostCount], Response::OK);
+        
+    }
+
+    final public function getCurrentUserPhotos(): string {
+
     }
 }

@@ -37,14 +37,14 @@ final class Post extends Model {
         return self::findById((string) $id);
     }
 
-    public static function allOrderedByCreationDesc(): array {
-        $db = self::getDb();
-        $sql = 'SELECT * FROM posts ORDER BY created_at DESC';
-
-        /** @var list<array<string, mixed>> $rows */
-        $rows = $db->fetchAll($sql);
-
-        return array_map(fn(array $row): self => static::fromRow($row), $rows);
+    /**
+     * Find posts with pagination.
+     * @param int $offset
+     * @param int $limit
+     * @return list<self>
+     */
+    public static function findAllUsersPostsWithPagination(int $offset = 0, int $limit = 10): array {
+        return self::findWithPagination(null, null, 'created_at', 'DESC', $offset, $limit);
     }
 
     /**
@@ -64,6 +64,18 @@ final class Post extends Model {
         return array_map(fn(array $row): self => static::fromRow($row), $rows);
     }
 
+    public static function findAllWithPagination(int $offset = 0, int $limit = 10): array {
+        return self::findWithPagination(null, null, 'created_at', 'DESC', $offset, $limit);
+    }
+
+    public static function findByUserIdWithPagination(int $userId, int $offset = 0, int $limit = 10): array {
+        if ($userId <= 0) {
+            return [];
+        }
+
+        return self::findWithPagination('user_id', $userId, 'created_at', 'DESC', $offset, $limit);
+    }
+
     /**
      * @return self|null
      */
@@ -79,6 +91,10 @@ final class Post extends Model {
         $row = $db->fetch($sql, ['image_path' => $imagePath]);
 
         return $row === null ? null : static::fromRow($row);
+    }
+
+    public static function countAll(): int {
+        return self::count(null, null);
     }
 
     #[Override]

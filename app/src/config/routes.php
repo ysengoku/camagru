@@ -34,6 +34,8 @@ $routes = [
     ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'DELETE', 'controller' => 'photoApi', 'action' => 'delete', 'auth' => true],
+    ['path' => '/api/photos', 'method' => 'GET', 'controller' => 'photoApi', 'action' => 'getPhotos', 'auth' => false],
+    ['path' => '/api/photos/me', 'method' => 'GET', 'controller' => 'photoApi', 'action' => 'getCurrentUserPhotos', 'auth' => true],
 
     ['path' => '/api/like', 'method' => 'POST', 'controller' => 'postReactions', 'action' => 'like', 'auth' => true],
     ['path' => '/api/like', 'method' => 'DELETE', 'controller' => 'postReactions', 'action' => 'removeLike', 'auth' => true],

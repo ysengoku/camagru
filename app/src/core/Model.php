@@ -126,6 +126,44 @@ abstract class Model {
         ));
     }
 
+    protected static function findWithPagination(
+        ?string $field,
+        mixed $value,
+        string $orderBy,
+        string $orderDirection = 'DESC',
+        int $offset = 0,
+        int $limit = 10
+    ): array {
+        $db = self::getDb();
+        $table = static::$name;
+
+        $orderDirection = strtoupper($orderDirection) === 'ASC' ? 'ASC' : 'DESC';
+        $whereClause = $field !== null ? "WHERE `$field` = :value" : '';
+
+        $sql = "SELECT * FROM `$table` $whereClause ORDER BY `$orderBy` $orderDirection LIMIT $limit OFFSET $offset";
+        $params = $field !== null ? ['value' => $value] : [];
+
+        $rows = $db->fetchAll($sql, $params);
+
+        return array_values(array_map(
+            fn(array $row): self => static::fromRow($row),
+            $rows
+        ));
+    }
+
+    protected static function count(?string $field, mixed $value): int {
+        $db = self::getDb();
+        $table = static::$name;
+        $whereClause = $field !== null ? "WHERE `$field` = :value" : '';
+
+        $sql = "SELECT COUNT(*) as count FROM `$table` $whereClause";
+        $params = $field !== null ? ['value' => $value] : [];
+
+        $result = $db->fetch($sql, $params);
+
+        return (int) ($result['count'] ?? 0);
+    }
+
     protected static function countByField(string $field, mixed $value): int {
         $db = self::getDb();
         $table = static::$name;

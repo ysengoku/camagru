@@ -30,7 +30,7 @@
         <div id="studio-editor" class="display-none m-4">
             <video id="webcam" autoplay></video>
             <canvas id="studio-preview"></canvas>
-            <img src="" id="studio-image" class="display-none" />
+            <img id="studio-image" class="display-none" />
 
             <?php echo render_text_preview(); ?>
             <?php echo render_sticker_preview_template(); ?>

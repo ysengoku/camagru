@@ -617,9 +617,8 @@ hr {
 .post-preview-card {
   display: flex;
   flex-direction: column;
-  border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(var(--primary-800-rgb), 0.1);
-  padding: 1rem 0;
+  /* padding: 1rem 0; */
 }
 
 .post-preview-card:hover {
@@ -630,6 +629,21 @@ hr {
 .post-preview-card button {
   transform: none !important;
   cursor: none !important;
+}
+
+.post-preview-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+#load-more-posts-button {
+  border: none;
+  background-color: transparent;
+  color: var(--secondary-500);
+  font-size: 1.2rem;
+  font-weight: regular !important;
+  min-height: 100px;
 }
 
 .post-view-overlay {
@@ -760,12 +774,12 @@ hr {
 }
 
 .post-comments-container {
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .post-comments {
-  flex: 1;
   min-height: 0;
   padding: 1rem 1rem 0 0.5rem;
 }
@@ -796,7 +810,7 @@ hr {
   border: none;
   background-color: transparent;
   cursor: pointer;
-  padding: 0.5rem 1rem 0 0;
+  padding: 0.5rem 0 0 0;
   opacity: 0.4;
 
   svg {

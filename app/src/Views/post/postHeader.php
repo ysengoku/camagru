@@ -1,8 +1,6 @@
 <?php
     require_once __DIR__ . '/../components/avatar.php';
-?>
 
-<?php
 if (!function_exists('render_post_header')) {
     function render_post_header(string $authorName, ?string $authorAvatar, string $createdAt, string $size = 'medium'): string {
         $timestamp = strtotime($createdAt);

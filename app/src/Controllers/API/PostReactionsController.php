@@ -112,17 +112,7 @@ final class PostReactionsController extends Controller {
             : [];
         $html = '';
         foreach ($comments as $comment) {
-            $author = User::find($comment->author_id);
-            $authorName = $author ? htmlspecialchars($author->username, ENT_QUOTES) : 'Unknown';
-            $authorAvatar = $author ? htmlspecialchars($author->avatar, ENT_QUOTES) : null;
-            $commentData = new PostCommentData(
-                id: $comment->id,
-                author_id: $comment->author_id,
-                author_name: $authorName,
-                author_avatar: $authorAvatar,
-                created_at: $comment->created_at ?? '',
-                content: $comment->content
-            );
+            $commentData = PostDataFactory::toCommentData($comment);
             $html .= render_comment($commentData, $user?->id);
         }
 
@@ -154,18 +144,10 @@ final class PostReactionsController extends Controller {
 
         $comment = new Comment((int)$postId, $user->id, trim($content));
         if ($comment->save()) {
-            $commentData = new PostCommentData(
-                id: $comment->id,
-                author_id: $user->id,
-                author_name: $user->username,
-                author_avatar: $user->avatar,
-                created_at: $comment->created_at ?? '',
-                content: $comment->content
-            );
-
+            $commentData = PostDataFactory::toCommentData($comment);
             $commentCount = Comment::countByPostId((int)$postId);
 
-            $postAuthor = User::find($post->user_id);
+            $postAuthor = $post->user();
             if ($postAuthor !== null && $postAuthor->id !== $user->id) {
                 $this->sendNotification($postAuthor, $user->username, trim($content), (int)$postId);
             }

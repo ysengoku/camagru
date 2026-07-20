@@ -14,6 +14,13 @@ final class Comment extends Model {
         'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
     ];
 
+    /**
+     * @var array<string, array{0: string, 1: string, 2: string}> 
+     */
+    protected static array $relations = [
+        'author_id' => ['users', 'id', 'CASCADE']
+    ];
+
     public int $id = 0;
     public int $post_id = 0;
     public int $author_id = 0;
@@ -39,15 +46,26 @@ final class Comment extends Model {
             return 0;
         }
 
-        return self::countByField('post_id', $postId);
+        return self::count('post_id', $postId);
     }
 
-    public static function findByPostIdWithPagination(int $postId, int $offset = 0, int $limit = 5): array {
+    public static function findByPostIdWithPagination(int $postId, int $offset = 0, int $limit = 10): array {
         if ($postId <= 0) {
             return [];
         }
 
-        return self::findByFieldWithPagination('post_id', $postId, $offset, $limit);
+        return self::findWithPagination('post_id', $postId, 'created_at', 'DESC', $offset, $limit);
+    }
+
+    /**
+     * Get the user who wrote the comment.
+     */
+    public function author(): ?User {
+        $relation = static::$relations['author_id'] ?? null;
+        if (!$relation || $this->author_id <= 0) {
+            return null;
+        }
+        return User::find($this->author_id);
     }
 
     public function toArray(): array {
