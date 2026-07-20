@@ -14,7 +14,9 @@ async function addComment(postId, content, commentsEl) {
     commentsEl.insertAdjacentHTML('afterbegin', newCommentHTML);
 
     updateCommentCount(response.data.postId, response.data.commentCount);
-    document.querySelector('.post-comments-container')?.scrollTo({ top: 0, behavior: 'smooth' });   
+    document
+      .querySelector('.post-comments-container')
+      ?.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to add comment');
   }
@@ -111,8 +113,7 @@ export function initComments() {
   if (showMoreButton) {
     showMoreButton.addEventListener('click', async () => {
       console.log('Show more comments button clicked');
-      const currentCount =
-        commentsEl.querySelectorAll('.comment').length;
+      const currentCount = commentsEl.querySelectorAll('.comment').length;
       await loadMoreComments(postId, currentCount, commentsEl);
     });
   }

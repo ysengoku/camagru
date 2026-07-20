@@ -336,11 +336,10 @@ class StudioManager {
   }
 
   clearPhoto() {
-      this.editor.photo.removeAttribute('src');
-      this.editor.photo.onload = null;
-      this.editor.photo.onerror = null;
+    this.editor.photo.removeAttribute('src');
+    this.editor.photo.onload = null;
+    this.editor.photo.onerror = null;
   }
-
 
   resetCapture() {
     this.clearCanvas();
