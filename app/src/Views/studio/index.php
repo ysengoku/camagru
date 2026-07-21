@@ -2,6 +2,7 @@
 /**
  * @var array $user
  * @var array $posts
+ * @var int   $postCount
  * @var array $stickers
  */
     require_once __DIR__ . '/tools/navmenu.php';
@@ -39,6 +40,6 @@
         <?php echo render_studio_buttons(); ?>
     </div>
 
-    <?php echo render_studio_gallery($posts); ?>
+    <?php echo render_studio_gallery($posts, $postCount); ?>
 </div>
 </div>

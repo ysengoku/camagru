@@ -2,3 +2,4 @@
 import '../main.js'; // Common dependencies
 
 import './StudioManager.js';
+import './gallery.js';

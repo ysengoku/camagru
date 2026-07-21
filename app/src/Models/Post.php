@@ -97,6 +97,14 @@ final class Post extends Model {
         return self::count(null, null);
     }
 
+    public static function countByUserId(int $userId): int {
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        return self::count('user_id', $userId);
+    }
+
     #[Override]
     protected function beforeSave(): bool {
         $this->image_path = trim($this->image_path);

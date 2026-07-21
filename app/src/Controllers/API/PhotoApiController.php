@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../Views/feed/postPreview.php';
+require_once __DIR__ . '/../../Views/studio/galleryItem.php';
 
 /**
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
@@ -64,7 +65,11 @@ final class PhotoApiController extends Controller {
             );
         }
 
-        return $this->json(['message' => 'Post created successfully', 'data' => $post->toArray()], Response::CREATED);
+        $html = render_gallery_item($post->id, $post->image_path);
+        return $this->json([
+            'message' => 'Post created successfully',
+            'html' => $html
+        ], Response::CREATED);
     }
 
     final public function delete(): string {
@@ -90,7 +95,6 @@ final class PhotoApiController extends Controller {
         $posts = $limit > 0 
             ? Post::findAllWithPagination($offset, $limit)
             : [];
-        error_log('limit: ' . $limit . ', offset: ' . $offset . ', totalPostCount: ' . $totalPostCount);
         $html = '';
         $user = User::getCurrentUser();
         foreach ($posts as $post) {
@@ -103,6 +107,32 @@ final class PhotoApiController extends Controller {
     }
 
     final public function getCurrentUserPhotos(): string {
+        if (Request::getMethod() !== 'GET') {
+            return $this->methodNotAllowed();
+        }
 
+        $offset = (int)(Request::getQueryParam('offset') ?? 0);
+        $limit = (int)(Request::getQueryParam('limit') ?? 10);
+
+        if ($offset < 0 || $limit <= 0 || $limit > 50) {
+            return $this->json(['error' => 'Invalid offset or limit'], Response::BAD_REQUEST);
+        }
+
+        $user = User::getCurrentUser();
+        if ($user === null) {
+            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
+        }
+
+        $totalCount = Post::countByUserId($user->id);
+        $limit = min($limit, max($totalCount - $offset, 0));
+        $posts = $limit > 0 
+            ? Post::findByUserIdWithPagination($user->id, $offset, $limit)
+            : [];
+        $html = '';
+        foreach ($posts as $post) {
+            $html .= render_gallery_item($post->id, $post->image_path);
+        }
+
+        return $this->json(['html' => $html, 'count' => $totalCount], Response::OK);
     }
 }

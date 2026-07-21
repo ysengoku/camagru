@@ -320,11 +320,40 @@ class StudioManager {
     const width = this.editor.canvas.width;
     const height = this.editor.canvas.height;
 
-    // Mirror to match #webcam's CSS mirror — drawImage() ignores CSS transforms.
+    const video = this.editor.video;
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+
+    const scale = Math.max(width / videoWidth, height / videoHeight);
+    const scaledWidth = width / scale;
+    const scaledHeight = height / scale;
+    const scaledX = (videoWidth - scaledWidth) / 2;
+    const scaledY = (videoHeight - scaledHeight) / 2;
+
+    /**
+     * scale(-1, 1): Mirror to match #webcam's CSS mirror — drawImage() ignores CSS transforms.
+     * drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight):
+     *  - image: video element
+     *  - sx, sy: source x/y (top-left corner of the rectangle to crop from the source image)
+     *  - sWidth, sHeight: source width/height (size of the rectangle to crop from the source image)
+     *  - dx, dy: destination x/y (top-left corner of the rectangle to draw on the canvas)
+     *  - dWidth, dHeight: destination width/height (size of the rectangle to draw on the canvas)
+     *  - Here, we crop a centered rectangle from the video and draw it on the canvas.
+     */
     ctx.save();
     ctx.translate(width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(this.editor.video, 0, 0, width, height);
+    ctx.drawImage(
+      video,
+      scaledX,
+      scaledY,
+      scaledWidth,
+      scaledHeight,
+      0,
+      0,
+      width,
+      height
+    );
     ctx.restore();
 
     const data = this.editor.canvas.toDataURL('image/png');
@@ -484,7 +513,19 @@ class StudioManager {
 
     try {
       const response = await api.post(endpoints.PHOTOS, finalImageData);
-      // TODO: Success flow
+      console.log('Share photo response:', response);
+      if (!response.ok) {
+        console.error('Failed to share photo:', response);
+        throw new Error('Failed to share photo');
+      }
+
+      const newPhotoHtml = response.data.html;
+      const galleryItemsEl = document.getElementById('gallery-items');
+      if (galleryItemsEl) {
+        galleryItemsEl.insertAdjacentHTML('afterbegin', newPhotoHtml);
+        galleryItemsEl.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      showToast(ToastType.SUCCESS, 'Photo shared successfully!');
       this.backToMenu();
     } catch (error) {
       showToast(ToastType.ERROR, 'Failed to share photo');

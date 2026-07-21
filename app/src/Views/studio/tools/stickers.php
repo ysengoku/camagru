@@ -1,8 +1,6 @@
 <?php
     require_once __DIR__ . '/../../components/icon.php';
-?>
 
-<?php
 if (!function_exists('render_stickers_tool')) {
     function render_stickers_tool(array $stickers): string {
         $leftIcon = render_icon('left');
@@ -39,4 +37,3 @@ if (!function_exists('render_stickers_tool')) {
         HTML;
     }
 }
-?>

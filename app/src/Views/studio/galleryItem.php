@@ -1,4 +1,5 @@
 <?php
+
 if (!function_exists('render_gallery_item')) {
     function render_gallery_item(string $postId, string $imagePath): string {
         $postIdHtml = htmlspecialchars($postId, ENT_QUOTES);
@@ -17,4 +18,3 @@ if (!function_exists('render_gallery_item')) {
         HTML;
     }
 }
-?>

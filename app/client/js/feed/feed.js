@@ -31,10 +31,8 @@ function init() {
   }
 
   const loadMoreButton = document.getElementById('load-more-posts-button');
-  console.log('Load more button:', loadMoreButton);
   if (loadMoreButton) {
     loadMoreButton.addEventListener('click', async () => {
-      console.log('Load more button clicked');
       const currentCount = feedContainer.children.length - 1;
       await loadMorePhotos(currentCount, feedContainer, loadMoreButton);
     });

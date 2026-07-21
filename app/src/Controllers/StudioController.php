@@ -11,7 +11,7 @@ final class StudioController extends Controller {
 
         $user = User::getCurrentUser();
         if (!$user) {
-            Response::redirect('/login');
+            return Response::redirect('/login');
         }
 
         // Load all stickers from the stickers directory
@@ -21,14 +21,23 @@ final class StudioController extends Controller {
             $scanned = scandir($stickerDir);
             $files = $scanned !== false ? array_diff($scanned, ['.', '..']) : [];
             foreach ($files as $file) {
-                if (preg_match('/\.(png|jpg|jpeg|svg)$/i', $file)) {
-                    $stickers[] = '/assets/stickers/' . $file;
+                if (!preg_match('/\.(png|jpg|jpeg)$/i', $file)) {
+                    continue;
                 }
+
+                $filePath = $stickerDir . $file;
+                $dimensions = @getimagesize($filePath);
+                if ($dimensions === false || ($dimensions[0] * $dimensions[1]) > 6_000_000) {
+                    continue;
+                }
+
+                $stickers[] = '/assets/stickers/' . $file;
             }
             sort($stickers);
         }
 
         $posts = Post::findByUserIdWithpagination($user->id);
+        $postCount = Post::countByUserId($user->id);
         $postData = array_map(function (Post $post) {
             return [
                 'id' => $post->id,
@@ -41,6 +50,7 @@ final class StudioController extends Controller {
             'pageScript' => 'studio',
             'user' => $user,
             'posts' => $postData,
+            'postCount' => $postCount,
             'stickers' => $stickers
         ]);
     }
