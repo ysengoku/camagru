@@ -23,12 +23,55 @@ async function loadMorePhotos(currentCount, showMoreButton) {
   }
 }
 
+async function downloadPhoto(postId) {
+
+}
+
+async function deletePhoto(postId, galleryItemEl) {
+  try {
+    const url = `${endpoints.PHOTOS}?postId=${postId}`;
+    const response = await api.delete(url);
+    if (!response.ok) {
+      throw new Error(response.data.message || 'Failed to delete photo');
+    }
+
+    galleryItemEl.remove();
+    showToast(ToastType.SUCCESS, 'Photo deleted successfully');
+  } catch (error) {
+    showToast(ToastType.ERROR, error.message || 'Failed to delete photo');
+  }
+}
+
 function init() {
-  console.log('Initializing gallery.js');
   const galleryItemsEl = document.getElementById('gallery-items');
   if (!galleryItemsEl) {
     return;
   }
+
+  galleryItemsEl.addEventListener('click', (event) => {
+    const dropdown = event.target.closest('.gallery-item-dropdown');
+    if (dropdown) {
+      dropdown.classList.toggle('open');
+    }
+
+    const actionButton = event.target.closest('.gallery-item-action');
+    if (!actionButton) {
+      return;
+    }
+    const action = actionButton.dataset.action;
+    const postId = actionButton.dataset.postId;
+    switch (action) {
+      case 'download':
+        downloadPhoto(postId);
+        break;
+      case 'delete':
+        const galleryItemEl = actionButton.closest('.gallery-item');
+        deletePhoto(postId, galleryItemEl);
+        break;
+      default:
+        break;
+    }
+  });
 
   const showMoreButton = document.getElementById('show-more-photos-button');
   if (showMoreButton) {
