@@ -39,8 +39,6 @@ class StudioManager {
 
   setupStoreSubscriptions() {
     studioStore.subscribe((newState, prevState) => {
-      console.log('State changed: ', { prevState, newState });
-
       if (newState.editorMode !== prevState.editorMode) {
         this.updateEditorView(newState.editorMode);
         this.updateEditorButtonsVisibility(newState);
@@ -468,7 +466,6 @@ class StudioManager {
 
     studioConfig.toolMenuItems.forEach(({ button, panel, id }) => {
       const isActive = id === tool;
-      console.log(`Updating tool: ${id}, isActive: ${isActive}`);
       button.classList.toggle('tool-active', isActive);
       button.setAttribute('aria-selected', isActive);
       panel.classList.toggle('display-none', !isActive);
@@ -513,9 +510,7 @@ class StudioManager {
 
     try {
       const response = await api.post(endpoints.PHOTOS, finalImageData);
-      console.log('Share photo response:', response);
       if (!response.ok) {
-        console.error('Failed to share photo:', response);
         throw new Error('Failed to share photo');
       }
 
@@ -536,6 +531,7 @@ class StudioManager {
     this.clearWebcam();
     this.clearEditor();
     this.clearCanvas();
+    this.stickerManager.panel.list?.scrollTo({ left: 0, behavior: 'smooth' });
     studioStore.setState({ editorMode: 'menu' });
   }
 

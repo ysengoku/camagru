@@ -5,10 +5,6 @@
  */
 final class ValidationRulesController extends Controller {
     final public function getRules(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
         $rules = require __DIR__ . '/../../config/validation.php';
         
         header('Content-Type: application/json');

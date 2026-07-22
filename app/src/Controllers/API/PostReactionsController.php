@@ -8,10 +8,6 @@ require_once __DIR__ . '/../../helper/mailer.php';
  */
 final class PostReactionsController extends Controller {
     final public function like(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $context = $this->resolveLikeContext();
         if (is_string($context)) {
             return $context;
@@ -36,10 +32,6 @@ final class PostReactionsController extends Controller {
     }
 
     final public function removeLike(): string {
-        if (Request::getMethod() !== 'DELETE') {
-            return $this->methodNotAllowed();
-        }
-
         $context = $this->resolveLikeContext();
         if (is_string($context)) {
             return $context;
@@ -75,21 +67,17 @@ final class PostReactionsController extends Controller {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
         }
 
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
-        }
+        // $user = User::getCurrentUser();
+        // if ($user === null) {
+        //     return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
+        // }
 
-        $like = Like::findByUserAndPost($user->id, (int)$postId);
+        $like = Like::findByUserAndPost($this->currentUser->id, (int)$postId);
 
-        return [(int)$postId, $user, $like];
+        return [(int)$postId, $this->currentUser, $like];
     }
 
     final public function getComments(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
         $postId = Request::getQueryParam('postId');
         if (is_numeric($postId) === false) {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
@@ -105,7 +93,7 @@ final class PostReactionsController extends Controller {
 
         $limit = min($limit, max($commentCount - $offset, 0));
 
-        $user = User::getCurrentUser();
+        // $user = User::getCurrentUser();
 
         $comments = $limit > 0
             ? Comment::findByPostIdWithPagination((int)$postId, $offset, $limit)
@@ -113,17 +101,13 @@ final class PostReactionsController extends Controller {
         $html = '';
         foreach ($comments as $comment) {
             $commentData = PostDataFactory::toCommentData($comment);
-            $html .= render_comment($commentData, $user?->id);
+            $html .= render_comment($commentData, $this->currentUser?->id);
         }
 
         return $this->json(['html' => $html, 'count' => $commentCount], Response::OK);
     }
 
     final public function addComment(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $data = Request::getPostData();
         $postId = $data['postId'] ?? null;
         $content = $data['content'] ?? '';
@@ -132,29 +116,24 @@ final class PostReactionsController extends Controller {
             return $this->json(['error' => 'Invalid post ID or empty content'], Response::BAD_REQUEST);
         }
 
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
-        }
-
         $post = Post::find((int)$postId);
         if ($post === null) {
             return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
         }
 
-        $comment = new Comment((int)$postId, $user->id, trim($content));
+        $comment = new Comment((int)$postId, $this->currentUser->id, trim($content));
         if ($comment->save()) {
             $commentData = PostDataFactory::toCommentData($comment);
             $commentCount = Comment::countByPostId((int)$postId);
 
             $postAuthor = $post->user();
-            if ($postAuthor !== null && $postAuthor->id !== $user->id) {
-                $this->sendNotification($postAuthor, $user->username, trim($content), (int)$postId);
+            if ($postAuthor !== null && $postAuthor->id !== $this->currentUser->id) {
+                $this->sendNotification($postAuthor, $this->currentUser->username, trim($content), (int)$postId);
             }
 
             return $this->json([
                 'message' => 'Comment added',
-                'html' => render_comment($commentData, $user->id),
+                'html' => render_comment($commentData, $this->currentUser->id),
                 'postId' => (int)$postId,
                 'commentCount' => $commentCount
             ], Response::CREATED);
@@ -164,22 +143,13 @@ final class PostReactionsController extends Controller {
     }
 
     final public function deleteComment(): string {
-        if (Request::getMethod() !== 'DELETE') {
-            return $this->methodNotAllowed();
-        }
-
         $commentId = Request::getQueryParam('commentId');
         if (is_numeric($commentId) === false) {
             return $this->json(['error' => 'Invalid comment ID'], Response::BAD_REQUEST);
         }
 
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
-        }
-
         $comment = Comment::find((int)$commentId);
-        if ($comment === null || $comment->author_id !== $user->id) {
+        if ($comment === null || $comment->author_id !== $this->currentUser->id) {
             return $this->json(['error' => 'Comment not found or user not authorized to delete it'], Response::FORBIDDEN);
         }
 

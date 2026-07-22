@@ -43,16 +43,25 @@ final class Application {
                 return;
             }
 
+            $user = User::getCurrentUser();
             $authRequired = $params['auth'] ?? false;
-            if ($authRequired === true) {
-                if (SessionStore::activeSession() === false) {
-                    $this->response->redirect('/login');
+            if ($authRequired === true && $user === null) {
+                if (str_starts_with($params['path'], '/api/')) {
+                    $this->response->setStatus(Response::UNAUTHORIZED);
+                    $this->response->setContent(json_encode(['error' => 'Authentication required']));
+                    $this->response->send();
+                    return;
                 }
+                $this->response->redirect('/login');
             }
 
             $controller = $params['controller'];
             $action     = $params['action'];
-            $this->runAction($controller, $action);
+            $this->runAction($controller, $action, $user);
+        } catch (HTTPMethodNotAllowedException $e) {
+            error_log('HTTPMethodNotAllowedException: ' . $e->getMessage());
+            $this->response->setStatus(Response::METHOD_NOT_ALLOWED);
+            $this->response->setContent('405 Method Not Allowed');
         } catch (HTTPNotFoundException $e) {
             error_log('HTTPNotFoundException: ' . $e->getMessage());
             $this->renderNotFound();
@@ -61,7 +70,7 @@ final class Application {
         $this->response->send();
     }
 
-    private function runAction(string $controller, string $action): void {
+    private function runAction(string $controller, string $action, ?User $user): void {
         $controllerClass = ucfirst($controller) . 'Controller';
         if (!class_exists($controllerClass)) {
             error_log("Controller class not found: " . htmlspecialchars($controllerClass));
@@ -69,7 +78,7 @@ final class Application {
         }
 
         /** @psalm-suppress MixedMethodCall */
-        $controllerInstance = new $controllerClass();
+        $controllerInstance = new $controllerClass($user);
 
         /** @var Controller $controllerInstance */
         $content = $controllerInstance->run($action);

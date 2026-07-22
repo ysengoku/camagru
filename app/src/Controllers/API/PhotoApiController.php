@@ -8,10 +8,6 @@ require_once __DIR__ . '/../../Views/studio/galleryItem.php';
  */
 final class PhotoApiController extends Controller {
     final public function create(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $mediaDir = Path::getMediaDirPath();
         $imageFilename = uniqid('', true) . '.jpg';
         $imagePath = Path::join($mediaDir, $imageFilename);
@@ -52,12 +48,7 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Image save failed'], Response::INTERNAL_ERROR);
         }
 
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
-        }
-
-        $post = new Post($publicImagePath, $user->id);
+        $post = new Post($publicImagePath, $this->currentUser->id);
         if (!$post->save()) {
             return $this->json(
                 ['error' => 'Post could not be saved', 'details' => $post->getErrors()],
@@ -73,15 +64,28 @@ final class PhotoApiController extends Controller {
     }
 
     final public function delete(): string {
-        // TESTING PURPOSES ONLY
+        $postId = Request::getQueryParam('postId');
+        if (!is_string($postId) || $postId === '') {
+            return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
+        }
+        
+        $post = Post::find($postId);
+        if ($post === null) {
+            return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
+        }
+
+        if ($post->user_id !== $this->currentUser->id) {
+            return $this->json(['error' => 'Unauthorized to delete this post'], Response::FORBIDDEN);
+        }
+
+        if (!$post->delete()) {
+            return $this->json(['error' => 'Failed to delete post'], Response::INTERNAL_ERROR);
+        }
+
         return $this->json(['success' => true], Response::OK);
     }
 
     final public function getPhotos(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 10);
 
@@ -96,9 +100,8 @@ final class PhotoApiController extends Controller {
             ? Post::findAllWithPagination($offset, $limit)
             : [];
         $html = '';
-        $user = User::getCurrentUser();
         foreach ($posts as $post) {
-            $postData = PostDataFactory::fromPost($post, $user?->id);            
+            $postData = PostDataFactory::fromPost($post, $this->currentUser?->id);            
             $html .= render_post_preview($postData);
         }
 
@@ -107,10 +110,6 @@ final class PhotoApiController extends Controller {
     }
 
     final public function getCurrentUserPhotos(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 10);
 
@@ -118,15 +117,10 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Invalid offset or limit'], Response::BAD_REQUEST);
         }
 
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return $this->json(['error' => 'User not authenticated'], Response::UNAUTHORIZED);
-        }
-
-        $totalCount = Post::countByUserId($user->id);
+        $totalCount = Post::countByUserId($this->currentUser->id);
         $limit = min($limit, max($totalCount - $offset, 0));
         $posts = $limit > 0 
-            ? Post::findByUserIdWithPagination($user->id, $offset, $limit)
+            ? Post::findByUserIdWithPagination($this->currentUser->id, $offset, $limit)
             : [];
         $html = '';
         foreach ($posts as $post) {

@@ -39,10 +39,17 @@ final class Router {
      * }|null Returns the route parameters if found, or null if not found.
      */
     public function resolve(string $pathInfo, string $method): ?array {
+        $pathMatched = false;
         foreach ($this->routes as $route) {
-            if ($route['path'] === $pathInfo && (!isset($route['method']) || $route['method'] === $method)) {
-                return $route;
+            if ($route['path'] === $pathInfo) {
+                $pathMatched = true;
+                if (!isset($route['method']) || $route['method'] === $method) {
+                    return $route;
+                }
             }
+        }
+        if ($pathMatched) {
+            throw new HTTPMethodNotAllowedException();
         }
 
         return null;

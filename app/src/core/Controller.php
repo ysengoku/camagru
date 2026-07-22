@@ -1,9 +1,14 @@
 <?php
 
 abstract class Controller {
-    protected string $actionName = 'index';
-    protected int $statusCode = 200;
-    protected string $statusText = 'OK';
+    protected string $actionName  = 'index';
+    protected int    $statusCode  = 200;
+    protected string $statusText  = 'OK';
+    protected ?User  $currentUser = null;
+
+    public function __construct(?User $currentUser = null) {
+        $this->currentUser = $currentUser;
+    }
 
     public function run(string $action): string {
         if (!method_exists($this, $action)) {
@@ -54,7 +59,7 @@ abstract class Controller {
         $controllerName = strtolower(str_replace('Controller', '', get_class($this)));
         $path = $controllerName . '/' . $template;
 
-        $props['user'] = User::getCurrentUser();
+        $props['user'] = $this->currentUser;
 
         // Auto-set pageScript based on controller name if not already set
         if (!isset($props['pageScript'])) {

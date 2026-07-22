@@ -5,11 +5,6 @@
  */
 final class PostController extends Controller {
     public function view(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
-        $user = User::getCurrentUser();
         $isOverlay = Request::isXmlHttpRequest() === true;
 
         $postId = Request::getQueryParam('postId');
@@ -29,11 +24,11 @@ final class PostController extends Controller {
             return PostDataFactory::toCommentData($comment);
         }, $comments);
 
-        $postData = PostDataFactory::fromPost($post, $user?->id ?? null, $commentsData);
+        $postData = PostDataFactory::fromPost($post, $this->currentUser?->id ?? null, $commentsData);
 
         $params = [
             'pageTitle' => 'Post View',
-            'user' => $user,
+            'user' => $this->currentUser,
             'postData' => $postData,
             'isOverlay' => $isOverlay,
         ];

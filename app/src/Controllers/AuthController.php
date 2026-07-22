@@ -72,10 +72,6 @@ final class AuthController extends Controller {
     }
 
     public function logout(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $result = SessionService::getInstance()->processLogout();
         if (!$result->success) {
             return $this->json(['error' => $result->errors], Response::BAD_REQUEST);
@@ -131,11 +127,7 @@ final class AuthController extends Controller {
         }
     }
 
-    public function emailSent(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-        
+    public function emailSent(): string {        
         $action = Request::getQueryParam('action') ?? '';
         if (!in_array($action, ['verify-email', 'reset-password'])) {
             throw new HTTPNotFoundException();
@@ -145,10 +137,6 @@ final class AuthController extends Controller {
     }
 
     public function resendEmail(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $email = SessionStore::get(SessionKey::PendingEmail);
         $action = SessionStore::get(SessionKey::ResendEmailAction);
         if (!is_string($email) || $email === '' || !is_string($action) || $action === '') {

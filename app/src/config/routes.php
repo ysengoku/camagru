@@ -2,7 +2,7 @@
 
 $routes = [
     // Feed (root page)
-    ['path' => '', 'controller' => 'feed', 'action' => 'index'],
+    ['path' => '', 'method' => 'GET', 'controller' => 'feed', 'action' => 'index'],
 
     // Post routes
     ['path' => '/post', 'method' => 'GET', 'controller' => 'post', 'action' => 'view'],
@@ -16,10 +16,10 @@ $routes = [
     ['path' => '/email-sent', 'method' => 'GET', 'controller' => 'auth', 'action' => 'emailSent'],
 
     // Camera/Studio routes (authenticated only)
-    ['path' => '/studio', 'controller' => 'studio', 'action' => 'index', 'auth' => true],
+    ['path' => '/studio', 'method' => 'GET', 'controller' => 'studio', 'action' => 'index', 'auth' => true],
     
     // User profile routes
-    ['path' => '/profile', 'controller' => 'profile', 'action' => 'index', 'auth' => true],
+    ['path' => '/profile', 'method' => 'GET', 'controller' => 'profile', 'action' => 'index', 'auth' => true],
 
     // API routes
     ['path' => '/api/validation-rules', 'method' => 'GET', 'controller' => 'validationRules', 'action' => 'getRules'],

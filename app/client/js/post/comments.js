@@ -112,7 +112,6 @@ export function initComments() {
   const showMoreButton = document.getElementById('show-more-comments-button');
   if (showMoreButton) {
     showMoreButton.addEventListener('click', async () => {
-      console.log('Show more comments button clicked');
       const currentCount = commentsEl.querySelectorAll('.comment').length;
       await loadMoreComments(postId, currentCount, commentsEl);
     });

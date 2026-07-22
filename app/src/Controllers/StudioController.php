@@ -5,15 +5,6 @@
  */
 final class StudioController extends Controller {
     public function index(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
-        $user = User::getCurrentUser();
-        if (!$user) {
-            return Response::redirect('/login');
-        }
-
         // Load all stickers from the stickers directory
         $stickers = [];
         $stickerDir = __DIR__ . '/../../public/assets/stickers/';
@@ -36,9 +27,9 @@ final class StudioController extends Controller {
             sort($stickers);
         }
 
-        $posts = Post::findByUserIdWithpagination($user->id);
-        $postCount = Post::countByUserId($user->id);
-        $postData = array_map(function (Post $post) {
+        $posts     = Post::findByUserIdWithpagination($this->currentUser->id);
+        $postCount = Post::countByUserId($this->currentUser->id);
+        $postData  = array_map(function (Post $post) {
             return [
                 'id' => $post->id,
                 'image_path' => $post->image_path,
@@ -48,7 +39,7 @@ final class StudioController extends Controller {
 
         return $this->render([
             'pageScript' => 'studio',
-            'user' => $user,
+            'user' => $this->currentUser,
             'posts' => $postData,
             'postCount' => $postCount,
             'stickers' => $stickers

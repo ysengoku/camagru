@@ -56,7 +56,6 @@ export class TextManager extends ToolManager {
     });
 
     this.deleteTextButton.addEventListener('click', (e) => {
-      console.log('Delete button clicked');
       e.stopPropagation();
       this.removeText();
     });

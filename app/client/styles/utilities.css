@@ -99,6 +99,9 @@
 .color-primary-600 { color: var(--primary-600); }
 .color-primary-700 { color: var(--primary-700); }
 .color-primary-800 { color: var(--primary-800); }
+.color-secondary-100 { color: var(--secondary-100); }
+.color-secondary-200 { color: var(--secondary-200); }
+.color-secondary-300 { color: var(--secondary-300); }
 .color-secondary-400 { color: var(--secondary-400); }
 .color-secondary-500 { color: var(--secondary-500); }
 .color-gray-100 { color: var(--gray-100); }

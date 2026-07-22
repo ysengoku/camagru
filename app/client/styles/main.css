@@ -857,10 +857,15 @@ hr {
 
 #studio-editor,
 #studio-menu {
+  flex: 1 1 auto;
   min-height: 0;
-  width: 100%;
+  min-width: 0;
   aspect-ratio: 16 / 9;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  align-self: center;
 }
 
 #studio-editor {
@@ -942,10 +947,66 @@ video {
 #gallery-items {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.gallery-item-dropdown {
+  position: absolute;
+  top: 8px;
+  right: 20px;
+  width: fit-content;
+}
+
+.gallery-item-menu-button {
+  background-color: rgba(var(--primary-100-rgb), 0.4);
+  color: var(--gray-600);
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  z-index: 1000;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.gallery-item-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  background-color: rgba(var(--gray-800-rgb), 0.7);
+  backdrop-filter: blur(10px);
+  margin-top: 0;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  list-style: none;
+}
+
+.gallery-item-dropdown-menu li {
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+}
+
+.gallery-item-dropdown-menu li:last-child {
+  margin-bottom: 0;
+}
+
+@media (hover: hover) {
+  .gallery-item-dropdown:hover .gallery-item-dropdown-menu {
+    display: block;
+  }
+}
+
+@media (hover: none) {
+  .gallery-item-dropdown.open .gallery-item-dropdown-menu {
+    display: block;
+  }
 }
 
 @container (max-width: 1000px) {

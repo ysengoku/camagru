@@ -6,7 +6,6 @@ try {
   const response = await api.get(endpoints.VALIDATION_RULES);
   rules = response.data;
 } catch (error) {
-  console.error('Failed to fetch validation rules:', error);
   // Fallback to default rules if fetching fails
   rules = {
     username: {

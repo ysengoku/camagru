@@ -5,10 +5,6 @@
  */
 final class ProfileController extends Controller {
     public function index(): string {
-        if (Request::getMethod() !== 'GET') {
-            return $this->methodNotAllowed();
-        }
-
         return $this->render([
             'pageScript' => 'profile',
             'pageTitle' => 'Profile'
@@ -16,10 +12,6 @@ final class ProfileController extends Controller {
     }
 
     public function update(): string {
-        if (Request::getMethod() !== 'POST') {
-            return $this->methodNotAllowed();
-        }
-
         $data = Request::getPostData();
         $profileData = new ProfileData(
             username: $data['username'] ?? '',
