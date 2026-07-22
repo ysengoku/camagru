@@ -23,10 +23,6 @@ async function loadMorePhotos(currentCount, showMoreButton) {
   }
 }
 
-async function downloadPhoto(postId) {
-
-}
-
 async function deletePhoto(postId, galleryItemEl) {
   try {
     const url = `${endpoints.PHOTOS}?postId=${postId}`;
@@ -35,7 +31,7 @@ async function deletePhoto(postId, galleryItemEl) {
       throw new Error(response.data.message || 'Failed to delete photo');
     }
 
-    galleryItemEl.remove();
+    galleryItemEl?.remove();
     showToast(ToastType.SUCCESS, 'Photo deleted successfully');
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to delete photo');
@@ -54,23 +50,13 @@ function init() {
       dropdown.classList.toggle('open');
     }
 
-    const actionButton = event.target.closest('.gallery-item-action');
-    if (!actionButton) {
+    const deleteButton = event.target.closest('.delete-button');
+    if (!deleteButton) {
       return;
     }
-    const action = actionButton.dataset.action;
-    const postId = actionButton.dataset.postId;
-    switch (action) {
-      case 'download':
-        downloadPhoto(postId);
-        break;
-      case 'delete':
-        const galleryItemEl = actionButton.closest('.gallery-item');
-        deletePhoto(postId, galleryItemEl);
-        break;
-      default:
-        break;
-    }
+    const postId = deleteButton.dataset.postId;
+    const galleryItemEl = deleteButton.closest('.gallery-item');
+    deletePhoto(postId, galleryItemEl);
   });
 
   const showMoreButton = document.getElementById('show-more-photos-button');

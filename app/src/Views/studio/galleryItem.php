@@ -15,10 +15,12 @@ if (!function_exists('render_gallery_item')) {
                     {$moreIconHtml}
                 </button>
                 <ul class="gallery-item-dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li class="gallery-item-action color-primary-100" data-action="download" data-post-id="{$postIdHtml}">
-                        Download
+                    <li class="gallery-item-action color-primary-100">
+                        <a href="/post/download?postId={$postIdHtml}" class="color-primary-100 text-decoration-none">
+                            Download
+                        </a>
                     </li>
-                    <li class="gallery-item-action color-danger" data-action="delete" data-post-id="{$postIdHtml}">
+                    <li class="gallery-item-action delete-button color-danger" data-post-id="{$postIdHtml}">
                         Delete
                     </li>
                 </ul>

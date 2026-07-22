@@ -9,6 +9,7 @@ export const ToastMessage = Object.freeze({
   'email-verified': 'Email verified successfully. Please login to continue.',
   'password-reset':
     'Password reset successful. Please log in with your new password.',
+  'logout-failed': 'Logout failed.',
   'profile-update-success': 'Profile updated successfully.',
   'profile-update-error': 'Error updating profile. Please try again.',
   'post-not-found': 'This post does not exist or has been deleted.',

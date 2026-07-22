@@ -6,6 +6,7 @@ $routes = [
 
     // Post routes
     ['path' => '/post', 'method' => 'GET', 'controller' => 'post', 'action' => 'view'],
+    ['path' => '/post/download', 'method' => 'GET', 'controller' => 'photoDownload', 'action' => 'downloadPhoto', 'auth' => true],
 
     // Auth routes
     ['path' => '/signup', 'method' => 'GET', 'controller' => 'auth', 'action' => 'signup'],

@@ -1,5 +1,5 @@
 import { api, endpoints } from '../api.js';
-import { showToast, ToastType } from '../helpers/toast.js';
+import { showToast, ToastType, ToastMessage } from '../toast.js';
 
 const logoutButton = document.getElementById('logout-button');
 if (logoutButton) {
@@ -9,7 +9,7 @@ if (logoutButton) {
       await api.post(endpoints.LOGOUT);
       window.location.href = '/login';
     } catch (error) {
-      showToast('Logout failed.', ToastType.ERROR);
+      showToast(ToastType.ERROR, ToastMessage['logout-failed']);
     }
   });
 }
