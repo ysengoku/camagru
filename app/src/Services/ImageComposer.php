@@ -193,10 +193,10 @@ final class ImageComposer {
     }
 
     private function applyVintageFilter(): void {
-        imagefilter($this->canvas, IMG_FILTER_COLORIZE, 56, 33, 10);
+        $this->applyPartialGrayscale(50);
+        imagefilter($this->canvas, IMG_FILTER_COLORIZE, 28, 17, 5);
         imagefilter($this->canvas, IMG_FILTER_BRIGHTNESS, 13);
         imagefilter($this->canvas, IMG_FILTER_CONTRAST, -4);
-        imagefilter($this->canvas, IMG_FILTER_GRAYSCALE);
     }
 
     private function applyDreamFilter(): void {
@@ -204,5 +204,16 @@ final class ImageComposer {
         imagefilter($this->canvas, IMG_FILTER_BRIGHTNESS, 51);
         imagefilter($this->canvas, IMG_FILTER_CONTRAST, -25);
         imagefilter($this->canvas, IMG_FILTER_COLORIZE, 30, -10, 10);
+    }
+
+    private function applyPartialGrayscale(int $percentage): void {
+        $width = imagesx($this->canvas);
+        $height = imagesy($this->canvas);
+
+        $grayscaleCopy = imagecreatetruecolor($width, $height);
+        imagecopy($grayscaleCopy, $this->canvas, 0, 0, 0, 0, $width, $height);
+        imagefilter($grayscaleCopy, IMG_FILTER_GRAYSCALE);
+
+        imagecopymerge($this->canvas, $grayscaleCopy, 0, 0, 0, 0, $width, $height, $percentage);
     }
 }

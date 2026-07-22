@@ -207,6 +207,7 @@ class StudioManager {
         this.editorButtons.capture?.classList.add('display-none');
         this.editorButtons.share?.classList.remove('display-none');
         this.editorButtons.reset?.classList.remove('display-none');
+        this.updateShareButtonState();
         break;
       case 'upload':
         this.editorButtons.backToMenu?.classList.remove('display-none');
