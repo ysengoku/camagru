@@ -6,17 +6,17 @@
 final class StudioController extends Controller {
     public function index(): string {
         // Load all stickers from the stickers directory
-        $stickers = [];
+        $stickers   = [];
         $stickerDir = __DIR__ . '/../../public/assets/stickers/';
         if (is_dir($stickerDir)) {
             $scanned = scandir($stickerDir);
-            $files = $scanned !== false ? array_diff($scanned, ['.', '..']) : [];
+            $files   = $scanned !== false ? array_diff($scanned, ['.', '..']) : [];
             foreach ($files as $file) {
                 if (!preg_match('/\.(png|jpg|jpeg)$/i', $file)) {
                     continue;
                 }
 
-                $filePath = $stickerDir . $file;
+                $filePath   = $stickerDir . $file;
                 $dimensions = @getimagesize($filePath);
                 if ($dimensions === false || ($dimensions[0] * $dimensions[1]) > 6_000_000) {
                     continue;
@@ -27,8 +27,9 @@ final class StudioController extends Controller {
             sort($stickers);
         }
 
-        $posts     = Post::findByUserIdWithpagination($this->currentUser->id);
-        $postCount = Post::countByUserId($this->currentUser->id);
+        $user      = $this->getAuthenticatedUser();
+        $posts     = Post::findByUserIdWithpagination($user->id);
+        $postCount = Post::countByUserId($user->id);
         $postData  = array_map(function (Post $post) {
             return [
                 'id' => $post->id,
@@ -39,7 +40,7 @@ final class StudioController extends Controller {
 
         return $this->render([
             'pageScript' => 'studio',
-            'user' => $this->currentUser,
+            'user' => $user,
             'posts' => $postData,
             'postCount' => $postCount,
             'stickers' => $stickers

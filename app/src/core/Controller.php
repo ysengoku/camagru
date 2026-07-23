@@ -72,4 +72,19 @@ abstract class Controller {
     protected function methodNotAllowed(): string {
         return $this->json(['error' => 'Method Not Allowed'], Response::METHOD_NOT_ALLOWED);
     }
+
+    /**
+     * Returns the current user for actions routed with auth: true, where the
+     * router guarantees a user is present. Throws if that guarantee was violated
+     * (i.e. a routing misconfiguration), rather than returning a nullable type
+     * every auth-required action would otherwise have to null-check.
+     * Do not use this in auth: false actions, where a null user is legitimate.
+     */
+    protected function getAuthenticatedUser(): User {
+        if ($this->currentUser === null) {
+            throw new \LogicException('Action requires an authenticated user; check the route has auth: true.');
+        }
+
+        return $this->currentUser;
+    }
 }

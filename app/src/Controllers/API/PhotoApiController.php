@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../Views/studio/galleryItem.php';
  */
 final class PhotoApiController extends Controller {
     final public function create(): string {
+        $user = $this->getAuthenticatedUser();
         $mediaDir = Path::getMediaDirPath();
         $imageFilename = uniqid('', true) . '.jpg';
         $imagePath = Path::join($mediaDir, $imageFilename);
@@ -48,7 +49,7 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Image save failed'], Response::INTERNAL_ERROR);
         }
 
-        $post = new Post($publicImagePath, $this->currentUser->id);
+        $post = new Post($publicImagePath, $user->id);
         if (!$post->save()) {
             return $this->json(
                 ['error' => 'Post could not be saved', 'details' => $post->getErrors()],
@@ -56,7 +57,7 @@ final class PhotoApiController extends Controller {
             );
         }
 
-        $html = render_gallery_item($post->id, $post->image_path);
+        $html = render_gallery_item((string) $post->id, $post->image_path);
         return $this->json([
             'message' => 'Post created successfully',
             'html' => $html
@@ -64,17 +65,18 @@ final class PhotoApiController extends Controller {
     }
 
     final public function delete(): string {
+        $user = $this->getAuthenticatedUser();
         $postId = Request::getQueryParam('postId');
         if (!is_string($postId) || $postId === '') {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
         }
         
-        $post = Post::find($postId);
+        $post = Post::find((int) $postId);
         if ($post === null) {
             return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
         }
 
-        if ($post->user_id !== $this->currentUser->id) {
+        if ($post->user_id !== $user->id) {
             return $this->json(['error' => 'Unauthorized to delete this post'], Response::FORBIDDEN);
         }
 
@@ -117,14 +119,15 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Invalid offset or limit'], Response::BAD_REQUEST);
         }
 
-        $totalCount = Post::countByUserId($this->currentUser->id);
+        $user = $this->getAuthenticatedUser();
+        $totalCount = Post::countByUserId($user->id);
         $limit = min($limit, max($totalCount - $offset, 0));
-        $posts = $limit > 0 
-            ? Post::findByUserIdWithPagination($this->currentUser->id, $offset, $limit)
+        $posts = $limit > 0
+            ? Post::findByUserIdWithPagination($user->id, $offset, $limit)
             : [];
         $html = '';
         foreach ($posts as $post) {
-            $html .= render_gallery_item($post->id, $post->image_path);
+            $html .= render_gallery_item((string) $post->id, $post->image_path);
         }
 
         return $this->json(['html' => $html, 'count' => $totalCount], Response::OK);

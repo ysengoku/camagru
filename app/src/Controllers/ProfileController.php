@@ -7,7 +7,7 @@ require_once __DIR__ . '/../Views/profile/avatarSelection.php';
  */
 final class ProfileController extends Controller {
     public function index(): string {
-        $user = $this->currentUser;
+        $user = $this->getAuthenticatedUser();
         $posts = Post::findByUserIdWithPagination($user->id, 0, 4);
         $postCount = Post::countByUserId($user->id);
 
@@ -43,12 +43,12 @@ final class ProfileController extends Controller {
         $limit = $pageNumber === 1 ? 4 : 5;
         $offset = $pageNumber === 1 ? 0 : 4 + ($pageNumber - 2) * 5;
 
-        $userId = $this->currentUser->id;
-        $posts = Post::findByUserIdWithPagination($userId, $offset, $limit);
-        $count = Post::countByUserId($userId);
+        $user = $this->getAuthenticatedUser();
+        $posts = Post::findByUserIdWithPagination($user->id, $offset, $limit);
+        $count = Post::countByUserId($user->id);
         $totalPages = $count <= 4 ? 1 : 1 + (int)ceil(($count - 4) / 5);
 
-        $html =  render_avatar_selection_list($pageNumber, $totalPages, $this->currentUser->username, $this->currentUser->avatar, $posts);
+        $html =  render_avatar_selection_list($pageNumber, $totalPages, $user->username, $user->avatar, $posts);
 
         return $this->json([
             'html' => $html,

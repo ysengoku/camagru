@@ -40,6 +40,7 @@ final class Application {
                 $this->response->setStatus(Response::FORBIDDEN);
                 $this->response->setContent('403 Forbidden: Invalid CSRF token');
                 $this->response->send();
+
                 return;
             }
 
@@ -48,8 +49,10 @@ final class Application {
             if ($authRequired === true && $user === null) {
                 if (str_starts_with($params['path'], '/api/')) {
                     $this->response->setStatus(Response::UNAUTHORIZED);
-                    $this->response->setContent(json_encode(['error' => 'Authentication required']));
+                    $json = json_encode(['error' => 'Authentication required']);
+                    $this->response->setContent($json === false ? '{"error":"Internal Server Error"}' : $json);
                     $this->response->send();
+
                     return;
                 }
                 $this->response->redirect('/login');

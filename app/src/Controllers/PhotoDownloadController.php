@@ -1,16 +1,16 @@
 <?php
 
+/**
+ * @psalm-suppress UnusedClass - Instantiated dynamically via routing
+ */
 final class PhotoDownloadController extends Controller {
-    /**
-     * @psalm-suppress UnusedClass - Instantiated dynamically via routing
-     */
     final public function downloadPhoto(): string {
         $postId = Request::getQueryParam('postId');
         if (!is_string($postId) || $postId === '') {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
         }
 
-        $post = Post::find($postId);
+        $post = Post::find((int) $postId);
         if ($post === null) {
             return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
         }
