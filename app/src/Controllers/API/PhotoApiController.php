@@ -97,7 +97,7 @@ final class PhotoApiController extends Controller {
         $limit = min($limit, max($totalPostCount - $offset, 0));
 
         $posts = $limit > 0 
-            ? Post::findAllWithPagination($offset, $limit)
+            ? Post::findAllUsersPostsWithPagination($offset, $limit)
             : [];
         $html = '';
         foreach ($posts as $post) {

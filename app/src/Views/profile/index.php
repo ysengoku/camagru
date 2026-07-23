@@ -53,7 +53,7 @@ $notificationsEnabled = $user->email_notifications_enabled;
             <div id="avatar-preview">
                 <?= render_avatar($user->username, 'large', $user->avatar !== null ? $user->avatar : null) ?>
             </div>
-            <?= render_avatar_selection($user) ?>
+            <?= render_avatar_selection($user->username, $user->avatar, $posts, $postCount) ?>
         </div>
 
         <hr />

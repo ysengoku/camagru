@@ -1,8 +1,5 @@
 <?php
 require_once __DIR__ . '/../components/icon.php';
-?>
-
-<?php
 
 if (!function_exists('render_password_field')) {
     function render_password_field(string $label = 'Password', string $name = 'password', bool $required = false): string {

@@ -102,7 +102,10 @@ final class Application {
     }
 
     private function renderNotFound(): void {
+        $user = User::getCurrentUser();
+        $controller = new ErrorController($user);
+        $content = $controller->run('notFound');
         $this->response->setStatus(Response::NOT_FOUND);
-        $this->response->setContent('404 Not Found'); // TODO
+        $this->response->setContent($content);
     }
 }

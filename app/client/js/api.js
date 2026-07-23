@@ -11,6 +11,7 @@ export const endpoints = {
   RESEND_EMAIL: `${API_BASE_URL}resend-email`,
   VALIDATION_RULES: `${API_BASE_URL}validation-rules`,
   PROFILE: `${API_BASE_URL}profile`,
+  AVATAR_OPTIONS: `${API_BASE_URL}avatar-options`,
   LIKE: `${API_BASE_URL}like`,
   COMMENTS: `${API_BASE_URL}comments`,
   PHOTOS: `${API_BASE_URL}photos`,

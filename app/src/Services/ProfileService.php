@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../helper/mailer.php';
 require_once __DIR__ . '/../helper/token.php';
+require_once __DIR__ . '/../Views/components/avatar.php';
 
 final class ProfileService {
     use SingletonTrait;
@@ -19,6 +20,8 @@ final class ProfileService {
         if (!empty($validationErrors)) {
             return ServiceResult::failure($validationErrors);
         }
+
+        $avatarChanged = $data->avatar !== $user->avatar;
 
         $user->username = $data->username;
         $user->avatar = $data->avatar;
@@ -42,7 +45,16 @@ final class ProfileService {
             return ServiceResult::failure(['email' => 'Failed to update email.']);
         }
 
-        return ServiceResult::success(['message' => 'Profile updated successfully.', 'emailVerificationRequired' => false]);
+        $newAvatarHtml = '';
+        if ($avatarChanged) {
+            $newAvatarHtml = render_avatar($user->username, 'medium', $user->avatar);
+        }
+
+        return ServiceResult::success([
+            'message' => 'Profile updated successfully.',
+            'emailVerificationRequired' => false,
+            'avatarHtml' => $newAvatarHtml
+        ]);
     }
 
     private function validateProfileData(ProfileData $data, User $user): array {

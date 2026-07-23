@@ -47,27 +47,6 @@ final class Post extends Model {
         return self::findWithPagination(null, null, 'created_at', 'DESC', $offset, $limit);
     }
 
-    /**
-     * @return list<self>
-     */
-    public static function findByUserId(int $userId): array {
-        if ($userId <= 0) {
-            return [];
-        }
-
-        $db = self::getDb();
-        $sql = 'SELECT * FROM posts WHERE user_id = :user_id ORDER BY created_at DESC';
-
-        /** @var list<array<string, mixed>> $rows */
-        $rows = $db->fetchAll($sql, ['user_id' => $userId]);
-
-        return array_map(fn(array $row): self => static::fromRow($row), $rows);
-    }
-
-    public static function findAllWithPagination(int $offset = 0, int $limit = 10): array {
-        return self::findWithPagination(null, null, 'created_at', 'DESC', $offset, $limit);
-    }
-
     public static function findByUserIdWithPagination(int $userId, int $offset = 0, int $limit = 10): array {
         if ($userId <= 0) {
             return [];

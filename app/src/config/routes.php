@@ -31,6 +31,7 @@ $routes = [
     ['path' => '/api/reset-password', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resetPassword'],
     ['path' => '/api/resend-email', 'method' => 'POST', 'controller' => 'auth', 'action' => 'resendEmail'],
     ['path' => '/api/profile', 'method' => 'POST', 'controller' => 'profile', 'action' => 'update', 'auth' => true],
+    ['path' => '/api/avatar-options', 'method' => 'GET', 'controller' => 'profile', 'action' => 'getAvatarOptions', 'auth' => true],
 
     ['path' => '/api/studio-config', 'method' => 'GET', 'controller' => 'studioConfig', 'action' => 'config', 'auth' => true],
     ['path' => '/api/photos', 'method' => 'POST', 'controller' => 'photoApi', 'action' => 'create', 'auth' => true],

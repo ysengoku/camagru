@@ -110,9 +110,11 @@
 }
 
 /* Breakpoints 
-Mobile: 0 - 576px
-Tablet: 577px - 768px
-Desktop: 769px and above
+Extra small: 0 - 576px
+Small: 577px - 768px
+Medium: 769px - 992px
+Large: 993px - 1200px
+Extra large: 1201px and above
 */
 
 html,
@@ -443,6 +445,7 @@ hr {
   border-radius: 0.5rem;
   background-color: rgba(var(--primary-100-rgb), 0.5);
   width: 30%;
+  min-width: 4ch;
   margin: 2rem auto;
 
   h2 {
@@ -451,9 +454,23 @@ hr {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
+  .auth-form-container {
+    width: 40%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 992px) {
   .auth-form-container {
     width: 50%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-form-container {
+    width: 75%;
     padding: 1rem 2rem;
   }
 }
@@ -528,15 +545,42 @@ hr {
   }
 }
 
+.avatar-selection .previous-page-button,
+.avatar-selection .next-page-button {
+  color: var(--primary-500);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
 .avatar-selection-list {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
+  width: calc(6 * 36px + 5 * 0.5rem);
+  flex-shrink: 0;
 }
 
 .avatar-selection-option {
+  display: flex;
+  align-items: center;
   cursor: pointer;
+
+  span {
+    margin: 0;
+  }
+}
+
+.avatar-selection-list {
+  scrollbar-width: none; /* Firefox */
+}
+
+.avatar-selection-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 .error-feedback {
@@ -1047,6 +1091,13 @@ video {
   }
 }
 
+@media (max-width: 768px) {
+  #studio-tools-menu ul li {
+    margin-right: 0.5rem;
+    padding: 0 0.25rem 0.25rem 0.25rem;
+  }
+}
+
 .tool-menu-item:has(.tool-active) {
   border-bottom: 3px solid var(--primary-500);
 }
@@ -1112,6 +1163,11 @@ video {
   background-size: contain;
   background-repeat: no-repeat;
   z-index: 4;
+}
+
+.sticker-overlay,
+.sticker-resize-handle {
+  touch-action: none;
 }
 
 .sticker-delete-btn,
@@ -1318,4 +1374,26 @@ video {
   background-color: transparent;
   color: var(--primary-600);
   font-size: 1rem;
+}
+
+.error-title {
+  font-size: 2rem;
+  color: var(--primary-600);
+  margin-top: 0;
+}
+
+.error-status {
+  font-size: 3rem;
+  font-weight: bold;
+  opacity: 0.8;
+  background: linear-gradient(
+    to right bottom,
+    rgba(0, 192, 176, 1) 0%,
+    rgba(0, 150, 137, 1) 20%,
+    rgba(217, 13, 112, 1) 100%
+  );
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

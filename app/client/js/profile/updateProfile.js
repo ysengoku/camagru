@@ -120,6 +120,9 @@ function init() {
     const inputData = buildInputData();
     inputData['current-password'] = currentPassword;
     delete inputData['confirm-password'];
+    if (inputData['avatar'] === '') {
+      inputData['avatar'] = null;
+    }
 
     try {
       const res = await api.post(endpoints.PROFILE, inputData);
@@ -127,6 +130,15 @@ function init() {
       if (res.data && res.data.emailVerificationRequired) {
         window.location.href = '/email-sent?action=verify-email';
         return;
+      }
+
+      if (res.data.avatarHtml) {
+        const profileNavLink = document.querySelector(
+          '.nav-link[href="/profile"]'
+        );
+        if (profileNavLink) {
+          profileNavLink.innerHTML = res.data.avatarHtml;
+        }
       }
 
       showToast(ToastType.SUCCESS, ToastMessage['profile-update-success']);
@@ -160,14 +172,64 @@ function init() {
     }
 
     const preview = document.getElementById('avatar-preview');
-    let img = preview.querySelector('img');
-    if (!img) {
-      preview.innerHTML = '';
-      img = document.createElement('img');
-      img.className = 'avatar avatar-large';
-      preview.appendChild(img);
+    const selecteAvatarEl = target.parentElement.querySelector(
+      '.avatar, .letter-avatar'
+    );
+    if (!selecteAvatarEl) {
+      return;
     }
-    img.src = target.value;
+
+    const copy = selecteAvatarEl.cloneNode(true);
+    copy.classList.remove('avatar-medium');
+    copy.classList.add('avatar-large');
+    preview.replaceChildren(copy);
+  }
+
+  async function loadAvatarOptions(previousButton, nextButton, direction) {
+    const listEl = document.querySelector('.avatar-selection-list');
+    if (!listEl) {
+      return;
+    }
+    const currentPage = listEl.dataset.page;
+    const totalPages = listEl.dataset.totalPages;
+    const nextPage =
+      direction === 'next'
+        ? parseInt(currentPage) + 1
+        : parseInt(currentPage) - 1;
+
+    if (nextPage < 1 || nextPage > totalPages) {
+      return;
+    }
+
+    const url = `${endpoints.AVATAR_OPTIONS}?page=${nextPage}`;
+    try {
+      const response = await api.get(url);
+      if (!response.ok) {
+        throw new Error('Failed to load more avatar options');
+      }
+
+      const avatarOptionsHTML = response.data.html;
+      const newList = document
+        .createRange()
+        .createContextualFragment(avatarOptionsHTML);
+      listEl.replaceWith(newList);
+
+      if (response.data.totalPages > nextPage) {
+        nextButton.classList.remove('invisible');
+      } else {
+        nextButton.classList.add('invisible');
+      }
+      if (nextPage === 1) {
+        previousButton.classList.add('invisible');
+      } else {
+        previousButton.classList.remove('invisible');
+      }
+    } catch (error) {
+      showToast(
+        ToastType.ERROR,
+        error.message || 'Failed to load more avatar options'
+      );
+    }
   }
 
   initPasswordToggles();
@@ -220,6 +282,19 @@ function init() {
   if (container) {
     container.addEventListener('change', (event) => {
       updateAvatarPreview(event.target);
+    });
+
+    const previousButton = container.querySelector('.previous-page-button');
+    const nextButton = container.querySelector('.next-page-button');
+
+    previousButton?.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await loadAvatarOptions(previousButton, nextButton, 'previous');
+    });
+
+    nextButton?.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await loadAvatarOptions(previousButton, nextButton, 'next');
     });
   }
 }
