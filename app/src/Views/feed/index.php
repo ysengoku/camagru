@@ -1,5 +1,11 @@
 <?php
+/**
+ * @var list<PostData> $posts
+ * @var int $count
+ */
+
 require_once __DIR__ . '/postPreview.php';
+
 ?>
 
 <div class="p-4">

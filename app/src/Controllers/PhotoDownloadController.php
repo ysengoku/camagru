@@ -5,6 +5,7 @@
  */
 final class PhotoDownloadController extends Controller {
     final public function downloadPhoto(): string {
+        $user = $this->getAuthenticatedUser();
         $postId = Request::getQueryParam('postId');
         if (!is_string($postId) || $postId === '') {
             return $this->json(['error' => 'Invalid post ID'], Response::BAD_REQUEST);
@@ -14,7 +15,7 @@ final class PhotoDownloadController extends Controller {
         if ($post === null) {
             return $this->json(['error' => 'Post not found'], Response::NOT_FOUND);
         }
-        if ($post->user_id !== $this->currentUser->id) {
+        if ($post->user_id !== $user->id) {
             return $this->json(['error' => 'Unauthorized to download this post'], Response::FORBIDDEN);
         }
 
@@ -31,13 +32,18 @@ final class PhotoDownloadController extends Controller {
         }
 
         // Mime type detection using finfo
-        $mimeType = (new \finfo(FILEINFO_MIME_TYPE))->file($filePath) ?: 'application/octet-stream';
-
+        $detectedMimeType = (new \finfo(FILEINFO_MIME_TYPE))->file($filePath);
+        $mimeType = $detectedMimeType === false ? 'application/octet-stream' : $detectedMimeType;
         header('Content-Type: ' . $mimeType);
-        header('Content-Length: ' . filesize($filePath));
+
+        $filesize = filesize($filePath);
+        if ($filesize !== false) {
+            header('Content-Length: ' . $filesize);
+        }
+
         header('Content-Disposition: attachment; filename="camagru-photo-' . $post->id . '.jpg"');
         header('Cache-Control: no-cache');
-        
+            
         // Read the file and send it to the output buffer
         readfile($filePath);
         exit;

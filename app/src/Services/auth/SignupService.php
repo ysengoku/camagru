@@ -21,7 +21,7 @@ final class SignupService {
         }
 
         $availability = $this->checkAvailability();
-        if (!empty($availability['errors'])) {
+        if ($availability['errors'] !== []) {
             return ServiceResult::failure($availability['errors']);
         }
 
@@ -65,6 +65,9 @@ final class SignupService {
      * If an unverified user exists with the same email, it will be returned for potential deletion before creating a new user.
      * @return array{errors: array<string, string>, existingUnverifiedUser: ?User}
     */
+    /**
+     * @return array{errors: array<string, string>, existingUnverifiedUser: User|null}
+     */
     private function checkAvailability(): array {
         $errors = [];
 

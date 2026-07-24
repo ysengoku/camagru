@@ -15,14 +15,14 @@ final class PostController extends Controller {
 
         $post = Post::find((int)$postId);
         if ($post === null) {
-            error_log("Post not found for postId: " . htmlspecialchars((string)$postId));
+            error_log("Post not found for postId: " . htmlspecialchars($postId));
             throw new HTTPNotFoundException();
         }
 
         $comments = Comment::findByPostIdWithPagination($post->id, 0, 10);
-        $commentsData = array_map(function (Comment $comment): PostCommentData {
+        $commentsData = array_values(array_map(function (Comment $comment): PostCommentData {
             return PostDataFactory::toCommentData($comment);
-        }, $comments);
+        }, $comments));
 
         $postData = PostDataFactory::fromPost($post, $this->currentUser?->id ?? null, $commentsData);
 

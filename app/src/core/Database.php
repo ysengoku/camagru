@@ -34,13 +34,17 @@ class Database {
     }
 
     public function getConnection(): PDO {
+        if ($this->conn === null) {
+            throw new \LogicException('Database connection is closed.');
+        }
+
         return $this->conn;
     }
 
     public function query(string $sql, array $params = []): PDOStatement {
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($params);
-    
+
         return $stmt;
     }
 

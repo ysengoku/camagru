@@ -21,21 +21,22 @@ final class Like extends Model {
     ];
 
     public int $id = 0;
+    /** 
+     * @psalm-suppress PossiblyUnusedProperty - dynamically read/written via Model::fromRow()/refresh()
+     */
     public int $post_id = 0;
+    /** 
+     * @psalm-suppress PossiblyUnusedProperty - dynamically read/written via Model::fromRow()/refresh()
+     */
     public int $author_id = 0;
+    /** 
+     * @psalm-suppress PossiblyUnusedProperty - dynamically read/written via Model::fromRow()/refresh()
+     */
     public ?string $created_at = '';
 
     public function __construct(int $author_id = 0, int $post_id = 0) {
         $this->author_id = $author_id;
         $this->post_id = $post_id;
-    }
-
-    public function find(int $id): ?self {
-        if ($id <= 0) {
-            return null;
-        }
-
-        return self::findById((string) $id);
     }
 
     public static function countByPostId(int $postId): int {
@@ -67,7 +68,7 @@ final class Like extends Model {
         $sql = 'SELECT * FROM likes WHERE author_id = :author_id AND post_id = :post_id LIMIT 1';
         $result = $db->fetch($sql, ['author_id' => $userId, 'post_id' => $postId]);
 
-        if ($result === false || $result === null) {
+        if ($result === null) {
             return null;
         }
 

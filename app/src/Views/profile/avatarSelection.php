@@ -18,15 +18,6 @@ if (!function_exists('render_avatar_selection')) {
             HTML;
         }
 
-        $noAvatarChecked = $userAvatar === null ? 'checked' : '';
-        $noAvatarOptionHtml = render_no_avatar_option($username, $noAvatarChecked);
-
-        $avatarsHtml = '';
-        foreach ($posts as $post) {
-            $checked = $post->image_path === $userAvatar ? 'checked' : '';
-            $avatarsHtml .= render_avatar_option($username, $post, $checked);
-        }
-
         $totalPages = $postCount <= 4 ? 1 : 1 + (int)ceil(($postCount - 4) / 5);
         $listHtml = render_avatar_selection_list(1, $totalPages, $username, $userAvatar, $posts);
 

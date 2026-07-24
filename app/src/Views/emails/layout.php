@@ -1,7 +1,10 @@
 <?php
+/**
+ * @var string $content
+ * @psalm-suppress UnnecessaryVarAnnotation - needed so Psalm treats $content as defined; it also infers the type via the static include in renderEmailTemplate(), which makes this redundant from its point of view
+ */
     $logoUrl = $logoUrl ?? '';
     $emailTitle = $emailTitle ?? 'Camagru';
-    $content = $content ?? '';
 ?>
 
 <!DOCTYPE html>

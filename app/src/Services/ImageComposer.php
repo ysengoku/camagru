@@ -54,7 +54,7 @@ final class ImageComposer {
          * x: float,
          * y: float
          * }|null $textOverlay An associative array containing text overlay properties.
-         * @param string $filterName The name of the filter to apply (e.g., 'grayscale', 'sepia', 'vintage', 'dream', or 'none').
+         * @param string $filterName The name of the filter to apply (e.g., 'grayscale', 'sepia', 'vintage', 'polaroid', or 'none').
          * @param string $filePath The file path where the composed image will be saved.
          * @return bool Returns true on success, false on failure.
          * @throws \InvalidArgumentException If any of the sticker paths are invalid.
@@ -149,6 +149,9 @@ final class ImageComposer {
 
         // Convert the client's "top of box" y into the baseline y imagefttext() expects.
         $bbox = imagettfbbox((float)$fontSize, 0.0, $fontPath, $content);
+        if ($bbox === false) {
+            throw new \RuntimeException("Failed to calculate text bounding box.");
+        }
         $ascent = -$bbox[7];
 
         imagefttext(
@@ -174,8 +177,8 @@ final class ImageComposer {
             case 'vintage':
                 $this->applyVintageFilter();
                 break;
-            case 'dream':
-                $this->applyDreamFilter();
+            case 'polaroid':
+                $this->applyPolaroidFilter();
                 break;
             case 'none':
             default:
@@ -199,11 +202,11 @@ final class ImageComposer {
         imagefilter($this->canvas, IMG_FILTER_CONTRAST, -4);
     }
 
-    private function applyDreamFilter(): void {
-        imagefilter($this->canvas, IMG_FILTER_GAUSSIAN_BLUR);
-        imagefilter($this->canvas, IMG_FILTER_BRIGHTNESS, 51);
+    private function applyPolaroidFilter(): void {
+        $this->applyPartialGrayscale(20);
+        imagefilter($this->canvas, IMG_FILTER_COLORIZE, 11, 7, 2);
+        imagefilter($this->canvas, IMG_FILTER_BRIGHTNESS, 32);
         imagefilter($this->canvas, IMG_FILTER_CONTRAST, -25);
-        imagefilter($this->canvas, IMG_FILTER_COLORIZE, 30, -10, 10);
     }
 
     private function applyPartialGrayscale(int $percentage): void {
@@ -211,6 +214,9 @@ final class ImageComposer {
         $height = imagesy($this->canvas);
 
         $grayscaleCopy = imagecreatetruecolor($width, $height);
+        if ($grayscaleCopy === false) {
+            throw new \RuntimeException("Failed to create grayscale copy of the image.");
+        }
         imagecopy($grayscaleCopy, $this->canvas, 0, 0, 0, 0, $width, $height);
         imagefilter($grayscaleCopy, IMG_FILTER_GRAYSCALE);
 

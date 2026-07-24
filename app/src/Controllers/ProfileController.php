@@ -14,6 +14,7 @@ final class ProfileController extends Controller {
         return $this->render([
             'pageScript' => 'profile',
             'pageTitle' => 'Profile',
+            'user' => $user,
             'posts' => $posts,
             'postCount' => $postCount,
         ]);
@@ -28,9 +29,10 @@ final class ProfileController extends Controller {
             newPassword: $data['password'] ?? null,
             avatar: $data['avatar'] ?? null,
             notificationsEnabled: isset($data['notifications']) ? (bool)$data['notifications'] : false
-            );
+        );
+        $user = $this->getAuthenticatedUser();
 
-        $res = ProfileService::getInstance()->updateProfile($profileData);
+        $res = ProfileService::getInstance()->updateProfile($profileData, $user);
         if (!$res->success) {
             return $this->json(['error' => $res->errors], Response::BAD_REQUEST);
         }

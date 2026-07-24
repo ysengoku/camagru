@@ -1,6 +1,6 @@
 <?php
     const SAMPLE_IMAGE  = '/assets/img/sample.jpg';
-    const FILTERS = ['none', 'grayscale', 'sepia', 'vintage', 'dream'];
+    const FILTERS = ['none', 'grayscale', 'sepia', 'vintage', 'polaroid'];
     const DEFAULT_FILTER = 'none';
 ?>
 

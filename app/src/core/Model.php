@@ -9,8 +9,8 @@ abstract class Model {
     protected static string $name;
     protected static array $schema    = [];
 
-    /** * @var array<string, array{0: string, 1: string, 2: string}> 
-     * @psalm-suppress PossiblyUnusedProperty
+    /** * @var array<string, array{0: string, 1: string, 2: string}>
+     * @psalm-suppress PossiblyUnusedProperty - read via static::$relations in some subclasses' relation lookups (e.g. Comment::author()); not every subclass uses it
      */
     protected static array $relations = [];
 
@@ -74,58 +74,10 @@ abstract class Model {
     }
 
     /**
-     * Find all records in the table.
-     * @return list<static>
-     */
-    protected static function findAll(): array {
-        $db = self::getDb();
-        $table = static::$name;
-        $sql = "SELECT * FROM `$table`";
-        
-        $rows = $db->fetchAll($sql);
-
-        return array_values(array_map(
-            fn(array $row): self => static::fromRow($row),
-            $rows
-        ));
-    }
-
-    /** Find all records by a specific field.
-     * @param string $field
+     * @param string|null $field
      * @param mixed $value
      * @return list<static>
      */
-    protected static function findAllByField(string $field, mixed $value): array {
-        $db = self::getDb();
-        $table = static::$name;
-        $sql = "SELECT * FROM `$table` WHERE `$field` = :value";
-
-        $rows = $db->fetchAll($sql, ['value' => $value]);
-
-        return array_values(array_map(
-            fn(array $row): self => static::fromRow($row),
-            $rows
-        ));
-    }
-
-    /**
-     * @param string $field
-     * @param mixed $value
-     * @return list<static>
-     */
-    protected static function findByFieldWithPagination(string $field, mixed $value, int $offset, int $limit): array {
-        $db = self::getDb();
-        $table = static::$name;
-        $sql = "SELECT * FROM `$table` WHERE `$field` = :value LIMIT $limit OFFSET $offset";
-
-        $rows = $db->fetchAll($sql, ['value' => $value]);
-    
-        return array_values(array_map(
-            fn(array $row): self => static::fromRow($row),
-            $rows
-        ));
-    }
-
     protected static function findWithPagination(
         ?string $field,
         mixed $value,
@@ -160,16 +112,6 @@ abstract class Model {
         $params = $field !== null ? ['value' => $value] : [];
 
         $result = $db->fetch($sql, $params);
-
-        return (int) ($result['count'] ?? 0);
-    }
-
-    protected static function countByField(string $field, mixed $value): int {
-        $db = self::getDb();
-        $table = static::$name;
-        $sql = "SELECT COUNT(*) as count FROM `$table` WHERE `$field` = :value";
-
-        $result = $db->fetch($sql, ['value' => $value]);
 
         return (int) ($result['count'] ?? 0);
     }
@@ -267,7 +209,7 @@ abstract class Model {
 
     /**
      * Delete the current instance from the database.
-     * * @psalm-suppress PossiblyUnusedProperty
+     * * @psalm-suppress PossiblyUnusedProperty - $id is written by subclasses only via Model::fromRow()/refresh(), never a literal ->id assignment
      * @return bool
      */
     public function delete(): bool {

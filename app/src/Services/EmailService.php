@@ -48,6 +48,8 @@ final class EmailService {
             $this->write("QUIT");
             $this->expect(221);
         } finally {
+            // Socket may still be null here if fsockopen() failed before line 40 ran.
+            /** @psalm-suppress RedundantConditionGivenDocblockType */
             if (isset($this->socket) && is_resource($this->socket)) {
                 $socket = $this->socket;
                 $this->socket = null;
@@ -56,13 +58,24 @@ final class EmailService {
         }
     }
 
+    /**
+     * @return resource
+     */
+    private function getSocket() {
+        if ($this->socket === null) {
+            throw new \LogicException('SMTP socket is not open; send() must establish a connection first.');
+        }
+
+        return $this->socket;
+    }
+
     private function write(string $data): void {
-        fwrite($this->socket, $data . "\r\n");
+        fwrite($this->getSocket(), $data . "\r\n");
     }
 
     private function expect(int $code): void {
         $response = '';
-        while ($line = fgets($this->socket, 515)) {
+        while ($line = fgets($this->getSocket(), 515)) {
             $response .= $line;
             if (substr($line, 3, 1) == ' ') {
                 break;
@@ -81,7 +94,7 @@ final class EmailService {
 
         $this->write("STARTTLS");
         $this->expect(220);
-        if (stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) !== true) {
+        if (stream_socket_enable_crypto($this->getSocket(), true, STREAM_CRYPTO_METHOD_TLS_CLIENT) !== true) {
             throw new RuntimeException("Failed to enable TLS encryption for SMTP connection.");
         }
 

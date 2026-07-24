@@ -128,15 +128,6 @@ final class Post extends Model {
         return empty($this->errors);
     }
 
-    public function toArray(): array {
-        return [
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'image_path' => $this->image_path,
-            'created_at' => $this->created_at,
-        ];
-    }
-
     private static function userExists(int $userId): bool {
         $db = self::getDb();
         $user = $db->fetch(

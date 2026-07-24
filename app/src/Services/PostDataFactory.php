@@ -9,7 +9,7 @@ final class PostDataFactory {
         return new PostData(
             id: $post->id,
             author_name: $author?->username ?? 'Unknown',
-            author_id: $author?->id ?? 0,
+            // author_id: $author?->id ?? 0,
             author_avatar: $author?->avatar ?? null,
             image_path: $post->image_path,
             created_at: $post->created_at ?? '',

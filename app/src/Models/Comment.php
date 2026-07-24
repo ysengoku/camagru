@@ -38,7 +38,7 @@ final class Comment extends Model {
             return null;
         }
 
-        return self::findById($commentId);
+        return self::findById((string) $commentId);
     }
 
     public static function countByPostId(int $postId): int {
@@ -66,15 +66,5 @@ final class Comment extends Model {
             return null;
         }
         return User::find($this->author_id);
-    }
-
-    public function toArray(): array {
-        return [
-            'id' => $this->id,
-            'post_id' => $this->post_id,
-            'author_id' => $this->author_id,
-            'content' => $this->content,
-            'created_at' => $this->created_at,
-        ];
     }
 }

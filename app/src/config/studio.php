@@ -41,10 +41,10 @@ return [
             'css' => 'brightness(105%) contrast(104%) grayscale(10%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(100%) sepia(50%)',
             'description' => 'Warm retro look',
         ],
-        'dream' => [
-            'name' => 'Dream',
-            'css' => 'blur(0.6px) brightness(120%) contrast(125%) grayscale(0%) hue-rotate(342deg) invert(0%) opacity(90%) saturate(70%) sepia(15%)',
-            'description' => 'Soft dreamy effect',
+        'polaroid' => [
+            'name' => 'Polaroid',
+            'css' => 'blur(0.6px) brightness(125%) contrast(125%) grayscale(20%) hue-rotate(0deg) invert(0%) opacity(100%) saturate(125%) sepia(10%)',
+            'description' => 'Faded, milky instant-film look',
         ],
     ]
 ];

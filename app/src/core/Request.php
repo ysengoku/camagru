@@ -1,10 +1,6 @@
 <?php
 
 final class Request {
-    public static function getPathInfo(): string {
-        return $_SERVER['PATH_INFO'] ?? '';
-    }
-
     public static function isXmlHttpRequest(): bool {
         return ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
     }
@@ -36,10 +32,6 @@ final class Request {
             return json_decode($input, true) ?? [];
         }
         return $_POST;
-    }
-
-    public static function getFiles(): array {
-        return $_FILES;
     }
 
     public static function getCsrfToken(): string {

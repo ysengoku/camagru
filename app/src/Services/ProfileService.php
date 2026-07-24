@@ -10,12 +10,7 @@ final class ProfileService {
     // Private constructor to prevent direct instantiation
     private function __construct() {}
 
-    public function updateProfile(ProfileData $data): ServiceResult {
-        $user = User::getCurrentUser();
-        if ($user === null) {
-            return ServiceResult::failure(['general' => 'Not authenticated.']);
-        }
-
+    public function updateProfile(ProfileData $data, User $user): ServiceResult {
         $validationErrors = $this->validateProfileData($data, $user);
         if (!empty($validationErrors)) {
             return ServiceResult::failure($validationErrors);

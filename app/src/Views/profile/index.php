@@ -7,11 +7,11 @@ require_once __DIR__ . '/../components/usernameField.php';
 require_once __DIR__ . '/avatarSelection.php';
 
 /**
- * @var User|null $user
+ * @var User $user
+ * @var list<Post> $posts
+ * @var int $postCount
  */
-if ($user === null) {
-    throw new HTTPNotFoundException();
-}
+
 
 $notificationsEnabled = $user->email_notifications_enabled;
 ?>

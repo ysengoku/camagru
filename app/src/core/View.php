@@ -35,6 +35,7 @@ final class View {
      * @param array<string, mixed> $props An associative array of data to expand into variables within the templates.
      * @return string The fully assembled and compiled HTML raw content.
      * @throws HTTPNotFoundException If the requested template file cannot be found on the filesystem.
+     * 
      * @psalm-suppress UnusedParam - Variables are used inside the included template files
      */
     public function render(string $template, array $props = []): string {
@@ -62,6 +63,10 @@ final class View {
         return $layout;
     }
 
+    /**
+     * @psalm-suppress UnusedParam - $template and $props are used, but extract($props) makes
+     * Psalm treat every variable in this method as possibly redefined
+     */
     public function renderContent(string $template, array $props = []): string {
         /** @psalm-suppress UnresolvableInclude - Paths are set in constructor */
         $templatePath = $this->viewsDir . '/' . str_replace('/', DIRECTORY_SEPARATOR, $template) . '.php';

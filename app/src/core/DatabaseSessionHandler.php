@@ -11,18 +11,21 @@ final class DatabaseSessionHandler implements SessionHandlerInterface {
     private Database $db;
 
     // Execute when session_start() is called
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function open(string $path, string $name): bool {
         $this->db = Database::getInstance();
         return true;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function close(): bool {
         return true;
     }
 
     // Execute when session_start() is called
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function read(string $id): string {
         $sql = "
@@ -39,6 +42,7 @@ final class DatabaseSessionHandler implements SessionHandlerInterface {
     }
 
     // Execute when $_SESSION is modified (at script end)
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function write(string $id, string $data): bool {
         $user_id = SessionStore::get(SessionKey::UserId) ?? null;
@@ -62,6 +66,7 @@ final class DatabaseSessionHandler implements SessionHandlerInterface {
     }
 
     // Execute when session_destroy() is called (logout)
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function destroy(string $id): bool {
         $sql = "
@@ -73,6 +78,7 @@ final class DatabaseSessionHandler implements SessionHandlerInterface {
     }
 
     // Execute when garbage collection is triggered
+    /** @psalm-suppress PossiblyUnusedMethod - invoked internally by PHP's session engine */
     #[Override]
     public function gc(int $max_lifetime): int|false {
         $sql = "

@@ -14,7 +14,6 @@ if (!function_exists('render_post_reactions')) {
         $commentIcon = render_icon('bubble');
         $commentDataAttr = 'data-comment="' . htmlspecialchars((string)$postId, ENT_QUOTES) . '"';
 
-        $postIdHtml = htmlspecialchars((string)$postId, ENT_QUOTES);
         $likesCountHtml = $likesCount > 0 ? htmlspecialchars((string)$likesCount, ENT_QUOTES) : '';
         $commentsCountHtml = $commentsCount > 0 ? htmlspecialchars((string)$commentsCount, ENT_QUOTES) : '';
 
