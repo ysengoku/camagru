@@ -7,6 +7,18 @@ require_once __DIR__ . '/../../Views/studio/galleryItem.php';
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
 final class PhotoApiController extends Controller {
+    /**
+     * Composes a base image with stickers/text/filter and saves the result as a new post.
+     *
+     * @route POST /api/photos
+     * @bodyParam string $baseImage Base64-encoded source image
+     * @bodyParam array $stickers List of {path, width, height, x, y}
+     * @bodyParam array $textOverlay {content, fontFamily, fontSize, color, x, y}, optional
+     * @bodyParam string $filter Filter name, defaults to "none"
+     * @response 201 {message, html} Post created successfully
+     * @response 422 {error} Missing required elements, or post could not be saved
+     * @response 500 {error} Media directory not writable, or image creation/save failed
+     */
     final public function create(): string {
         $user = $this->getAuthenticatedUser();
         $mediaDir = Path::getMediaDirPath();
@@ -64,6 +76,17 @@ final class PhotoApiController extends Controller {
         ], Response::CREATED);
     }
 
+    /**
+     * Deletes a post owned by the current user.
+     *
+     * @route DELETE /api/photos
+     * @queryParam string postId
+     * @response 200 {success} Post deleted
+     * @response 400 {error} Invalid post ID
+     * @response 403 {error} Unauthorized to delete this post
+     * @response 404 {error} Post not found
+     * @response 500 {error} Failed to delete post
+     */
     final public function delete(): string {
         $user = $this->getAuthenticatedUser();
         $postId = Request::getQueryParam('postId');
@@ -87,6 +110,15 @@ final class PhotoApiController extends Controller {
         return $this->json(['success' => true], Response::OK);
     }
 
+    /**
+     * Returns a paginated HTML fragment of all users' posts (public feed).
+     *
+     * @route GET /api/photos
+     * @queryParam int offset Defaults to 0
+     * @queryParam int limit Defaults to 10, max 50
+     * @response 200 {html, count}
+     * @response 400 {error} Invalid offset or limit
+     */
     final public function getPhotos(): string {
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 10);
@@ -111,6 +143,15 @@ final class PhotoApiController extends Controller {
         
     }
 
+    /**
+     * Returns a paginated HTML fragment of the current user's own posts.
+     *
+     * @route GET /api/photos/me
+     * @queryParam int offset Defaults to 0
+     * @queryParam int limit Defaults to 10, max 50
+     * @response 200 {html, count}
+     * @response 400 {error} Invalid offset or limit
+     */
     final public function getCurrentUserPhotos(): string {
         $offset = (int)(Request::getQueryParam('offset') ?? 0);
         $limit = (int)(Request::getQueryParam('limit') ?? 10);

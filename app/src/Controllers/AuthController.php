@@ -6,6 +6,16 @@ require_once __DIR__ . '/../helper/mailer.php';
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
 final class AuthController extends Controller {
+    /**
+     * Create a new user account.
+     * 
+     * @route POST /api/signup
+     * @bodyParam string $username
+     * @bodyParam string $email
+     * @bodyParam string $password
+     * @response 201 {message} User created successfully
+     * @response 400 {error} Validation failed
+     */
     public function signup(): string {
         switch (Request::getMethod()) {
             case 'GET':
@@ -33,7 +43,7 @@ final class AuthController extends Controller {
                 return $this->methodNotAllowed();
         }
     }
-    
+
     public function verifyEmail(): void {
         $res = VerifyEmailService::getInstance()->processVerification(Request::getQueryParam('token') ?? '');
         if (!$res->success) {
@@ -43,6 +53,15 @@ final class AuthController extends Controller {
         Response::redirect('/login?toast=email-verified');
     }
 
+    /**
+     * Authenticate a user by username and password, starting a new session.
+     * 
+     * @route POST /api/login
+     * @bodyParam string $username
+     * @bodyParam string $password
+     * @response 200 {message} Login successful
+     * @response 400 {error} Authentication failed
+     */
     public function login(): string {
         switch (Request::getMethod()) {
             case 'GET':
@@ -71,6 +90,13 @@ final class AuthController extends Controller {
         }
     }
 
+    /**
+     * Clear and destroy the current user session
+     * 
+     * @route POST /api/logout
+     * @response 200 {message} Logged out successfully
+     * @response 400 {error} Logout failed
+     */
     public function logout(): string {
         $result = SessionService::getInstance()->processLogout();
         if (!$result->success) {
@@ -80,6 +106,14 @@ final class AuthController extends Controller {
         return $this->json(['message' => 'Logged out successfully'], Response::OK);
     }
 
+    /**
+     * Sends a password-reset email to the given address, if it belongs to a registered account.
+     *
+     * @route POST /api/forgot-password
+     * @bodyParam string $email
+     * @response 200 {message} An email has been sent successfully
+     * @response 400 {error} Failed to send an email
+     */
     public function forgotPassword(): string {
         $method = Request::getMethod();
         switch ($method) {
@@ -100,6 +134,15 @@ final class AuthController extends Controller {
         }
     }
 
+    /**
+     * Resets a user's password using a valid password-reset token.
+     *
+     * @route POST /api/reset-password
+     * @bodyParam string $token
+     * @bodyParam string $new_password
+     * @response 200 {message} Password reset successfully
+     * @response 400 {error} Validation failed
+     */
     public function resetPassword(): string {
         $method = Request::getMethod();
         switch ($method) {
@@ -136,6 +179,14 @@ final class AuthController extends Controller {
         return $this->render(['pageTitle' => 'Email Sent', 'action' => $action], 'emailSent');
     }
 
+    /**
+     * Resends the pending verification or password-reset email tied to the current session.
+     *
+     * @route POST /api/resend-email
+     * @response 200 {message} Email resent successfully
+     * @response 400 {error} Verification token has expired or is missing, or invalid action
+     * @response 429 {error, time_remaining} Too many requests, wait before resending
+     */
     public function resendEmail(): string {
         $email = SessionStore::get(SessionKey::PendingEmail);
         $action = SessionStore::get(SessionKey::ResendEmailAction);

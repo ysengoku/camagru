@@ -7,6 +7,15 @@ require_once __DIR__ . '/../../helper/mailer.php';
  * @psalm-suppress UnusedClass - Instantiated dynamically via routing
  */
 final class PostReactionsController extends Controller {
+    /**
+     * Adds a like from the current user to a post.
+     *
+     * @route POST /api/like
+     * @bodyParam int postId
+     * @response 201 {message, likesCount} Like added
+     * @response 400 {error} Invalid post ID, or already liked
+     * @response 500 {error} Failed to add like
+     */
     final public function like(): string {
         $context = $this->resolveLikeContext();
         if (is_string($context)) {
@@ -31,6 +40,15 @@ final class PostReactionsController extends Controller {
         return $this->json(['error' => 'Failed to add like'], Response::INTERNAL_ERROR);
     }
 
+    /**
+     * Removes the current user's like from a post.
+     *
+     * @route DELETE /api/like
+     * @queryParam int postId
+     * @response 200 {message, likesCount} Like removed
+     * @response 400 {error} Invalid post ID, or not liked
+     * @response 500 {error} Failed to remove like
+     */
     final public function removeLike(): string {
         $context = $this->resolveLikeContext();
         if (is_string($context)) {
@@ -73,6 +91,16 @@ final class PostReactionsController extends Controller {
         return [(int)$postId, $user, $like];
     }
 
+    /**
+     * Returns a paginated HTML fragment of a post's comments.
+     *
+     * @route GET /api/comments
+     * @queryParam int postId
+     * @queryParam int offset Defaults to 0
+     * @queryParam int limit Defaults to 10, max 50
+     * @response 200 {html, count}
+     * @response 400 {error} Invalid post ID, or invalid offset/limit
+     */
     final public function getComments(): string {
         $postId = Request::getQueryParam('postId');
         if (is_numeric($postId) === false) {
@@ -103,6 +131,17 @@ final class PostReactionsController extends Controller {
         return $this->json(['html' => $html, 'count' => $commentCount], Response::OK);
     }
 
+    /**
+     * Adds a comment to a post and notifies the post's author by email.
+     *
+     * @route POST /api/comments
+     * @bodyParam int postId
+     * @bodyParam string content
+     * @response 201 {message, html, postId, commentCount} Comment added
+     * @response 400 {error} Invalid post ID or empty content
+     * @response 404 {error} Post not found
+     * @response 500 {error} Failed to add comment
+     */
     final public function addComment(): string {
         $data = Request::getPostData();
         $postId = $data['postId'] ?? null;
@@ -139,6 +178,16 @@ final class PostReactionsController extends Controller {
         return $this->json(['error' => 'Failed to add comment'], Response::INTERNAL_ERROR);
     }
 
+    /**
+     * Deletes a comment owned by the current user.
+     *
+     * @route DELETE /api/comments
+     * @queryParam int commentId
+     * @response 200 {message, postId, commentCount} Comment deleted
+     * @response 400 {error} Invalid comment ID
+     * @response 403 {error} Comment not found, or user not authorized to delete it
+     * @response 500 {error} Failed to delete comment
+     */
     final public function deleteComment(): string {
         $user = $this->getAuthenticatedUser();
         $commentId = Request::getQueryParam('commentId');

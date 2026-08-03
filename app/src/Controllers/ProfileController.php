@@ -20,6 +20,19 @@ final class ProfileController extends Controller {
         ]);
     }
 
+    /**
+     * Updates the current user's profile: username, email, password, avatar, and notification preference.
+     *
+     * @route POST /api/profile
+     * @bodyParam string $username
+     * @bodyParam string $email
+     * @bodyParam string current-password Required when changing email or password
+     * @bodyParam string $password New password
+     * @bodyParam string $avatar
+     * @bodyParam bool $notifications
+     * @response 200 {message, emailVerificationRequired, avatarHtml} Profile updated successfully
+     * @response 400 {error} Validation failed
+     */
     public function update(): string {
         $data = Request::getPostData();
         $profileData = new ProfileData(
@@ -40,6 +53,14 @@ final class ProfileController extends Controller {
         return $this->json($res->data, Response::OK);
     }
 
+    /**
+     * Returns a paginated HTML fragment of the current user's posts,
+     * used for the avatar-selection picker in profile settings.
+     * 
+     * @route GET /api/avatar-options
+     * @queryParam int page Page number, default to 1
+     * @response 200 {html, page, totalPages}
+     */
     public function getAvatarOptions(): string {
         $pageNumber = (int)(Request::getQueryParam('page') ?? 1);
         $limit = $pageNumber === 1 ? 4 : 5;

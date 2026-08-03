@@ -76,4 +76,7 @@ populate-db:
 clean-db:
 	docker exec $(APP_CONTAINER) php scripts/cleanDb.php
 
+api-doc:
+	php app/scripts/apiDoc.php
+
 .PHONY: all dev up down build build-dev init-ip clean fclean lint-js format-js lint-php format-php psalm quality-php test-app clean-db populate-db
