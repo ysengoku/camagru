@@ -223,7 +223,6 @@ class StudioManager {
         this.editorButtons.share?.classList.add('display-none');
         break;
       default:
-      // TODO handle error: unknown editor mode
     }
   }
 

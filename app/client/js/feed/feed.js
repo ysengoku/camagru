@@ -3,21 +3,20 @@ import { showToast, ToastType } from '../toast.js';
 
 const PAGE_SIZE = 10;
 
-async function loadMorePhotos(offset, feedContainer, loadMoreButton) {
+async function loadMorePhotos(feedContainer, observer) {
   try {
+    const offset = feedContainer.children.length;
     const url = `${endpoints.PHOTOS}?offset=${offset}&limit=${PAGE_SIZE}`;
     const response = await api.get(url);
-
     if (!response.ok) {
       throw new Error('Failed to load more photos');
     }
 
     const newPhotosHTML = response.data.html;
-    const buttonContainer = loadMoreButton.parentElement;
-    buttonContainer.insertAdjacentHTML('beforebegin', newPhotosHTML);
+    feedContainer.insertAdjacentHTML('beforeend', newPhotosHTML);
 
     if (response.data.count <= feedContainer.children.length) {
-      buttonContainer.classList.add('display-none');
+      observer.disconnect();
     }
   } catch (error) {
     showToast(ToastType.ERROR, error.message || 'Failed to load more photos');
@@ -26,17 +25,30 @@ async function loadMorePhotos(offset, feedContainer, loadMoreButton) {
 
 function init() {
   const feedContainer = document.getElementById('feed-container');
-  if (!feedContainer) {
+  const observerEl = document.getElementById('observer');
+  if (!feedContainer || !observerEl) {
     return;
   }
 
-  const loadMoreButton = document.getElementById('load-more-posts-button');
-  if (loadMoreButton) {
-    loadMoreButton.addEventListener('click', async () => {
-      const currentCount = feedContainer.children.length - 1;
-      await loadMorePhotos(currentCount, feedContainer, loadMoreButton);
+  const options = {
+    root: null,
+    rootMargin: '16px',
+    threshold: 1.0,
+  };
+
+  let isLoading = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1];
+    if (!entry.isIntersecting || isLoading) {
+      return;
+    }
+    isLoading = true;
+    loadMorePhotos(feedContainer, observer).finally(() => {
+      isLoading = false;
     });
-  }
+  }, options);
+  observer.observe(observerEl);
 }
 
 init();

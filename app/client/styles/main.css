@@ -681,13 +681,8 @@ hr {
     object-fit: cover;
 }
 
-#load-more-posts-button {
-  border: none;
-  background-color: transparent;
-  color: var(--secondary-500);
-  font-size: 1.2rem;
-  font-weight: regular !important;
-  min-height: 100px;
+.observer {
+  height: 16px;
 }
 
 .post-view-overlay {
