@@ -21,7 +21,7 @@ This note summarizes the Model–View–Controller pattern in a framework-agnost
 4. The controller passes data to a view or returns a response directly.
 5. The response is sent back to the client.
 
-## Flow diagram (Mermaid)
+## Flow diagram
 
 ```mermaid
 flowchart LR
