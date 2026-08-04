@@ -14,7 +14,6 @@ final class PostReactionsController extends Controller {
      * @bodyParam int postId
      * @response 201 {message, likesCount} Like added
      * @response 400 {error} Invalid post ID, or already liked
-     * @response 500 {error} Failed to add like
      */
     final public function like(): string {
         $context = $this->resolveLikeContext();
@@ -47,7 +46,6 @@ final class PostReactionsController extends Controller {
      * @queryParam int postId
      * @response 200 {message, likesCount} Like removed
      * @response 400 {error} Invalid post ID, or not liked
-     * @response 500 {error} Failed to remove like
      */
     final public function removeLike(): string {
         $context = $this->resolveLikeContext();
@@ -140,7 +138,6 @@ final class PostReactionsController extends Controller {
      * @response 201 {message, html, postId, commentCount} Comment added
      * @response 400 {error} Invalid post ID or empty content
      * @response 404 {error} Post not found
-     * @response 500 {error} Failed to add comment
      */
     final public function addComment(): string {
         $data = Request::getPostData();
@@ -186,7 +183,6 @@ final class PostReactionsController extends Controller {
      * @response 200 {message, postId, commentCount} Comment deleted
      * @response 400 {error} Invalid comment ID
      * @response 403 {error} Comment not found, or user not authorized to delete it
-     * @response 500 {error} Failed to delete comment
      */
     final public function deleteComment(): string {
         $user = $this->getAuthenticatedUser();

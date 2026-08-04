@@ -17,7 +17,6 @@ final class PhotoApiController extends Controller {
      * @bodyParam string $filter Filter name, defaults to "none"
      * @response 201 {message, html} Post created successfully
      * @response 422 {error} Missing required elements, or post could not be saved
-     * @response 500 {error} Media directory not writable, or image creation/save failed
      */
     final public function create(): string {
         $user = $this->getAuthenticatedUser();
@@ -85,7 +84,6 @@ final class PhotoApiController extends Controller {
      * @response 400 {error} Invalid post ID
      * @response 403 {error} Unauthorized to delete this post
      * @response 404 {error} Post not found
-     * @response 500 {error} Failed to delete post
      */
     final public function delete(): string {
         $user = $this->getAuthenticatedUser();
