@@ -70,6 +70,9 @@ quality-php:
 psalm-baseline:
 	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
+test-php:
+	docker exec $(APP_CONTAINER) vendor/bin/phpunit
+
 populate-db:
 	docker exec $(APP_CONTAINER) php scripts/populateDb.php
 
