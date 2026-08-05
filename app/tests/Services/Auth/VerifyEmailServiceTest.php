@@ -1,7 +1,7 @@
 <?php
 
 final class VerifyEmailServiceTest extends DbTestCase {
-    private function newUserToken($username): string {
+    private function newUserToken(string $username): string {
         $password = 'Valid-Password123!';
         $data = new SignupData($username, "{$username}@example.com", $password);
         $result = SignupService::getInstance()->processSignup($data);

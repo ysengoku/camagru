@@ -9,4 +9,8 @@ abstract class DbTestCase extends TestCase {
         $db->execute('TRUNCATE TABLE users');
         $db->execute('SET FOREIGN_KEY_CHECKS=1');
     }
+
+    protected function setUp(): void {
+        $_SESSION = [];
+    }
 }

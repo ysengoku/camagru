@@ -9,6 +9,7 @@ on:
     branches: [main, dev]
     paths:
       - "app/src/Controllers/**"
+workflow_dispatch:
 
 jobs:
   api-doc:
