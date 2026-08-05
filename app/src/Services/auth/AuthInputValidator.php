@@ -13,7 +13,7 @@ final class AuthInputValidator {
             return $rules['username']['messages']['required'];
         }
         if (strlen($username) < $rules['username']['minLength'] || strlen($username) > $rules['username']['maxLength']) {
-            return 'Username must be between ' . $rules['username']['minLength'] . ' and ' . $rules['username']['maxLength'] . ' characters long.';
+            return $rules['username']['messages']['length'];
         }
         if (!preg_match('/' . $rules['username']['pattern'] . '/', $username)) {
             return $rules['username']['messages']['pattern'];
@@ -30,7 +30,7 @@ final class AuthInputValidator {
             return $rules['email']['messages']['pattern'];
         }
         if (strlen($email) > $rules['email']['maxLength']) {
-            return 'Email must not exceed ' . $rules['email']['maxLength'] . ' characters.';
+            return $rules['email']['messages']['length'];
         }
         return null;
     }
@@ -41,7 +41,7 @@ final class AuthInputValidator {
             return $rules['password']['messages']['required'];
         }
         if (strlen($password) < $rules['password']['minLength'] || strlen($password) > $rules['password']['maxLength']) {
-            return 'Password must be between ' . $rules['password']['minLength'] . ' and ' . $rules['password']['maxLength'] . ' characters long.';
+            return $rules['password']['messages']['length'];
         }
         if ($rules['password']['requireLower'] && !preg_match('/[a-z]/', $password)
             || ($rules['password']['requireUpper'] && !preg_match('/[A-Z]/', $password))

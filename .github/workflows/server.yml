@@ -2,7 +2,7 @@ name: Server tests
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, test]
     paths:
       - "app/src/**"
       - "app/public/**"
@@ -16,6 +16,24 @@ on:
       - "app/composer.json"
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+
+      - name: Install Composer dependencies
+        working-directory: ./app
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPUnit
+        working-directory: ./app
+        run: composer test
+
   phpcs:
     runs-on: ubuntu-latest
     steps:

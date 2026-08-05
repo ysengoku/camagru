@@ -6,7 +6,7 @@ services:
       - .env.dev
     volumes:
       - ./app:/var/www/html
-      - vendor_volume:/var/www/html/vendor
+      - vendor:/var/www/html/vendor
 
   client:
     build:
@@ -37,5 +37,5 @@ services:
       - .env.dev
 
 volumes:
-  vendor_volume:
+  vendor:
   node_modules:
