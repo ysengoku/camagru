@@ -18,6 +18,28 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: camagru_test
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      MYSQL_DATABASE: camagru_test
+      MYSQL_TEST_DATABASE: camagru_test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test_password
     steps:
       - uses: actions/checkout@v5
 
@@ -29,6 +51,9 @@ jobs:
       - name: Install Composer dependencies
         working-directory: ./app
         run: composer install --no-progress --prefer-dist
+
+      - name: Run migrations
+        run: mysql -h 127.0.0.1 -u test -ptest_password camagru_test < database/migrations/001_initial_schema.sql
 
       - name: Run PHPUnit
         working-directory: ./app

@@ -71,7 +71,7 @@ psalm-baseline:
 	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
 test-php:
-	docker exec $(APP_CONTAINER) vendor/bin/phpunit
+	docker exec $(APP_CONTAINER) vendor/bin/phpunit --testdox
 
 populate-db:
 	docker exec $(APP_CONTAINER) php scripts/populateDb.php

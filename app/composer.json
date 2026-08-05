@@ -14,7 +14,7 @@
     "lint": "vendor/bin/phpcs --standard=phpcs.xml src",
     "fix": "vendor/bin/phpcbf --standard=phpcs.xml src",
     "psalm": "vendor/bin/psalm --use-baseline=psalm-baseline.xml",
-    "test": "vendor/bin/phpunit"
+    "test": "vendor/bin/phpunit --testdox"
   },
   "config": {
     "preferred-install": "dist"

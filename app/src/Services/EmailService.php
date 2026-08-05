@@ -20,6 +20,10 @@ final class EmailService {
         $this->smtpPass = $_ENV['SMTP_PASS'] ?? '';
         $this->mailFrom = $_ENV['MAIL_FROM'] ?? '';
 
+        if (getenv('MAIL_DISABLED') === 'true') {
+            return;
+        }
+
         if (
             empty($this->smtpHost)
             || $this->smtpPort === 0
@@ -32,6 +36,10 @@ final class EmailService {
     }
 
     public function send(string $to, string $subject, string $body): void {
+        if (getenv('MAIL_DISABLED') === 'true') {
+            return;
+        }
+
         try {
             $socket = @fsockopen($this->smtpHost, $this->smtpPort, $errno, $errstr, 5);
             if ($socket === false) {
