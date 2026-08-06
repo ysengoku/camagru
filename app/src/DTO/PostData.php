@@ -4,7 +4,6 @@ final readonly class PostData {
     public function __construct(
         public int $id,
         public string $author_name,
-        // public int $author_id,
         public ?string $author_avatar,
         public string $image_path,
         public string $created_at,

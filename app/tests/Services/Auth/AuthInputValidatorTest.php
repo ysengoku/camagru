@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-final class AuthInputVAlidatorTest extends TestCase {
+final class AuthInputValidatorTest extends TestCase {
     private static array $rules;
 
     public static function setUpBeforeClass(): void {
