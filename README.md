@@ -7,10 +7,9 @@
     This project was created as part of the 42 curriculum by <a href="https://github.com/ysengoku">yusengok</a>.
   </em>
   <br /><br />
-  <img src="https://img.shields.io/badge/coverage-23.94%25-9D9E0A?style=flat-square" />
   <img src="https://img.shields.io/github/commit-activity/t/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/last-commit/ysengoku/camagru?style=flat-square&color=9D9E0A" />
-  <img src="https://img.shields.io/github/created-at/ysengoku/camagru?style=flat-square" />
+  <img src="https://img.shields.io/badge/coverage-23.94%25-9D9E0A?style=flat-square" />
 </div>
 
 ## Table of Contents
@@ -107,9 +106,7 @@ This repository contains a PHP MVC application used for the Camagru project.
   <img src="https://img.shields.io/badge/JavaScript-333333?style=for-the-badge&logo=javascript&logoColor=F7DF1E" />
   <img src="https://img.shields.io/badge/CSS-333333?style=for-the-badge&logo=css&logoColor=1572B6" />
 </div>
-<br />
-
-**Frameworks & Libraries:**   
+<br /> 
 
 **Database:**   
 

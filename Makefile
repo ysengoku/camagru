@@ -45,9 +45,6 @@ clean:
 
 fclean: clean
 
-test-app:
-	docker exec $(APP_CONTAINER) npm run test
-
 lint-js:
 	docker exec $(CLIENT_CONTAINER) npm run lint
 
@@ -71,7 +68,7 @@ psalm-baseline:
 	docker exec $(APP_CONTAINER) vendor/bin/psalm --update-baseline
 
 test-php:
-	docker exec $(APP_CONTAINER) vendor/bin/phpunit --testdox
+	docker exec $(APP_CONTAINER) vendor/bin/phpunit --testdox --display-warnings
 
 populate-db:
 	docker exec $(APP_CONTAINER) php scripts/populateDb.php

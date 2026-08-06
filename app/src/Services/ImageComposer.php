@@ -99,7 +99,11 @@ final class ImageComposer {
             imagealphablending($stickerImage, false);
             imagesavealpha($stickerImage, true);
 
-            $resizedSticker = imagescale($stickerImage, $roundedWidth, $roundedHeight, IMG_BICUBIC);
+            try {
+                $resizedSticker = imagescale($stickerImage, $roundedWidth, $roundedHeight, IMG_BICUBIC);
+            } catch (\ValueError $e) {
+                throw new \RuntimeException("Failed to resize sticker image.");
+            }
             if ($resizedSticker === false) {
                 throw new \RuntimeException("Failed to resize sticker image.");
             }
