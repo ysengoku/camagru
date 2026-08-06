@@ -19,6 +19,8 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     services:
       mysql:
         image: mysql:8.0
@@ -48,6 +50,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
+          coverage: pcov
 
       - name: Install Composer dependencies
         working-directory: ./app
@@ -59,6 +62,20 @@ jobs:
       - name: Run PHPUnit
         working-directory: ./app
         run: composer test
+
+      - name: Update coverage badge
+        run: |
+          COVERAGE=$(grep -m1 "Lines:" app/coverage.txt | grep -oP '\d+\.\d+(?=%)')
+          sed -i -E "s#(coverage-)[0-9.]+(%25-)#\1${COVERAGE}\2#" README.md
+
+      - name: Commit updated badge
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --staged --quiet || git commit -m "docs: update coverage badge"
+          git push
 
   phpcs:
     runs-on: ubuntu-latest

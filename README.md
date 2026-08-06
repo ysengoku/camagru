@@ -7,6 +7,7 @@
     This project was created as part of the 42 curriculum by <a href="https://github.com/ysengoku">yusengok</a>.
   </em>
   <br /><br />
+  <img src="https://img.shields.io/badge/coverage-100%25-9D9E0A?style=flat-square" />
   <img src="https://img.shields.io/github/commit-activity/t/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/last-commit/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/created-at/ysengoku/camagru?style=flat-square" />
