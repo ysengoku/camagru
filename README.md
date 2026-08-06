@@ -12,7 +12,7 @@
 <<<<<<< HEAD
   <img src="https://img.shields.io/badge/coverage-28.80%25-9D9E0A?style=flat-square" />
 =======
-  <img src="https://img.shields.io/badge/coverage-23.94%25-9D9E0A?style=flat-square" />
+  <img src="https://img.shields.io/badge/coverage-28.80%25-9D9E0A?style=flat-square" />
 >>>>>>> 8835502 (test: add tests for ImageComposer)
 </div>
 
