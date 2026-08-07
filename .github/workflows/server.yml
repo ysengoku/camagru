@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  tests_phpunit:
     runs-on: ubuntu-latest
     permissions:
       contents: write

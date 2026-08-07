@@ -98,7 +98,6 @@
 - [X] Validation logic
 - [X] Service layer
 - [X] Helpers:
-
 - [X] PhotoApiController:
 - [X] PostReactionsController:
 - [X] AuthController
