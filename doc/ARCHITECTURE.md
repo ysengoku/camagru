@@ -115,19 +115,20 @@ sequenceDiagram
 | `Application` | Front controller: resolves the route, instantiates the controller, sends the `Response`. |
 | `Router` | Linear path+method matcher over the static route table. |
 | `Controller` (abstract) | Base for all controllers: action dispatch, `render()` (delegates to `View`), `json()`, `methodNotAllowed()`. |
-| `Model` (abstract) | ActiveRecord-style base: `findById`/`findOneByField`/`findAll`, `save()` (insert or update), `delete()`, `validate()`/`beforeSave()` hooks, schema-driven field persistence. |
+| `Model` (abstract) | ActiveRecord-style base: `findById`/`findOneByField`/`findWithPagination`/`count`, `save()` (insert or update), `delete()`, `validate()`/`beforeSave()` hooks, schema-driven field persistence. |
 | `View` | Renders a template file, then composes it into `layout.php` together with `header.php`/`footer.php` via output buffering. No template inheritance system beyond this fixed skeleton. |
 | `Request` / `Response` | Static request accessors (query, POST body — JSON or form —, files, CSRF token) and a response object holding status/body sent once at the end of `Application::run()`. |
 | `SessionStore` | Typed wrapper around `$_SESSION`, keyed by the `SessionKey` enum; owns login/logout session semantics (including session-fixation protection via `session_regenerate_id`). |
-| `SessionHandler` | Custom `SessionHandlerInterface` implementation that persists sessions to the `sessions` DB table instead of the filesystem, so sessions survive across PHP-FPM workers/containers. |
+| `DatabaseSessionHandler` | Custom `SessionHandlerInterface` implementation that persists sessions to the `sessions` DB table instead of the filesystem, so sessions survive across PHP-FPM workers/containers. |
 | `HTTPNotFoundException` | Thrown to short-circuit to a 404 response; caught centrally in `Application::run()`. |
+| `HTTPMethodNotAllowedException` | Thrown by `Router::resolve()` when a path matches but the HTTP method doesn't; caught centrally to return a 405. |
 
 #### **`app/src/Controllers/` — request handlers**
 
 Two flavors, distinguished by return type and location:
 
-- Page controllers (`AuthController`, `FeedController`, `ProfileController`, `StudioController`) return HTML via `$this->render()` for GET page loads, and JSON via `$this->json()` for the POST/PATCH form-submission endpoints on the same route prefix.
-- `Controllers/API/*` (`PhotoApiController`, `StudioConfigController`, `ValidationRulesController`) are JSON-only endpoints consumed by page JS (photo save, studio config, shared validation rules). They never call `render()`.
+- Page controllers (e.g. `AuthController`, `FeedController`, `ProfileController`, `StudioController`, `PostController`, `PhotoDownloadController`, `ErrorController`) return HTML via `$this->render()` for GET page loads, and JSON via `$this->json()` for the POST form-submission endpoints on the same route prefix. The app only accepts GET, POST, and DELETE (`Application::ALLOWED_METHODS`); there is no PATCH/PUT.
+- `Controllers/API/*` (`PhotoApiController`, `PostReactionsController`, `StudioConfigController`, `ValidationRulesController`) are JSON-only endpoints consumed by page JS (photo save, likes/comments, studio config, shared validation rules). They never call `render()`.
 
 Controllers are intentionally thin: they parse the request, call a Service (or a Model directly for simple reads), and translate the `ServiceResult`/entity into a `render()`/`json()` call. They do not contain validation or persistence logic themselves.
 
@@ -171,7 +172,7 @@ input: {
 `Views/layout.php` decides at render time which bundles a page loads:
 
 - `main.js` (global CSS import + `api.js` + `logout.js`) is loaded on **every** page.
-- The page-specific bundle is loaded only if the controller sets `$props['pageScript']` — which `Controller::render()` defaults to the lowercased controller name, so `StudioController` → `studio.js`, `FeedController` → `feed.js`, `AuthController` → `auth.js`. `ProfileController`/others with no matching entry simply load nothing beyond `main.js`.
+- The page-specific bundle is loaded only if the controller sets `$props['pageScript']` — which `Controller::render()` defaults to the lowercased controller name, so `StudioController` → `studio.js`, `FeedController` → `feed.js`, `AuthController` → `auth.js`. Every controller that renders a page has a matching `app/client/js/{page}/entry.js` (including `profile`, `post`, `error`), but only `main`, `studio`, `feed`, and `auth` are declared in `vite.config.js`'s `rollupOptions.input`. In dev this doesn't matter since the Vite dev server serves any file on request; in a production build, the undeclared entries wouldn't be bundled to `/assets/`, so those pages would fall back to `main.js` only.
 - Dev vs. prod is a runtime branch in `layout.php`: dev serves unbundled ESM straight from the Vite dev server (`/js/main.js`, `/js/{page}/entry.js`, proxied by nginx), prod serves the built, hashed files from `/assets/`.
 
 This is the mechanism tying the server's routing/controller naming directly to which client code gets loaded — there is no client-side router.
@@ -181,7 +182,7 @@ This is the mechanism tying the server's routing/controller naming directly to w
 Every navigation is a real page load; the server always renders full HTML. What varies by page is how much the attached JS bundle does after that HTML lands:
 
 - **auth**, **feed**: mostly event listeners bound to existing DOM — form submit → `api.js` call → toast/redirect (`auth/login.js`, `auth/signup.js`, …), or small in-place DOM updates (`feed/feedManager.js`, `post/comments.js` for likes/comments without a full reload).
-- **studio**: a genuine client-side application. It owns webcam access, canvas drawing, drag/resize interactions for stickers and text, and only talks to the server once, at the end, POSTing the final composited state (base image, stickers, text overlay, filter) as one JSON payload to `/api/photos`, where `PhotoApiController::create()` hands it to `ImageComposer` (section 3.2) to rasterize the final JPEG and persist a `Post`. It is the one place in the client codebase that looks like a real SPA rather than progressive enhancement. Its internal structure (state store, managers) is documented separately in a Studio-specific doc.
+- **studio**: a genuine client-side application. It owns webcam access, canvas drawing, drag/resize interactions for stickers and text, and only talks to the server once, at the end, POSTing the final composited state (base image, stickers, text overlay, filter) as one JSON payload to `/api/photos`, where `PhotoApiController::create()` hands it to `ImageComposer` (section 3.2) to rasterize the final JPEG and persist a `Post`. It is the one place in the client codebase that looks like a real SPA rather than progressive enhancement.
 
 ### 4.3 Shared client foundation
 
