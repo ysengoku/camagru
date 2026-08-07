@@ -42,6 +42,9 @@ CMD [ "php-fpm" ]
 
 FROM base AS production
 
+# Adopts PHP's own recommended production settings
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 RUN rm -rf /var/www/html/tests /var/www/html/.git
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

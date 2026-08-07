@@ -4,6 +4,8 @@ services:
       target: production
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./app/public:/var/www/html/public:ro
 
   cron:
     container_name: camagru_cron

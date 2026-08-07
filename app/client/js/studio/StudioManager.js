@@ -230,9 +230,9 @@ class StudioManager {
     if (this.state.editorMode !== 'webcam') {
       return;
     }
-    this.state.selectedStickers.length > 0
-      ? this.editorButtons.capture?.classList.remove('disabled')
-      : this.editorButtons.capture?.classList.add('disabled');
+    if (this.editorButtons.capture) {
+      this.editorButtons.capture.disabled = this.state.selectedStickers.length === 0;
+    }
   }
 
   updateShareButtonState() {
@@ -242,9 +242,9 @@ class StudioManager {
     ) {
       return;
     }
-    this.state.selectedStickers.length > 0
-      ? this.editorButtons.share?.classList.remove('disabled')
-      : this.editorButtons.share?.classList.add('disabled');
+    if (this.editorButtons.share) {
+      this.editorButtons.share.disabled = this.state.selectedStickers.length === 0;
+    }
   }
 
   clearEditor() {

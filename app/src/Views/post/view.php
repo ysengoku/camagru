@@ -29,7 +29,7 @@ $postReactionsHtml = render_post_reactions($postData->id, $postData->likes_count
 
 <div class="post-view-overlay">
     <div class="post-view-container">
-        <div class="post-view bg-frosted-glass-200 relative">
+        <div class="post-view relative">
             <?= $backButtonHtml ?>
             <div class="post-view-image">
             <img src="<?= htmlspecialchars($postData->image_path) ?>" alt="PostImage" />
