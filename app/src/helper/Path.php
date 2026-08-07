@@ -30,7 +30,7 @@ final class Path {
         }
 
         $cleanedSegments = array_map(function ($segment) {
-            return trim($segment, '\//');
+            return trim($segment, " \t\n\r\0\x0B\\/");
         }, $segments);
 
         $filteredSegments = array_filter($cleanedSegments, function ($segment) {

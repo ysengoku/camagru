@@ -40,7 +40,6 @@ final class View {
      */
     public function render(string $template, array $props = []): string {
         extract($props);
-        ob_start();
         $title = self::TITLE;
 
         $content = $this->renderContent($template, $props);

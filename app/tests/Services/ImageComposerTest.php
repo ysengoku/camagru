@@ -29,6 +29,8 @@ final class ImageComposerTest extends TestCase {
         @unlink(self::$stickerFullPath);
     }
 
+    // ===== __construct() =====================================================
+
     public function testConstructorRejectInvalidBase():void {
         $this->expectException(\InvalidArgumentException::class);
         @new ImageComposer('not-a-real-image');
@@ -38,6 +40,8 @@ final class ImageComposerTest extends TestCase {
         $composer = new ImageComposer(self::$validBase64Image);
         $this->assertInstanceOf(ImageComposer::class, $composer);
     }
+
+    // ===== compose() - filters ===============================================
 
     public static function filterProvider(): array {
         return [
@@ -73,6 +77,8 @@ final class ImageComposerTest extends TestCase {
 
         unlink($outputPath);
     }
+
+    // ===== compose() - stickers ==============================================
 
     public function testComposeRejectStickerWithMissingPath():void {
         $composer   = new ImageComposer(self::$validBase64Image);
@@ -135,6 +141,8 @@ final class ImageComposerTest extends TestCase {
         unlink($stickerTwoFullPath);
         unlink($outputPath);
     }
+
+    // ===== compose() - text overlay ==========================================
 
     public function testComposeUnknownTextFontFallbacksToDefault():void {
         $composer   = new ImageComposer(self::$validBase64Image);

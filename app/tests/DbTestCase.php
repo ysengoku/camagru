@@ -11,6 +11,6 @@ abstract class DbTestCase extends TestCase {
     }
 
     protected function setUp(): void {
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
     }
 }

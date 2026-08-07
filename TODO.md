@@ -97,38 +97,12 @@
 
 - [X] Validation logic
 - [X] Service layer
+- [X] Helpers:
 
-Helpers:
-- [X] generateToken() (helper/token.php):
-- [ ] Path::join() (helper/Path.php):
-  - [ ] basic multi-segment join produces correctly separated path
-  - [ ] leading/trailing slashes on segments are stripped, not duplicated
-  - [ ] first segment starting with / -> result is absolute (leading / preserved)
-  - [ ] empty/blank segments are filtered out, not turned into double separators
-  - [ ] no arguments -> returns ''
-- [ ] Path::ensureDirectory() (helper/Path.php):
-  - [ ] creates a directory that doesn't exist yet, returns true
-  - [ ] returns true for a directory that already exists (idempotent)
-- [ ] renderEmailTemplate() (helper/renderer.php):
-  - [ ] rendering the 'verification' template with known vars includes the verification link and emailTitle in the output
-
-
-PhotoApiController:
-- [ ] create(): missing baseImage/stickers → 422; success → 201 with html
-- [ ] delete(): invalid ID → 400; not found → 404; not your post → 403; success → 200
-- [ ] getPhotos() / getCurrentUserPhotos(): offset/limit validation, pagination math at boundaries (e.g. limit clamped when fewer posts remain than requested)
-   
-
-PostReactionsController:
-- [ ] like()/removeLike(): already-liked / not-liked rejection, likesCount increments/decrements correctly
-- [ ] getComments(): pagination correctness
-- [ ] addComment(): invalid post ID, empty content, post-not-found
-- [ ] deleteComment(): ownership check (403 for someone else's comment)
-   
-AuthController/ProfileController:
-- [ ] One test per route confirming status code + response shape matches doc/API_DOC.md, not re-testing logic already covered by SignupServiceTest/SessionServiceTest/etc.
-
-For test setup: instantiate controllers directly (new PhotoApiController($user)) rather than simulating full HTTP requests through Router/Application — faster to write, and the routing/dispatch layer itself is thin enough not to need its own tests. 
+- [X] PhotoApiController:
+- [X] PostReactionsController:
+- [X] AuthController
+- [X] ProfileController:
 
 - [ ] User::deleteAbandonedUnverified() — cleanup logic for stale unverified signups, not exercised by any test so far (services don't call it).
 

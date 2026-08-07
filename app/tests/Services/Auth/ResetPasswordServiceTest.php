@@ -11,12 +11,14 @@ final class ResetPasswordServiceTest extends DbTestCase {
         $user->email_verified = 1;
         $user->save();
 
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         ForgotPasswordService::getInstance()->processForgotPassword($email);
         $updatedUser = User::findByUsername($username);
 
         return $updatedUser->password_reset_token;
     }
+
+    // ===== validateToken() ===================================================
 
     public function testValidateTokenSucceeds(): void {
         $token  = $this->generatePasswordResetToken('resetpassword');
@@ -51,6 +53,8 @@ final class ResetPasswordServiceTest extends DbTestCase {
 
         $this->assertFalse($result->success);
     }
+
+    // ===== processResetPassword() ============================================
 
     public function testProcessResetPasswordSucceeds(): void {
         $token        = $this->generatePasswordResetToken('invalidtoken');

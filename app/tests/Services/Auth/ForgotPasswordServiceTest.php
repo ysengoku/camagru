@@ -9,7 +9,7 @@ final class ForgotPasswordServiceTest extends DbTestCase {
         $user->email_verified = 1;
         $user->save();
 
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         $result = ForgotPasswordService::getInstance()->processForgotPassword($email);
 
         $this->assertTrue($result->success);
@@ -18,14 +18,14 @@ final class ForgotPasswordServiceTest extends DbTestCase {
     }
 
     public function testProcessForgotPasswordRejectEmptyEmail(): void {
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         $result = ForgotPasswordService::getInstance()->processForgotPassword('');
 
         $this->assertFalse($result->success);
     }
 
     public function testProcessForgotPasswordRejectInvalidEmail(): void {
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         $result = ForgotPasswordService::getInstance()->processForgotPassword('test.example.com');
 
         $this->assertFalse($result->success);
@@ -33,7 +33,7 @@ final class ForgotPasswordServiceTest extends DbTestCase {
 
     public function testProcessForgotPasswordUnknownUser(): void {
         $email = 'unknown@example.com';
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         $result = ForgotPasswordService::getInstance()->processForgotPassword($email);
 
         $this->assertTrue($result->success);
@@ -45,7 +45,7 @@ final class ForgotPasswordServiceTest extends DbTestCase {
         $username = 'unverified';
         $email    = 'unverified@example.com';
         SignupService::getInstance()->processSignup(new SignupData($username, $email, 'Valid-Password123!'));
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         $result = ForgotPasswordService::getInstance()->processForgotPassword($email);
 
         $this->assertTrue($result->success);
@@ -57,7 +57,7 @@ final class ForgotPasswordServiceTest extends DbTestCase {
         $username = 'ratelimit';
         $email    = 'ratelimit@example.com';
         SignupService::getInstance()->processSignup(new SignupData($username, $email, 'Valid-Password123!'));
-        $_SESSION = [];
+        SessionStore::delete(SessionKey::LastEmailSentTime);
         ForgotPasswordService::getInstance()->processForgotPassword($email);
         $result = ForgotPasswordService::getInstance()->processForgotPassword($email);
 

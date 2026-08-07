@@ -20,6 +20,8 @@ final class ProfileServiceTest extends DbTestCase {
         return new ProfileData($username, $email, $password, $newPassword, $avatar, $notificationsEnabled);
     }
 
+    // ===== updateProfile() - username / notifications =======================
+
     public function testUpdateProfileUsernameAndNotificationsChangeSucceeds(): void {
         $username = 'success';
         $email    = 'success@example.com';
@@ -38,6 +40,8 @@ final class ProfileServiceTest extends DbTestCase {
         $this->assertSame($newUsername, $updatedUser->username);
         $this->assertSame(0, $updatedUser->email_notifications_enabled);
     }
+
+    // ===== updateProfile() - avatar ==========================================
 
     public function testUpdateProfileAvatarChangeSucceeds(): void {
         $username = 'avatarchange';
@@ -69,6 +73,8 @@ final class ProfileServiceTest extends DbTestCase {
         $this->assertSame('', $resubmitResult->data['avatarHtml']);
     }
 
+    // ===== updateProfile() - password ========================================
+
     public function testUpdateProfilePasswordChangeSucceeds(): void {
         $username = 'passwordchange';
         $email    = 'passwordchange@example.com';
@@ -87,6 +93,8 @@ final class ProfileServiceTest extends DbTestCase {
         $loginWithNewPassword = SessionService::getInstance()->processLogin($username, $newPassword);
         $this->assertTrue($loginWithNewPassword->success);
     }
+
+    // ===== updateProfile() - email ===========================================
 
     public function testUpdateProfileEmailChangeSucceeds(): void {
         $username = 'emailchange';
@@ -108,6 +116,8 @@ final class ProfileServiceTest extends DbTestCase {
         $this->assertSame($newEmail, $updatedUser->pending_email);
         $this->assertNotNull($updatedUser->email_verification_token);
     }
+
+    // ===== updateProfile() - validation rejects ==============================
 
     public function testUpdateProfileRejectUsernameInvalidFormat(): void {
         $username = 'invalidusername';
@@ -292,6 +302,8 @@ final class ProfileServiceTest extends DbTestCase {
         $this->assertFalse($result->success);
         $this->assertNotNull($result->errors['general']);
     }
+
+    // ===== updateProfile() - unchanged values ================================
 
     public function testUpdateProfileUsernameUnchanged(): void {
         $username = 'myusername';

@@ -9,6 +9,8 @@ final class AuthInputValidatorTest extends TestCase {
         self::$rules = require __DIR__ . '/../../../src/config/validation.php';
     }
 
+    // ===== validateUsername() ===============================================
+
     public function testValidateUsernameValidName(): void {
         $this->assertSame(null, AuthInputValidator::validateUsername('yuko'));
     }
@@ -52,6 +54,8 @@ final class AuthInputValidatorTest extends TestCase {
             AuthInputValidator::validateUsername('bad name!')
         );
     }
+
+    // ===== validateEmail() ===================================================
 
     public function testValidateEmailValidEmail(): void {
         $this->assertSame(null, AuthInputValidator::validateEmail('yuko@example.com'));
@@ -104,6 +108,8 @@ final class AuthInputValidatorTest extends TestCase {
             AuthInputValidator::validateEmail($tooLongEmail)
         );
     }
+
+    // ===== validatePassword() ================================================
 
     public function testValidatePasswordValidPassword(): void {
         $this->assertSame(null, AuthInputValidator::validatePassword('Ab123-<>cccccc'));

@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 final class PathTest extends TestCase {
+    // ===== join() ===========================================================
     public function testJoinProducesCorrectly():void {
         $pathSegmentOne   = 'assets';
         $pathSegmentTwo   = 'images';
@@ -43,12 +44,24 @@ final class PathTest extends TestCase {
         $this->assertSame($expected, $path);
     }
 
+    public function testJoinWithBlankSegments():void {
+        $pathSegmentOne   = 'assets';
+        $pathSegmentTwo   = '   ';
+        $pathSegmentThree = 'icons';
+        $expected = $pathSegmentOne . '/' . $pathSegmentThree;
+
+        $path = Path::join($pathSegmentOne, $pathSegmentTwo, $pathSegmentThree);
+        $this->assertSame($expected, $path);
+    }
+
     public function testJoinWithNoSegment():void {
         $path = Path::join();
         $this->assertSame('', $path);
     }
 
-    public function testEncureDirectoryWithNonexistentDir(): void {
+    // ===== ensureDirectory() ================================================
+
+    public function testEnsureDirectoryWithNonexistentDir(): void {
         $dirName = sys_get_temp_dir() . '/temp-' . uniqid();
         $result = Path::ensureDirectory($dirName);
 
@@ -58,7 +71,7 @@ final class PathTest extends TestCase {
         rmdir($dirName);
     }
 
-    public function testEncureDirectoryWithExistentDir(): void {
+    public function testEnsureDirectoryWithExistentDir(): void {
         $dirName = sys_get_temp_dir() . '/temp-' . uniqid();
         @mkdir($dirName);
         $result = Path::ensureDirectory($dirName);
@@ -68,6 +81,8 @@ final class PathTest extends TestCase {
 
         rmdir($dirName);
     }
+
+    // ===== getMediaDir() ====================================================
 
     public function testGetMediaDirPathUsesEnvVarWhenSet(): void {
         $testMediaDir = '/tmp/custom-media';
