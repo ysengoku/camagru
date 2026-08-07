@@ -231,7 +231,8 @@ class StudioManager {
       return;
     }
     if (this.editorButtons.capture) {
-      this.editorButtons.capture.disabled = this.state.selectedStickers.length === 0;
+      this.editorButtons.capture.disabled =
+        this.state.selectedStickers.length === 0;
     }
   }
 
@@ -243,7 +244,8 @@ class StudioManager {
       return;
     }
     if (this.editorButtons.share) {
-      this.editorButtons.share.disabled = this.state.selectedStickers.length === 0;
+      this.editorButtons.share.disabled =
+        this.state.selectedStickers.length === 0;
     }
   }
 

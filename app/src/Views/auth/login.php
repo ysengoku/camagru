@@ -11,7 +11,7 @@ require_once __DIR__ . '/../components/usernameField.php';
         </div>
 
         <?= render_username_field(null, true) ?>
-        <?= render_password_field('Password', 'password', true) ?>
+        <?= render_password_field('Password', 'password', true, 'current-password') ?>
 
         <div class="my-4 pt-4 flex-col gap-2">
             <button type="submit" class="button-primary font-bold w-100">

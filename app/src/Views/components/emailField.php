@@ -8,7 +8,7 @@ if (!function_exists('render_email_field')) {
         return <<<HTML
         <div class="flex-col gap-1 mb-4">
             <label for="email" class="block color-gray-600">{$label}</label>
-            <input type="email" id="email" name="email" data-sensitive="true" class="form-input" value="{$email}">
+            <input type="email" id="email" name="email" data-sensitive="true" class="form-input" value="{$email}" autocomplete="email">
             <span id="email-error" class="error-feedback"></span>
         </div>
         HTML;

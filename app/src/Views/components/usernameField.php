@@ -8,7 +8,7 @@ if (!function_exists('render_username_field')) {
         return <<<HTML
         <div class="flex-col gap-1 mb-4">
             <label for="username" class="block color-gray-600">{$label}</label>
-            <input type="text" id="username" name="username" value="{$username}" class="form-input">
+            <input type="text" id="username" name="username" value="{$username}" class="form-input" autocomplete="username">
             <span id="username-error" class="error-feedback"></span>
         </div>
         HTML;

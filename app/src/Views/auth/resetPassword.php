@@ -12,8 +12,8 @@
             <span id="form-error" class="error-feedback"></span>
         </div>
 
-        <?= render_password_field('New Password', 'password', true) ?>
-        <?= render_password_field('Confirm New Password', 'confirm-password', true) ?>
+        <?= render_password_field('New Password', 'password', true, 'new-password') ?>
+        <?= render_password_field('Confirm New Password', 'confirm-password', true, 'new-password') ?>
 
         <div class="my-4 pt-4">
             <button type="submit" class="button-primary font-bold w-100">

@@ -19,7 +19,7 @@ $notificationsEnabled = $user->email_notifications_enabled;
 <dialog id="password-confirmation-dialog" class="dialog">
     <div class="flex-col gap-1 my-4">
         <label for="current-password" class="block color-gray-600 mb-4">Please Enter Your Current Password</label>
-        <input type="password" id="current-password" name="current_password" data-sensitive="true" class="form-input">
+        <input type="password" id="current-password" name="current_password" data-sensitive="true" class="form-input" autocomplete="current-password">
     </div>
     <div class="flex mt-4 mb-3 pt-4 gap-2">
         <button type="button" class="button-no-border font-bold w-100" id="cancel-current-password-button">
@@ -43,8 +43,8 @@ $notificationsEnabled = $user->email_notifications_enabled;
 
         <hr />
         
-        <?= render_password_field('Change Password', 'password') ?>
-        <?= render_password_field('Confirm New Password', 'confirm-password') ?>
+        <?= render_password_field('Change Password', 'password', false, 'new-password') ?>
+        <?= render_password_field('Confirm New Password', 'confirm-password', false, 'new-password') ?>
 
         <hr />
 
