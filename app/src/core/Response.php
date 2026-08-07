@@ -29,7 +29,6 @@ final class Response {
     
     protected string $content = '';
     protected int $statusCode = self::OK;
-    protected string $statusText = self::STATUS_TEXTS[self::OK];
 
     public function send(): void {
         http_response_code($this->statusCode);
@@ -43,7 +42,6 @@ final class Response {
 
     public function setStatus(int $statusCode): void {
         $this->statusCode = $statusCode;
-        $this->statusText = self::STATUS_TEXTS[$statusCode] ?? 'Unknown Status';
     }
 
     public static function redirect(string $url): never {
