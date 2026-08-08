@@ -868,6 +868,16 @@ hr {
   opacity: 1;
 }
 
+.noposts {
+  color: var(--primary-600);
+  font-family: 'HomemadeApple', 'sans-serif';
+}
+
+.noposts-img {
+  max-width: 20%;
+  opacity: 0.75;
+}
+
 /* -------- Studio -------- */
 #studio {
   container-type: inline-size;

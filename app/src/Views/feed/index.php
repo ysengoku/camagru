@@ -5,12 +5,13 @@
  */
 
 require_once __DIR__ . '/postPreview.php';
+require_once __DIR__ . '/noPosts.php';
 
 ?>
 
-<div class="p-4">
+<div class="p-4 flex-1">
     <?php if (empty($posts)) : ?>
-      <p>No posts found</p>
+      <?php echo render_no_posts(); ?>
     <?php else : ?>
         <div id="feed-container" class="grid grid-cols-auto grid-auto-rows grid-gap-4">
         <?php foreach ($posts as $post) : ?>
