@@ -63,6 +63,13 @@ jobs:
         working-directory: ./app
         run: composer test
 
+      - name: Sync with remote
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase
+
       - name: Update coverage badge
         run: |
           COVERAGE=$(grep -m1 "Lines:" app/coverage.txt | grep -oP '\d+\.\d+(?=%)')
@@ -71,8 +78,6 @@ jobs:
       - name: Commit updated badge
         if: github.event_name == 'push'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
           git diff --staged --quiet || git commit -m "docs: update coverage badge"
           git push

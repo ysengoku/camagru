@@ -12,24 +12,30 @@ final class EmailService {
     /** @var resource|null $socket */
     private $socket = null;
 
+    private static function envString(string $key, string $fallback = ''): string {
+        $value = getenv($key);
+
+        return $value !== false ? $value : $fallback;
+    }
+
     private function __construct() {
         // Private constructor to prevent direct instantiation
-        $this->smtpHost = $_ENV['SMTP_HOST'] ?? '';
-        $this->smtpPort = (int)($_ENV['SMTP_PORT'] ?? 0);
-        $this->smtpUser = $_ENV['SMTP_USER'] ?? '';
-        $this->smtpPass = $_ENV['SMTP_PASS'] ?? '';
-        $this->mailFrom = $_ENV['MAIL_FROM'] ?? '';
+        $this->smtpHost = self::envString('SMTP_HOST');
+        $this->smtpPort = (int) self::envString('SMTP_PORT', '0');
+        $this->smtpUser = self::envString('SMTP_USER');
+        $this->smtpPass = self::envString('SMTP_PASS');
+        $this->mailFrom = self::envString('MAIL_FROM');
 
         if (getenv('MAIL_DISABLED') === 'true') {
             return;
         }
 
         if (
-            empty($this->smtpHost)
+            empty($this->smtpHost) === true
             || $this->smtpPort === 0
-            || empty($this->smtpUser)
-            || empty($this->smtpPass)
-            || empty($this->mailFrom)
+            || empty($this->smtpUser) === true
+            || empty($this->smtpPass) === true
+            || empty($this->mailFrom) === true
         ) {
             throw new RuntimeException('SMTP configuration is incomplete.');
         }
