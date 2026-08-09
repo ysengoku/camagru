@@ -1,6 +1,6 @@
 # Camagru
 
-<img src="" width="100%" />
+<img src="./assets/camagru-cover.jpg" width="100%" />
 
 <div align="center">
   <em>  
@@ -41,6 +41,8 @@
 </details>
 
 ## About
+
+Camagru is an MVC based photo-editing web app: take a picture with your webcam (or upload one), overlay it with a sticker, add some text and a filter, and share it. Every shared photo lands in a public gallery where other users can like and comment on it.
 
 ## Objectives
 
@@ -92,6 +94,9 @@ It also covers image manipulation: webcam capture, canvas-based editing, coordin
 
 ## Architecture
 
+Camagru follows a hybrid architecture: a hand-rolled PHP **MVC** framework, built without any external framework or library, renders the server side. Each page is served as a normal, full server render on first load; most then update in place afterward via **AJAX requests** that return HTML fragments.   
+The Studio editor is the exception, running as a self-contained client-side application for capture and composition.
+
 ### MVC (Model-View-Controller)
 
 This repository contains a PHP MVC application used for the Camagru project.
@@ -99,6 +104,62 @@ This repository contains a PHP MVC application used for the Camagru project.
 ## Project Structure
 
 ## Tech Stack
+
+```
+.
+├── app
+│   ├── client
+│   │   ├── Dockerfile
+│   │   ├── js
+│   │   ├── package.json
+│   │   ├── styles
+│   │   └── vite.config.js
+│   ├── composer.json
+│   ├── cron
+│   │   ├── cleanup_unverified_users.php
+│   │   ├── crontab
+│   │   └── Dockerfile
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── wait-for-db.sh
+│   ├── phpcs.xml
+│   ├── phpunit.xml
+│   ├── psalm-baseline.xml
+│   ├── psalm.xml
+│   ├── public
+│   │   ├── assets/
+│   │   ├── favicon.ico
+│   │   └── index.php
+│   ├── src
+│   │   ├── Models/
+│   │   ├── Views/
+│   │   ├── Controllers/
+│   │   ├── core/
+│   │   ├── DTO/
+│   │   ├── Services/
+│   │   ├── config/
+│   │   ├── helper/
+│   │   ├── bootstrap.php
+│   │   ├── splAutoload.php
+│   │   └── Application.php
+│   ├── scripts/
+│   └── tests
+├── database
+│   ├── Dockerfile
+│   ├── init_db.sh
+│   └── migrations
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── docker-compose.yml
+├── nginx
+│   ├── Dockerfile
+│   ├── nginx.dev.conf
+│   └── nginx.prod.conf
+├── init-ip.sh
+├── Makefile
+├── doc
+└── README.md
+```
 
 **Languages:**   
 <div>   
