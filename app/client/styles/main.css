@@ -662,6 +662,35 @@ hr {
   opacity: 0.5;
 }
 
+
+.error-title {
+  font-size: 2rem;
+  color: var(--primary-600);
+  margin-top: 0;
+}
+
+.no-posts span,
+.error-status {
+  font-size: 3rem;
+  font-weight: bold;
+  opacity: 0.8;
+  background: linear-gradient(
+    to right bottom,
+    rgba(0, 192, 176, 1) 0%,
+    rgba(0, 150, 137, 1) 20%,
+    rgba(217, 13, 112, 1) 100%
+  );
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.error-img {
+  width: 8rem;
+  opacity: 0.7;
+}
+
 /* -------- Feed & Posts -------- */
 .post-preview-card {
   display: flex;
@@ -866,6 +895,17 @@ hr {
 
 .delete-comment-button:hover {
   opacity: 1;
+}
+
+.no-posts {
+  span {
+    font-size: 2rem;
+  }
+
+  img {
+    width: 12rem;
+    opacity: 0.7;
+  }
 }
 
 /* -------- Studio -------- */
@@ -1375,26 +1415,4 @@ video {
   background-color: transparent;
   color: var(--primary-600);
   font-size: 1rem;
-}
-
-.error-title {
-  font-size: 2rem;
-  color: var(--primary-600);
-  margin-top: 0;
-}
-
-.error-status {
-  font-size: 3rem;
-  font-weight: bold;
-  opacity: 0.8;
-  background: linear-gradient(
-    to right bottom,
-    rgba(0, 192, 176, 1) 0%,
-    rgba(0, 150, 137, 1) 20%,
-    rgba(217, 13, 112, 1) 100%
-  );
-  background-clip: text;
-  color: transparent;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
