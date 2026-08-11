@@ -9,7 +9,7 @@
   <br /><br />
   <img src="https://img.shields.io/github/commit-activity/t/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/last-commit/ysengoku/camagru?style=flat-square&color=9D9E0A" />
-  <img src="https://img.shields.io/badge/coverage-60.97%25-9D9E0A?style=flat-square" />
+  <img src="https://img.shields.io/badge/coverage-61.04%25-9D9E0A?style=flat-square" />
 </div>
 
 ## Table of Contents
@@ -28,13 +28,13 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Usage](#usage)
-- [Development](#development)
-  - [Workflow](#workflow)
-  - [Linting & Formatting](#linting--formatting)
-  - [Testing](#testing)
-- [Notes](#notes)
+  - [Development Tools](#development-tools)
+    - [Linting & Formatting](#linting--formatting)
+    - [Static Analysis](#static-analysis)
+    - [API documentation](#api-documentation)
+    - [Live Development](#live-development)
+- [Testing](#testing)
 - [Resources](#resources)
-- [AI Usage](#ai-usage)
 - [Authors](#authors)
 - [License](#license)
 
@@ -73,7 +73,7 @@ It also covers image manipulation: webcam capture, canvas-based editing, coordin
 
 - Capture a photo directly from the webcam in the browser
 - Compose the shot with stickers, custom text, and filters, previewed live before saving
-- Upload a user's image instead of using the webcam
+- Upload a photo from disk instead of capturing one with the webcam
 - Final image composed server-side, not client-rendered
 - Own post history shown on the studio page
 - Delete own posts
@@ -87,79 +87,68 @@ It also covers image manipulation: webcam capture, canvas-based editing, coordin
 
 ### Other
 
-- Responsive layout (header, main content, footer) that adapts across screen sizes
 - Automatically generated API documentation from PHPDoc comments in the controllers
+- Responsive layout (header, main content, footer) that adapts across screen sizes
 - Compatible with Firefox and Google Chrome
-
 
 ## Architecture
 
 Camagru follows a hybrid architecture: a hand-rolled PHP **MVC** framework, built without any external framework or library, renders the server side. Each page is served as a normal, full server render on first load; most then update in place afterward via **AJAX requests** that return HTML fragments.   
 The Studio editor is the exception, running as a self-contained client-side application for capture and composition.
 
-### MVC (Model-View-Controller)
-
-This repository contains a PHP MVC application used for the Camagru project.
+See [doc/ARCHITECTURE.md](./doc/ARCHITECTURE.md) and [doc/MVC.md](./doc/MVC.md) for more details.
 
 ## Project Structure
-
-## Tech Stack
 
 ```
 .
 ├── app
 │   ├── client
+│   │   ├── js/
+│   │   ├── styles/
 │   │   ├── Dockerfile
-│   │   ├── js
 │   │   ├── package.json
-│   │   ├── styles
 │   │   └── vite.config.js
-│   ├── composer.json
+│   │
 │   ├── cron
 │   │   ├── cleanup_unverified_users.php
 │   │   ├── crontab
 │   │   └── Dockerfile
-│   ├── Dockerfile
-│   ├── entrypoint.sh
-│   ├── wait-for-db.sh
-│   ├── phpcs.xml
-│   ├── phpunit.xml
-│   ├── psalm-baseline.xml
-│   ├── psalm.xml
+│   │
 │   ├── public
 │   │   ├── assets/
-│   │   ├── favicon.ico
 │   │   └── index.php
+│   │
 │   ├── src
 │   │   ├── Models/
 │   │   ├── Views/
 │   │   ├── Controllers/
-│   │   ├── core/
-│   │   ├── DTO/
 │   │   ├── Services/
+│   │   ├── DTO/
+│   │   ├── core/
 │   │   ├── config/
 │   │   ├── helper/
 │   │   ├── bootstrap.php
-│   │   ├── splAutoload.php
 │   │   └── Application.php
-│   ├── scripts/
-│   └── tests
+│   ├── tests/
+│   ├── Dockerfile
+│   └── composer.json
+│
 ├── database
 │   ├── Dockerfile
-│   ├── init_db.sh
-│   └── migrations
-├── docker-compose.dev.yml
-├── docker-compose.prod.yml
-├── docker-compose.yml
+│   └── migrations/
+│
 ├── nginx
 │   ├── Dockerfile
-│   ├── nginx.dev.conf
-│   └── nginx.prod.conf
-├── init-ip.sh
+│   └── nginx*.conf
+│
+├── docker-compose*.yml
 ├── Makefile
-├── doc
+├── doc/
 └── README.md
 ```
+
+## Tech Stack
 
 **Languages:**   
 <div>   
@@ -221,24 +210,56 @@ This repository contains a PHP MVC application used for the Camagru project.
 
 ### Prerequisites
 
+- `make`
+- `docker`
+- MailTrap account, a domain you own and DNS provider (Cloudflare)
+
 ### Installation
+
+Clone the repo:
+```bash
+git clone https://github.com/ysengoku/camagru.git
+cd ./camagru
+```
+
+Prepare `.env` file (`.env.dev` for development environment):
+```bash
+cp ./.env.example ./.env
+
+# Then, update the values.
+```
 
 ### Usage
 
-## Development
+Build Docker images and start:
+```bash
+# For production
+make
 
-### Workflow
+# For development
+make dev
+```
 
-The application is built and run with Docker.
+To access to the app on browser:
+- Production: `https://localhost:8443` (Or user IP of the host instead of localhost)
+- Development: `http://localhost:8080`   
+   
+> [!TIP]
+> Populate the database with demo data (usable both in production and development):
+> ```bash
+> make populate-db
+>
+> # To remove all data from DB
+> make clean-db
+> ```
 
-- `make dev` builds the development image and starts the stack
-- Composer dependencies are installed during the development image build
+### Development Tools
 
-### Linting & Formatting
+#### Linting & Formatting
 
-This project uses (TODO) for linting and automatic fixing.
+This project uses PHPCS/PHPCBF (backend), ESLint/Prettier (frontend) for linting and automatic fixing.
 
-```sh
+```bash
 # Backend
 make lint-php
 make format-php
@@ -248,17 +269,60 @@ make lint-js
 make format-js
 ```
 
-The lint rules are defined in [app/phpcs.xml](app/phpcs.xml) and are intentionally relaxed for this codebase's global-namespace structure.
+#### Static Analysis
 
-### Testing
+[Psalm](https://psalm.dev) provides static analysis for the PHP backend, catching type errors and other bugs before they reach production.
 
-## Notes
+```bash
+make psalm
+
+# Baseline of pre-existing issues is tracked in app/psalm-baseline.xml
+```
+
+#### API Documentation
+
+API documentation is generated directly from PHPDoc comments on controller methods, using a custom PHP script, so the docs can't drift out of sync with the actual routes.
+
+```bash
+make api-doc
+```
+
+#### Live Development
+
+Backend (PHP) code is bind-mounted into the container (`./app:/var/www/html`), and PHP is interpreted per-request rather than compiled, so changes to PHP files apply immediately, no rebuild or restart needed.
+
+Frontend (JS/CSS) needs a build step by design choice of this project, so it works differently: nginx proxies requests to a Vite dev server (`client:5173`) instead of serving pre-built files. After changing JS or CSS, refresh the browser to see the update.
+
+## Testing
+
+This project uses PHPUnit for automated tests, covering validation logic, services, controllers, and cron scripts.   
+
+Tests are organized under `app/tests/`, mirroring `app/src/`, and run inside the `camagru_app` container. Those that need a database run against a separate camagru_test database, truncated between tests so each test starts clean.
+
+```bash
+make test-php
+
+# To generate a coverage report:
+docker exec camagru_app vendor/bin/phpunit --coverage-text
+```
 
 ## Resources
 
-## AI Usage
+- [MVC - Glossary | MDN](https://developer.mozilla.org/en-US/docs/Glossary/MVC)
+- [初心者が説明する初心者のためのMVCフレームワーク](https://qiita.com/Keita-0025/items/8cec12c81956dfb61571)
+- [PHP Data Objects](https://www.php.net/manual/en/book.pdo.php)
+- [Image Processing and GD](https://www.php.net/manual/en/book.image.php)
+- [How SMTP uses TCP Sockets for communication ?](https://medium.com/@gurpreetkhanuja2309/how-smtp-uses-tcp-sockets-for-communication-ecfb9f1a3f65)
+- [Email API/SMTP | MailTrap](https://docs.mailtrap.io/getting-started/email-api-smtp)
+- [Email Sandbox | MailTrap](https://docs.mailtrap.io/getting-started/email-sandbox)
 
 ## Authors
 
+<div valign="top">
+  <img src="https://contrib.rocks/image?repo=ysengoku/camagru" height="30px" valign="middle" />
+  &nbsp Yuko SENGOKU &nbsp&nbsp (<a href="https://github.com/ysengoku">GitHub @ysengoku</a>)
+</div>
+
 ## License
 
+This project is for educational purposes.

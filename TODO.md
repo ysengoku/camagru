@@ -12,21 +12,20 @@
 
 ## Server Implementation
 
-- [ ] Implement routing & controllers — login, signup, feed, edit, settings, verify-email routes and controllers.
-- [ ] Models — implement `User`, `Post`, `Comment`, `Like`, `Session` in PHP matching DB fields and interactions.
-- [ ] Port services — implement `EmailService`, `signupService`, `loginService`, `postService`, `verifyEmailService`.
-- [ ] Port middleware — implement session, auth, cookie, and CSRF middleware equivalents.
+- [X] Implement routing & controllers — login, signup, feed, edit, settings, verify-email routes and controllers.
+- [X] Models — implement `User`, `Post`, `Comment`, `Like`, `Session` in PHP matching DB fields and interactions.
+- [X] Services — implement `EmailService`, `signupService`, `loginService`, `postService`, `verifyEmailService`.
 
 ## Frontend & Assets
 
-- [ ] Port views/templates — convert `app/src/mvc/views` to PHP templates (plain PHP or Twig) and ensure asset paths.
-- [ ] Migrate client assets — keep `public/assets` (JS/CSS) and ensure client JS calls the PHP endpoints correctly.
+- [X] Port views/templates — convert `app/src/mvc/views` to PHP templates (plain PHP or Twig) and ensure asset paths.
+- [X] Migrate client assets — keep `public/assets` (JS/CSS) and ensure client JS calls the PHP endpoints correctly.
 
 ## Media & Auth
 
-- [ ] Implement uploads & image processing — secure file uploads and use GD/Imagick for image tasks.
-- [ ] Authentication & sessions — use `password_hash`, secure sessions, CSRF protections, and optional remember-me.
-- [ ] Email and verification — configure PHPMailer/SwiftMailer (SMTP) for verification flows.
+- [X] Implement uploads & image processing — secure file uploads and use GD for image tasks.
+- [X] Authentication & sessions: use `password_hash`, secure sessions, CSRF protections, and optional remember-me.
+- [X] Email and verification flows.
 
 ## User Management Implementation Order
 
@@ -90,8 +89,8 @@
 
 ## Quality & Ops
 
-- [ ] CI/CD and linting — add GitHub Actions for linting, tests, and Docker build pipeline.
-- [ ] Documentation — document setup, migration notes, and API differences in `README.md`.
+- [X] CI/CD and linting: add GitHub Actions for linting, tests, and Docker build pipeline.
+- [X] Documentation — document setup, migration notes, and API differences.
 
 ## Testing
 
@@ -103,8 +102,4 @@
 - [X] AuthController
 - [X] ProfileController:
 
-- [ ] User::deleteAbandonedUnverified() — cleanup logic for stale unverified signups, not exercised by any test so far (services don't call it).
-
-- [ ] Frontend JS (Vitest)
-
-- [ ] full browser/E2E tests (Playwright/Cypress) — much higher setup cost, worth doing once the layers above have coverage, not as a starting point.
+- [X] User::deleteAbandonedUnverified() — cleanup logic for stale unverified signups, not exercised by any test so far (services don't call it).

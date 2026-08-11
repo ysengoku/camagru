@@ -12,6 +12,9 @@ export default defineConfig({
         studio: './js/studio/entry.js',
         feed: './js/feed/entry.js',
         auth: './js/auth/entry.js',
+        profile: './js/profile/entry.js',
+        post: './js/post/entry.js',
+        error: './js/error/entry.js',
       },
       output: {
         entryFileNames: '[name].js',

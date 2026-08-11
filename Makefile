@@ -44,6 +44,11 @@ clean:
 	docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_DEV) -f $(COMPOSE_FILE_PROD) down --rmi local --volumes --remove-orphans
 
 fclean: clean
+	rm -rf app/public/assets/.vite
+	rm -rf app/public/assets/assets
+	rm -f app/public/assets/*.js
+	rm -f app/public/assets/*.css
+
 
 lint-js:
 	docker exec $(CLIENT_CONTAINER) npm run lint

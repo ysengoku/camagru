@@ -30,5 +30,6 @@ flowchart LR
 	 C --> D[Model]
 	 D --> C
 	 C --> E[View]
-	 E --> F[HTTP Response]
+	 E --> C
+	 C --> F[HTTP Response]
 ```

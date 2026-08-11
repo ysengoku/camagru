@@ -1,0 +1,27 @@
+name: Docker build tests
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - "**/Dockerfile"
+      - "docker-compose*.yml"
+      - ".github/workflows/docker-build.yml"
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "**/Dockerfile"
+      - "docker-compose*.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build production images
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+      - name: Build development images
+        run: docker compose -f docker-compose.yml -f docker-compose.dev.yml build
