@@ -43,7 +43,7 @@ final class ForgotPasswordService {
     }
 
     private function issueResetToken(User $user): string {
-        $tokenData = generateToken(32, 15);
+        $tokenData = generateToken(32, Application::VERIF_TOKEN_TTL_MINUTES);
         $resetToken = $tokenData['token'];
         $resetTokenExpiresAt = $tokenData['expiresAt'];
 

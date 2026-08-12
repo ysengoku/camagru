@@ -155,7 +155,7 @@ final class ProfileService {
     }
 
     private function setupPendingEmail(User $user, ProfileData $data): bool {
-        $token = generateToken(32);
+        $token = generateToken(32, Application::VERIF_TOKEN_TTL_MINUTES);
         $user->pending_email = $data->email;
         $user->email_verification_token = $token['token'];
         $user->email_verification_token_expires_at = $token['expiresAt'];

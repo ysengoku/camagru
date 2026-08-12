@@ -13,3 +13,8 @@ session_set_cookie_params([
 $sessionHandler = new DatabaseSessionHandler();
 session_set_save_handler($sessionHandler, true);
 session_start();
+
+// TODO: remove - DEBUG
+if (!isset($_COOKIE['PHPSESSID'])) {
+    usleep(800000);
+}

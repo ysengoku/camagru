@@ -25,7 +25,7 @@ final class SignupService {
             return ServiceResult::failure($availability['errors']);
         }
 
-        $verificationTokenData = generateToken(32, 15);
+        $verificationTokenData = generateToken(32, Application::VERIF_TOKEN_TTL_MINUTES);
         $createdUser = $this->createUser($availability['existingUnverifiedUser'], $verificationTokenData);
         if ($createdUser === null) {
             return ServiceResult::failure(['general' => 'Failed to create user.']);

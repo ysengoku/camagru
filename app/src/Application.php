@@ -8,9 +8,10 @@ final class Application {
     private   Router   $router;
     protected Response $response;
 
-    public  const string APP_NAME            = 'Camagru';
-    private const array  ALLOWED_METHODS     = ['GET', 'POST', 'DELETE'];
-    private const array  CSRF_EXEMPT_METHODS = ['GET'];
+    public  const string APP_NAME                = 'Camagru';
+    public  const int    VERIF_TOKEN_TTL_MINUTES = 15;
+    private const array  ALLOWED_METHODS         = ['GET', 'POST', 'DELETE'];
+    private const array  CSRF_EXEMPT_METHODS     = ['GET'];
 
     public function __construct() {
         $this->router   = new Router(require __DIR__ . '/config/routes.php');

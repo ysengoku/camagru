@@ -229,6 +229,9 @@ cp ./.env.example ./.env
 # Then, update the values.
 ```
 
+> [!NOTE]
+> For a real deployment, set `DOMAIN_NAME` and `HOST_IP` in `.env` before building.
+
 ### Usage
 
 Build Docker images and start:
@@ -240,9 +243,9 @@ make
 make dev
 ```
 
-To access to the app on browser:
-- Production: `https://localhost:8443` (Or user IP of the host instead of localhost)
-- Development: `http://localhost:8080`   
+To access the app in browser, 
+- for production: use the URL set as `APP_BASE_URL` in `.env`
+- for development: `http://localhost:8080`  *(`getUserMedia()` only treats localhost or HTTPS)*
    
 > [!TIP]
 > Populate the database with demo data (usable both in production and development):
