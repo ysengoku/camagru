@@ -1,4 +1,5 @@
 <?php
+    $expire  = 'This link will expire in ' . Application::VERIF_TOKEN_TTL_MINUTES . ' minutes';
     $resetLink = $resetLink ?? '';
 ?>
 <tr>
@@ -6,7 +7,7 @@
     <h1 style="margin:0 0 16px; font-size:22px; color:#202121;">Reset your password</h1>
     <p style="margin:0 0 28px; font-size:15px; color:#5f6161; line-height:1.6;">
       You have requested to reset your password. Click the button below to proceed.
-      This link will expire in <strong>1 hour</strong>.
+      <?= htmlspecialchars($expire, ENT_QUOTES, 'UTF-8') ?>
     </p>
 
     <!-- CTA Button -->

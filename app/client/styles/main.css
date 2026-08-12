@@ -355,6 +355,11 @@ button:hover {
   cursor: pointer;
 }
 
+button:has(.icon-visible),
+button:has(.icon-invisible) {
+  transform: none;
+}
+
 .button-primary {
   display: flex;
   justify-content: center;
@@ -511,16 +516,13 @@ hr {
 
 .password-toggle {
   position: absolute;
-  top: 50%;
+  top: 20%;
   right: 0.5rem;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   background: none;
-  padding: 0.25rem 0 0 0;
-  cursor: pointer;
   color: var(--gray-400);
 
   svg {

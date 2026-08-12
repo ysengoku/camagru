@@ -1,5 +1,6 @@
 <?php
     $message = $message ?? '';
+    $expire  = 'This link will expire in ' . Application::VERIF_TOKEN_TTL_MINUTES . ' minutes';
     $verificationLink = $verificationLink ?? '';
 ?>
 <tr>
@@ -7,7 +8,7 @@
     <h1 style="margin:0 0 16px; font-size:22px; color:#202121;">Verify your email address</h1>
     <p style="margin:0 0 28px; font-size:15px; color:#5f6161; line-height:1.6;">
       <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
-      This link will expire in <strong>1 hour</strong>.
+      <?= htmlspecialchars($expire, ENT_QUOTES, 'UTF-8') ?>
     </p>
 
     <!-- CTA Button -->

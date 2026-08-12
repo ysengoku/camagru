@@ -12,6 +12,8 @@ services:
     build:
       context: ./app/client
       target: development
+    env_file:
+      - .env.dev
     ports:
       - "5173:5173"
     volumes:

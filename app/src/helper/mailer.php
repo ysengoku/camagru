@@ -44,7 +44,7 @@ function sendPasswordResetEmail(string $email, string $token): void {
         'resetLink' => $resetLink,
     ]);
 
-    EmailService::getInstance()->send($email, $subject, $body);
+    // EmailService::getInstance()->send($email, $subject, $body);
 }
 
 function sendNewCommentNotificationEmail(string $email, string $commenterName, string $commentContent, int $postId): void {
@@ -65,7 +65,7 @@ function sendNewCommentNotificationEmail(string $email, string $commenterName, s
     ]);
 
     try {
-        EmailService::getInstance()->send($email, $subject, $body);
+        // EmailService::getInstance()->send($email, $subject, $body);
     } catch (Exception $e) {
         error_log("Failed to send new comment notification email: " . $e->getMessage());
     }

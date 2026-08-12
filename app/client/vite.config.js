@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite';
 
+const allowedHosts = ['client', 'localhost', '127.0.0.1'];
+if (process.env.APP_HOST) {
+  allowedHosts.push(process.env.APP_HOST);
+}
+
 export default defineConfig({
   root: '.',
   build: {
@@ -26,7 +31,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     middlewareMode: false,
-    allowedHosts: ['client', 'localhost', '127.0.0.1'],
+    allowedHosts: allowedHosts,
     hmr: false,
     watch: {
       usePolling: true,
