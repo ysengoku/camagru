@@ -245,7 +245,7 @@ final class AuthController extends Controller {
                     return $this->json(['error' => 'Password reset token has expired or is missing'], Response::BAD_REQUEST);
                 }
 
-                sendPasswordResetEmail($email, $resetToken);
+                sendPasswordResetEmail($user->username, $email, $resetToken);
 
                 return $this->json(['message' => 'Reset password email resent successfully'], Response::OK);
             default:

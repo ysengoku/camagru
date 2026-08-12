@@ -29,7 +29,7 @@ function sendVerificationLinkEmail(string $email, string $token, bool $isNewUser
     }
 }
 
-function sendPasswordResetEmail(string $email, string $token): void {
+function sendPasswordResetEmail(string $username, string $email, string $token): void {
     $baseUrl = getenv('APP_BASE_URL');
     $baseUrl = $baseUrl !== false ? $baseUrl : '';
     $resetLink = $baseUrl . "/reset-password?token=$token";
@@ -39,9 +39,10 @@ function sendPasswordResetEmail(string $email, string $token): void {
 
     $subject = Application::APP_NAME . ' - Password Reset';
     $body = renderEmailTemplate('forgotPassword', [
-        'logoUrl' => $logoUrl,
+        'logoUrl'    => $logoUrl,
         'emailTitle' => 'Reset your password',
-        'resetLink' => $resetLink,
+        'username'   => $username,
+        'resetLink'  => $resetLink,
     ]);
 
     EmailService::getInstance()->send($email, $subject, $body);

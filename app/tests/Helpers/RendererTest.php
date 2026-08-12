@@ -18,6 +18,7 @@ final class RendererTest extends TestCase {
     public function testRenderEmailTemplateSelectsRequestedTemplate(): void {
         $html = renderEmailTemplate('forgotPassword', [
             'resetLink' => 'https://example.com/reset?token=xyz789',
+            'username' => 'testuser',
         ]);
 
         $this->assertStringContainsString('Reset Password', $html);
