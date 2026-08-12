@@ -510,6 +510,8 @@ class StudioManager {
       filter: this.state.selectedFilter,
     };
 
+    console.log(finalImageData);
+
     try {
       const response = await api.post(endpoints.PHOTOS, finalImageData);
       if (!response.ok) {
