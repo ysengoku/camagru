@@ -14,6 +14,7 @@ export const ToastMessage = Object.freeze({
   'profile-update-error': 'Error updating profile. Please try again.',
   'post-not-found': 'This post does not exist or has been deleted.',
   'webcam-access-error': 'Webcam is not accessible.',
+  'login-required-like': 'Please login to like a post.',
 });
 
 export function showToast(type, message) {

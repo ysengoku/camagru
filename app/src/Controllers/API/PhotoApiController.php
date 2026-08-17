@@ -138,8 +138,8 @@ final class PhotoApiController extends Controller {
             : [];
         $html = '';
         foreach ($posts as $post) {
-            $postData = PostDataFactory::fromPost($post, $this->currentUser?->id);            
-            $html .= render_post_preview($postData);
+            $postData = PostDataFactory::fromPost($post, $this->currentUser?->id);
+            $html .= render_post_preview($postData, $this->currentUser !== null);
         }
 
         return $this->json(['html' => $html, 'count' => $totalPostCount], Response::OK);

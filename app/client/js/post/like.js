@@ -1,5 +1,5 @@
 import { api, endpoints } from '../api.js';
-import { showToast, ToastType } from '../toast.js';
+import { showToast, ToastType, ToastMessage } from '../toast.js';
 
 async function toggleLike(postId, isLiked) {
   let response;
@@ -19,7 +19,7 @@ async function toggleLike(postId, isLiked) {
       }
       break;
   }
-  showToast('Failed to update like status', ToastType.ERROR);
+  showToast(ToastType.ERROR, 'Failed to update like status');
 }
 
 function updateLikeButtonState(postId, isLiked, likeCount) {
@@ -43,13 +43,18 @@ function updateLikeButtonState(postId, isLiked, likeCount) {
 
 export function initLikeButton(containerEl = document) {
   containerEl.addEventListener('click', async (event) => {
-    const likeButton = event.target.closest('[data-like]');
-    if (!likeButton) {
+    const target = event.target.closest('[data-like]');
+    if (!target) {
       return;
     }
 
-    const postId = likeButton.dataset.like;
-    const isLiked = likeButton.classList.contains('liked');
+    if (target.tagName !== 'BUTTON') {
+      showToast(ToastType.INFO, ToastMessage['login-required-like']);
+      return;
+    }
+
+    const postId = target.dataset.like;
+    const isLiked = target.classList.contains('liked');
     await toggleLike(postId, isLiked);
   });
 }

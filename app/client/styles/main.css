@@ -105,8 +105,8 @@
   --warning-dark: #b06d24;
   --danger: #f56c6c;
   --danger-dark: #b04848;
-  --info: #406eff;
-  --info-dark: #2a47b0;
+  --info: #5c7a99;
+  --info-dark: #40556b;
 }
 
 /* Breakpoints 
@@ -420,7 +420,7 @@ button:has(.icon-invisible) {
 
 .toast-success { background: var(--success); }
 .toast-danger  { background: var(--danger); }
-.toast-info    { background: var(--primary-600); }
+.toast-info    { background: var(--info); }
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -704,11 +704,6 @@ hr {
 .post-preview-card:hover {
   filter: brightness(120%);
   cursor: pointer;
-}
-
-.post-preview-card button {
-  transform: none !important;
-  cursor: none !important;
 }
 
 .post-preview-image img {
