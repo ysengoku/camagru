@@ -9,7 +9,7 @@
   <br /><br />
   <img src="https://img.shields.io/github/commit-activity/t/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/last-commit/ysengoku/camagru?style=flat-square&color=9D9E0A" />
-  <img src="https://img.shields.io/badge/coverage-60.98%25-9D9E0A?style=flat-square" />
+  <img src="https://img.shields.io/badge/coverage-61.02%25-9D9E0A?style=flat-square" />
 </div>
 
 ## Table of Contents
