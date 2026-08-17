@@ -27,10 +27,10 @@ export const endpoints = {
 
 /**
  * @typedef {Object} ApiClient
- * @property {(path: string) => Promise<unknown>}              get
- * @property {(path: string, body: unknown) => Promise<unknown>} post
- * @property {(path: string, body: unknown) => Promise<unknown>} put
- * @property {(path: string) => Promise<unknown>}              delete
+ * @property {(path: string) => Promise<unknown>} get
+ * @property {(path: string, body: unknown) => Promise<unknown>} post JSON-serializable value, or FormData for file uploads
+ * @property {(path: string, body: unknown) => Promise<unknown>} put JSON-serializable value, or FormData for file uploads
+ * @property {(path: string) => Promise<unknown>} delete
  */
 
 /**
@@ -45,7 +45,7 @@ function createApiClient() {
   /**
    * @param {string}  method
    * @param {string}  url
-   * @param {unknown} [body]
+   * @param {unknown} [body] JSON-serializable value, or a FormData instance for multipart uploads
    * @returns {Promise<unknown>}
    * @throws {ApiError}
    */
@@ -53,15 +53,18 @@ function createApiClient() {
     const csrfToken = document
       .querySelector('meta[name="csrf-token"]')
       ?.getAttribute('content');
+
+    const isFormData = body instanceof FormData;
+
     const options = {
       method,
       headers: {
-        'Content-Type': 'application/json',
         'X-CSRF-Token': csrfToken,
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       },
     };
     if (body) {
-      options.body = JSON.stringify(body);
+      options.body = isFormData ? body : JSON.stringify(body);
     }
 
     const res = await fetch(url, options);

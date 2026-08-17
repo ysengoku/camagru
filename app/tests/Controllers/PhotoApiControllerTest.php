@@ -1,7 +1,7 @@
 <?php
 
 final class PhotoApiControllerTest extends DbTestCase {
-    private static string $validBase64Image;
+    private static string $validImagePath;
     private static string $stickerPath;
     private static string $stickerFullPath;
     private string $mediaDir;
@@ -9,10 +9,8 @@ final class PhotoApiControllerTest extends DbTestCase {
     public static function setUpBeforeClass(): void {
         $canvas = imagecreatetruecolor(10, 10);
         imagefilledrectangle($canvas, 0, 0, 9, 9, imagecolorallocate($canvas, 255, 0, 0));
-        ob_start();
-        imagejpeg($canvas);
-        $imageData = ob_get_clean();
-        self::$validBase64Image = 'data:image/jpeg;base64,' . base64_encode($imageData);
+        self::$validImagePath = sys_get_temp_dir() . '/photo-api-test-image-' . uniqid() . '.jpg';
+        imagejpeg($canvas, self::$validImagePath);
 
         self::$stickerPath = '/assets/stickers/photo-api-test-sticker.png';
         self::$stickerFullPath = Path::join(realpath(Path::getPublicPath()), self::$stickerPath);
@@ -25,6 +23,7 @@ final class PhotoApiControllerTest extends DbTestCase {
 
     public static function tearDownAfterClass(): void {
         @unlink(self::$stickerFullPath);
+        @unlink(self::$validImagePath);
     }
 
     protected function setUp(): void {
@@ -60,6 +59,16 @@ final class PhotoApiControllerTest extends DbTestCase {
         return $user;
     }
 
+    private function validUploadedFile(): array {
+        return [
+            'name' => 'photo.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => self::$validImagePath,
+            'error' => UPLOAD_ERR_OK,
+            'size' => filesize(self::$validImagePath),
+        ];
+    }
+
     private function validStickerPayload(): array {
         return [['path' => self::$stickerPath, 'width' => 5, 'height' => 5, 'x' => 0, 'y' => 0]];
     }
@@ -70,7 +79,8 @@ final class PhotoApiControllerTest extends DbTestCase {
         $user = $this->createUser('creatormissingimg', 'creatormissingimg@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
-        $_POST = ['stickers' => $this->validStickerPayload()];
+        $_FILES = [];
+        $_POST = ['data' => json_encode(['stickers' => $this->validStickerPayload()])];
         $result = $controller->create();
 
         $this->assertSame(Response::UNPROCESSABLE, $controller->getStatus()['code']);
@@ -81,7 +91,8 @@ final class PhotoApiControllerTest extends DbTestCase {
         $user = $this->createUser('creatornostickers', 'creatornostickers@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
-        $_POST = ['baseImage' => self::$validBase64Image, 'stickers' => []];
+        $_FILES = ['image' => $this->validUploadedFile()];
+        $_POST = ['data' => json_encode(['stickers' => []])];
         $result = $controller->create();
 
         $this->assertSame(Response::UNPROCESSABLE, $controller->getStatus()['code']);
@@ -92,7 +103,8 @@ final class PhotoApiControllerTest extends DbTestCase {
         $user = $this->createUser('creatorsuccess', 'creatorsuccess@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
-        $_POST = ['baseImage' => self::$validBase64Image, 'stickers' => $this->validStickerPayload()];
+        $_FILES = ['image' => $this->validUploadedFile()];
+        $_POST = ['data' => json_encode(['stickers' => $this->validStickerPayload()])];
         $result = $controller->create();
         $data = json_decode($result, true);
 
