@@ -8,65 +8,144 @@ require_once __DIR__ . '/../src/Models/User.php';
 require_once __DIR__ . '/../src/Models/Post.php';
 require_once __DIR__ . '/../src/Models/Like.php';
 require_once __DIR__ . '/../src/Models/Comment.php';
+require_once __DIR__ . '/../src/Services/ImageComposer.php';
 
 const TEST_PASSWORD = '123';
 const FIXTURES_DIR = __DIR__ . '/fixtures';
 const FIXTURE_IMAGES = ['sample-pic.jpg', 'sample-pic2.jpg', 'sample-pic3.jpg'];
 
+$fixtures = require __DIR__ . '/fixtures/demoData.php';
+define('USER_DATA', $fixtures['users']);
+define('COMMENT_POOL', $fixtures['comments']);
+define('POST_COMPOSITIONS', $fixtures['posts']);
+
+/** @var list<User> $users */
+$demoUsers = [];
+/** @var list<Post> $posts */
+$demoPosts = [];
+
+function seedUsers(): array {
+    $passwordHash = password_hash(TEST_PASSWORD, PASSWORD_DEFAULT);
+    $users = [];
+
+    foreach (USER_DATA as $data) {
+        $existing = User::findByEmail($data['email']);
+        if ($existing !== null) {
+            echo "Skipping {$data['email']} (already exists)\n";
+            $users[] = $existing;
+            continue;
+        }
+
+        $user = new User(
+            username:$data['username'],
+            email: $data['email'],
+            passwordHash: $passwordHash,
+            emailVerified: 1
+        );
+
+        if (!$user->createNewUser()) {
+            echo "Failed to create {$data['username']}\n";
+            continue;
+        }
+
+        echo "Created {$data['username']} <{$data['email']}> (password: " . TEST_PASSWORD . ")\n";
+
+        $users[] = $user;
+    }
+
+    return $users;
+}
+
 /**
- * Copy the fixture images into real media storage and create a Post per image,
- * so demo data goes through the same /media/... path a real upload would use.
- * @return list<Post>
+ * Composes each configured demo post server-side from its base image, stickers,
+ * text overlay, and filter.
+ * @return list<Post> $posts
  */
-function seedPosts(User $user): array {
+function seedPosts(): array {
     $mediaDir = Path::getMediaDirPath();
     Path::ensureDirectory($mediaDir);
-
     $posts = [];
-    foreach (FIXTURE_IMAGES as $i => $filename) {
-        $seededFilename = "seed-{$user->username}-{$i}.jpg";
+
+    foreach (POST_COMPOSITIONS as $i => $composition) {
+        $author = User::findByUsername($composition['author']);
+        if ($author === null) {
+            echo "Skipping post #{$i}: author '{$composition['author']}' not found\n";
+            continue;
+        }
+
+        $baseImagePath = FIXTURES_DIR . '/' . ltrim($composition['baseImage'], './');
+        $seededFilename = 'seed-' . uniqid('', true) . '.jpg';
+        $imagePath = Path::join($mediaDir, $seededFilename);
         $publicPath = '/media/' . $seededFilename;
 
-        copy(FIXTURES_DIR . '/' . $filename, Path::join($mediaDir, $seededFilename));
+        try {
+            $imageComposer = new ImageComposer($baseImagePath);
+            $baseImageSize = getimagesize($baseImagePath);
+            [$imgWidth, $imgHeight] = $baseImageSize;
 
-        $post = new Post($publicPath, $user->id);
+            /**
+             * @var list<array{path: string, width: float, height: float, x: float, y: float}> $stickers
+             * @var array{content: string, fontFamily: string, fontSize: float, color: string, x: float, y: float}|null $textOverlay
+             */
+            $stickers = array_map(fn($s) => [
+                'path' => $s['path'],
+                'x' => $s['xFraction'] * $imgWidth,
+                'y' => $s['yFraction'] * $imgHeight,
+                'width' => $s['widthFraction'] * $imgWidth,
+                'height' => $s['heightFraction'] * $imgHeight,
+            ], $composition['stickers']);
+
+            $textOverlay = null;
+            if ($composition['textOverlay'] !== null) {
+                $t = $composition['textOverlay'];
+                $textOverlay = [
+                    'content' => $t['content'],
+                    'fontFamily' => $t['fontFamily'],
+                    'color' => $t['color'],
+                    'x' => $t['xFraction'] * $imgWidth,
+                    'y' => $t['yFraction'] * $imgHeight,
+                    'fontSize' => $t['fontSizeFraction'] * $imgHeight,
+                ];
+            }
+
+            $saved = $imageComposer->compose($stickers, $textOverlay, $composition['filter'], $imagePath);
+        } catch (\Throwable $e) {
+            echo "Failed to compose post #{$i} for {$author->username}: " . $e->getMessage() . "\n";
+            continue;
+        }
+
+        if (!$saved) {
+            echo "Failed to save composed image for post #{$i}\n";
+            continue;
+        }
+
+        $post = new Post($publicPath, $author->id);
         sleep(random_int(1, 3)); // Sleep 1-3 seconds to simulate more realistic timing
         if ($post->save()) {
             $posts[] = $post;
+            echo "Created post #{$i} for {$author->username}\n";
         } else {
-            echo "Failed to create post for {$user->username}: " . implode(', ', $post->getErrors()) . "\n";
+            echo "Failed to save post for {$author->username}: " . implode(', ', $post->getErrors()) . "\n";
         }
     }
 
     return $posts;
 }
 
-const COMMENT_POOL = [
-    'Love this!',
-    'Amazing shot!',
-    'Wow, stunning!',
-    'This is beautiful.',
-    'Great capture!',
-    'So cool!',
-    'Incredible!',
-    'Nice one!',
-    'This made my day.',
-    'Absolutely gorgeous.',
-];
 
 /**
  * Randomly like and comment on a subset of the given posts, using the given verified
  * users as the pool of possible likers/commenters (excluding a post's own author).
  * @param list<Post> $posts
- * @param list<User> $verifiedUsers
+ * @param list<User> $users
  */
-function seedEngagement(array $posts, array $verifiedUsers): void {
+function seedEngagement(array $posts, array $users): void {
     $likeCount = 0;
     $commentCount = 0;
 
     foreach ($posts as $post) {
         $possibleLikers = array_values(array_filter(
-            $verifiedUsers,
+            $users,
             fn(User $user): bool => $user->id !== $post->user_id
         ));
         shuffle($possibleLikers);
@@ -83,7 +162,7 @@ function seedEngagement(array $posts, array $verifiedUsers): void {
 
         $numComments = random_int(0, 3);
         for ($i = 0; $i < $numComments; $i++) {
-            $commenter = $verifiedUsers[array_rand($verifiedUsers)];
+            $commenter = $users[array_rand($users)];
             $comment = new Comment();
             $comment->post_id = $post->id;
             $comment->author_id = $commenter->id;
@@ -97,126 +176,12 @@ function seedEngagement(array $posts, array $verifiedUsers): void {
     echo "Created {$likeCount} like(s) and {$commentCount} comment(s) across " . count($posts) . " post(s)\n";
 }
 
-$passwordHash = password_hash(TEST_PASSWORD, PASSWORD_DEFAULT);
-
-$users = [
-    [
-        'username' => 'Yuko',
-        'email' => 'yuko@test.local',
-        'email_verified' => 1,
-        'pending_email' => null,
-        'email_verification_token' => null,
-        'email_verification_token_expires_at' => null,
-        'withPosts' => true,
-    ],
-    [
-        'username' => 'martine',
-        'email' => 'martine@test.local',
-        'email_verified' => 1,
-        'pending_email' => null,
-        'email_verification_token' => null,
-        'email_verification_token_expires_at' => null,
-        'withPosts' => true,
-    ],
-    [
-        'username' => 'claude',
-        'email' => 'claude@test.local',
-        'email_verified' => 1,
-        'pending_email' => null,
-        'email_verification_token' => null,
-        'email_verification_token_expires_at' => null,
-        'withPosts' => true,
-    ],
-    [
-        'username' => 'David',
-        'email' => 'david@test.local',
-        'email_verified' => 1,
-        'pending_email' => null,
-        'email_verification_token' => null,
-        'email_verification_token_expires_at' => null,
-        'withPosts' => false,
-    ],
-    [
-        'username' => 'guy',
-        'email' => 'guy@test.local',
-        'email_verified' => 1,
-        'pending_email' => null,
-        'email_verification_token' => null,
-        'email_verification_token_expires_at' => null,
-        'withPosts' => false,
-    ],
-    [
-        'username' => 'unverified',
-        'email' => 'unverified_user@test.local',
-        'email_verified' => 0,
-        'pending_email' => null,
-        'email_verification_token' => bin2hex(random_bytes(32)),
-        'email_verification_token_expires_at' => (new DateTime('+1 hour'))->format('Y-m-d H:i:s'),
-        'withPosts' => false,
-    ],
-    [
-        'username' => 'expired_token',
-        'email' => 'expired_token_user@test.local',
-        'email_verified' => 0,
-        'pending_email' => null,
-        'email_verification_token' => bin2hex(random_bytes(32)),
-        'email_verification_token_expires_at' => (new DateTime('-1 hour'))->format('Y-m-d H:i:s'),
-        'withPosts' => false,
-    ],
-];
-
-/** @var list<User> $newVerifiedUsers */
-$newVerifiedUsers = [];
-/** @var list<Post> $newPosts */
-$newPosts = [];
-
-foreach ($users as $data) {
-    $existing = User::findByEmail($data['email']);
-    if ($existing !== null) {
-        echo "Skipping {$data['email']} (already exists)\n";
-        continue;
-    }
-
-    $user = new User(
-        username:$data['username'],
-        email: $data['email'],
-        passwordHash: $passwordHash,
-        emailVerificationToken: $data['email_verification_token'] ?? '',
-        emailVerificationTokenExpiresAt: $data['email_verification_token_expires_at'],
-        emailVerified: $data['email_verified']
-    );
-
-    if (!$user->createNewUser()) {
-        echo "Failed to create {$data['username']}\n";
-        continue;
-    }
-
-    echo "Created {$data['username']} <{$data['email']}> (password: " . TEST_PASSWORD . ")\n";
-
-    if ($data['email_verified'] === 1) {
-        $newVerifiedUsers[] = $user;
-    }
-
-    if ($data['withPosts']) {
-        $posts = seedPosts($user);
-        echo "Created " . count($posts) . " post(s) for {$data['username']}\n";
-        $newPosts = array_merge($newPosts, $posts);
-
-        if (!empty($posts)) {
-            $user->avatar = $posts[0]->image_path;
-            $user->save()
-                ? print("Set avatar for {$data['username']} to {$user->avatar}\n")
-                : print("Failed to set avatar for {$data['username']}\n");
-        }
-    }
-}
-
 /**
  * Tops up the given post's comment count to exactly $targetCount, so there's a
  * predictable post to exercise the "load more comments" pagination against.
- * @param list<User> $verifiedUsers
+ * @param list<User> $users
  */
-function seedCommentsForPagination(Post $post, array $verifiedUsers, int $targetCount): void {
+function seedCommentsForPagination(Post $post, array $users, int $targetCount): void {
     $existingCount = Comment::countByPostId($post->id);
     $toAdd = $targetCount - $existingCount;
     if ($toAdd <= 0) {
@@ -224,7 +189,7 @@ function seedCommentsForPagination(Post $post, array $verifiedUsers, int $target
     }
 
     $possibleCommenters = array_values(array_filter(
-        $verifiedUsers,
+        $users,
         fn(User $user): bool => $user->id !== $post->user_id
     ));
     if (empty($possibleCommenters)) {
@@ -243,7 +208,7 @@ function seedCommentsForPagination(Post $post, array $verifiedUsers, int $target
     echo "Post #{$post->id} now has " . Comment::countByPostId($post->id) . " comment(s) (pagination test)\n";
 }
 
-if (!empty($newPosts) && count($newVerifiedUsers) > 1) {
-    seedEngagement($newPosts, $newVerifiedUsers);
-    seedCommentsForPagination($newPosts[0], $newVerifiedUsers, 11);
-}
+$demoUsers = seedUsers();
+$demoPosts = seedPosts();
+seedEngagement($demoPosts, $demoUsers);
+seedCommentsForPagination($demoPosts[rand(0, count($demoPosts) - 1)], $demoUsers, 12);

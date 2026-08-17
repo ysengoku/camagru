@@ -1,4 +1,10 @@
 <?php
+/**
+ * @var string $username
+ * @psalm-suppress UnnecessaryVarAnnotation - needed so Psalm treats $username as defined.
+ */
+
+    $greeting = 'Hi ' . $username . ',';
     $expire  = 'This link will expire in ' . Application::VERIF_TOKEN_TTL_MINUTES . ' minutes';
     $resetLink = $resetLink ?? '';
 ?>
@@ -6,6 +12,7 @@
   <td style="padding:40px;">
     <h1 style="margin:0 0 16px; font-size:22px; color:#202121;">Reset your password</h1>
     <p style="margin:0 0 28px; font-size:15px; color:#5f6161; line-height:1.6;">
+      <?= htmlspecialchars($greeting, ENT_QUOTES, 'UTF-8') ?><br />
       You have requested to reset your password. Click the button below to proceed.
       <?= htmlspecialchars($expire, ENT_QUOTES, 'UTF-8') ?>
     </p>

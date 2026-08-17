@@ -18,6 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& docker-php-ext-install pdo pdo_mysql gd\
 	&& rm -rf /var/lib/apt/lists/*
 
+# Raise upload limits for photo uploads
+RUN echo "post_max_size=12M" > /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "upload_max_filesize=12M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 COPY . .
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./wait-for-db.sh /usr/local/bin/wait-for-db.sh

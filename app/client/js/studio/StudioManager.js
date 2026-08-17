@@ -356,15 +356,23 @@ class StudioManager {
     );
     ctx.restore();
 
-    const data = this.editor.canvas.toDataURL('image/png');
-    this.editor.photo.setAttribute('src', data);
-    e.preventDefault();
+    this.editor.canvas.toBlob((blob) => {
+      if (this.editor.photo.src) {
+        URL.revokeObjectURL(this.editor.photo.src);
+      }
+      this.editor.photo.setAttribute('src', URL.createObjectURL(blob));
 
-    this.stopWebcam();
-    studioStore.setState({ editorMode: 'captured' });
+      this.stopWebcam();
+      studioStore.setState({ editorMode: 'captured' });
+    }, 'image/png');
+
+    e.preventDefault();
   }
 
   clearPhoto() {
+    if (this.editor.photo.src) {
+      URL.revokeObjectURL(this.editor.photo.src);
+    }
     this.editor.photo.removeAttribute('src');
     this.editor.photo.onload = null;
     this.editor.photo.onerror = null;
@@ -503,12 +511,19 @@ class StudioManager {
       };
     }
 
-    const finalImageData = {
-      baseImage: this.editor.canvas.toDataURL('image/jpeg'),
-      stickers,
-      textOverlay,
-      filter: this.state.selectedFilter,
-    };
+    const imageBlob = await new Promise((resolve) =>
+      this.editor.canvas.toBlob(resolve, 'image/jpeg')
+    );
+    const finalImageData = new FormData();
+    finalImageData.append('image', imageBlob, 'photo.jpg');
+    finalImageData.append(
+      'data',
+      JSON.stringify({
+        stickers,
+        textOverlay,
+        filter: this.state.selectedFilter,
+      })
+    );
 
     try {
       const response = await api.post(endpoints.PHOTOS, finalImageData);

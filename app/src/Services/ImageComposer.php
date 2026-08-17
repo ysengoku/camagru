@@ -15,17 +15,19 @@ final class ImageComposer {
     private string $fontsDirPath;
 
     /**
-     * @param string $base64Image The base64-encoded image data.
-     * @throws \InvalidArgumentException If the base64 image data is invalid.
+     * @param string $imagePath Path to the uploaded image file.
+     * @throws \InvalidArgumentException If the image file cannot be read or is invalid.
      * @throws \RuntimeException If the public path cannot be resolved.
      */
-    public function __construct(string $base64Image) {
-        $replaced = preg_replace('/^data:image\/\w+;base64,/i', '', $base64Image);
-        $imageData = base64_decode($replaced ?? '');
+    public function __construct(string $imagePath) {
+        $imageData = file_get_contents($imagePath);
+        if ($imageData === false) {
+            throw new \InvalidArgumentException("Invalid image data.");
+        }
 
         $canvas = imagecreatefromstring($imageData);
-        if (!$canvas) {
-            throw new \InvalidArgumentException("Invalid base64 image data.");
+        if ($canvas === false) {
+            throw new \InvalidArgumentException("Invalid image data.");
         }
         $this->canvas = $canvas;
 

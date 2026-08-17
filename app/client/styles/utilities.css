@@ -140,17 +140,14 @@
 .bg-frosted-glass-200 {
   background-color: rgba(var(--primary-100-rgb), 0.8);
   backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 .bg-frosted-glass-300 {
   background-color: rgba(var(--primary-100-rgb), 0.7);
   backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 .bg-frosted-glass-dark {
   background-color: rgba(var(--primary-700-rgb), 0.4);
   backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .text-decoration-none { text-decoration: none; }

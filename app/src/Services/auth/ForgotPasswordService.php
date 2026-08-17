@@ -30,7 +30,7 @@ final class ForgotPasswordService {
         $user = User::findByEmail($email);
         if ($user !== null && $user->isEmailVerified()) {
             $token = $this->issueResetToken($user);
-            sendPasswordResetEmail($email, $token);
+            sendPasswordResetEmail($user->username, $email, $token);
         } else {
             error_log("Password reset requested for non-existent or unverified email: $email");
         }
