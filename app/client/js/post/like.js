@@ -41,10 +41,13 @@ function updateLikeButtonState(postId, isLiked, likeCount) {
   });
 }
 
-export function initLikeButton() {
-  const likeButton = document.getElementById('like-button');
+export function initLikeButton(containerEl = document) {
+  containerEl.addEventListener('click', async (event) => {
+    const likeButton = event.target.closest('[data-like]');
+    if (!likeButton) {
+      return;
+    }
 
-  likeButton?.addEventListener('click', async () => {
     const postId = likeButton.dataset.like;
     const isLiked = likeButton.classList.contains('liked');
     await toggleLike(postId, isLiked);

@@ -9,19 +9,19 @@ if (!function_exists('render_post_preview')) {
         $imagePath = htmlspecialchars($post->image_path, ENT_QUOTES);
 
         return <<<HTML
-            <a href="/post?postId={$post->id}" class="post-preview text-decoration-none color-gray-700" data-post-id="{$post->id}">
+            <div class="post-preview text-decoration-none color-gray-700" data-post-id="{$post->id}">
                 <div class="post-preview-card bg-frosted-glass-200 gap-2 h-100 rounded">
                     <div class="mt-4">
                         {$header}
                     </div>
-                    <div class="post-preview-image bg-transparent flex-1 flex-col justify-center items-center">
+                    <a href="/post?postId={$post->id}" class="post-preview-image bg-transparent flex-1 flex-col justify-center items-center">
                         <img src="{$imagePath}" alt="Post Image">
-                    </div>
+                    </a>
                     <div class="flex flex-col mb-4">
                         {$reactions}
                     </div>
                 </div>
-            </a>
+            </div>
             HTML;
     }
 }

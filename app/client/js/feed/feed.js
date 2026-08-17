@@ -1,5 +1,6 @@
 import { api, endpoints } from '../api.js';
 import { showToast, ToastType } from '../toast.js';
+import { initLikeButton } from '../post/like.js';
 
 const PAGE_SIZE = 10;
 
@@ -49,6 +50,8 @@ function init() {
     });
   }, options);
   observer.observe(observerEl);
+
+  initLikeButton(document.querySelector('.container'));
 }
 
 init();

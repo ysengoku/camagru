@@ -40,13 +40,17 @@ function seedUsers(): array {
             username:$data['username'],
             email: $data['email'],
             passwordHash: $passwordHash,
-            emailVerified: 1
+            emailVerified: 1,
         );
 
         if (!$user->createNewUser()) {
             echo "Failed to create {$data['username']}\n";
             continue;
         }
+
+        $createdUser = User::findByEmail($data['email']);
+        $createdUser->email_notifications_enabled = 0;
+        $createdUser->save();
 
         echo "Created {$data['username']} <{$data['email']}> (password: " . TEST_PASSWORD . ")\n";
 

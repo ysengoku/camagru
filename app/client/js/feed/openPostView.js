@@ -1,6 +1,5 @@
 import { showToast, ToastType, ToastMessage } from '../toast.js';
 import { adjustPostViewHeight } from '../post/postView.js';
-import { initLikeButton } from '../post/like.js';
 import { initComments } from '../post/comments.js';
 
 let isOpeningPostView = false;
@@ -37,7 +36,6 @@ async function openPostViewOverlay(postId) {
     previousUrl = window.location.href;
     history.pushState({ postId }, '', `/post?postId=${postId}`);
     document.body.style.overflow = 'hidden';
-    initLikeButton();
     initComments();
   } finally {
     isOpeningPostView = false;
@@ -67,6 +65,10 @@ function init() {
     if (event.ctrlKey || event.metaKey || event.button !== 0) {
       return;
     }
+    if (event.target.closest('[data-like]')) {
+      return;
+    }
+
     const postEl = event.target.closest('.post-preview');
     if (!postEl) {
       return;

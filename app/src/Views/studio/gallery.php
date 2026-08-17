@@ -7,7 +7,12 @@ if (!function_exists('render_studio_gallery')) {
         $showMoreButtonHtml = '';
 
         if (empty($posts)) {
-            $galleryItemsHtml = '<p class="text-center color-primary-700">No photos yet</p>';
+            $galleryItemsHtml = <<<HTML
+            <div class="color-primary-700 mx-4 px-4 mt-4 gap-4 text-center">
+                <p class="py-2">Nothing here yet...</p>
+                <p>Capture your first photo now!</p>
+            </div>
+            HTML;
         } else {
             foreach ($posts as $post) {
                 $galleryItemsHtml .= render_gallery_item($post['id'], $post['image_path']);
