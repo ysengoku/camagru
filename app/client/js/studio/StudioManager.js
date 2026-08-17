@@ -356,12 +356,6 @@ class StudioManager {
     );
     ctx.restore();
 
-    // const data = this.editor.canvas.toDataURL('image/png');
-    // this.editor.photo.setAttribute('src', data);
-    // e.preventDefault();
-
-    // this.stopWebcam();
-    // studioStore.setState({ editorMode: 'captured' });
     this.editor.canvas.toBlob((blob) => {
       if (this.editor.photo.src) {
         URL.revokeObjectURL(this.editor.photo.src);
@@ -517,13 +511,6 @@ class StudioManager {
       };
     }
 
-    // const finalImageData = {
-    //   baseImage: this.editor.canvas.toDataURL('image/jpeg'),
-    //   stickers,
-    //   textOverlay,
-    //   filter: this.state.selectedFilter,
-    // };
-
     const imageBlob = await new Promise((resolve) =>
       this.editor.canvas.toBlob(resolve, 'image/jpeg')
     );
@@ -537,8 +524,6 @@ class StudioManager {
         filter: this.state.selectedFilter,
       })
     );
-
-    console.log(finalImageData);
 
     try {
       const response = await api.post(endpoints.PHOTOS, finalImageData);
