@@ -1,7 +1,7 @@
 import { api, endpoints } from '../api.js';
 import { initPasswordToggles } from './helpers/passwordVisibility.js';
 import { showFieldError, clearFormErrors } from './helpers/formFeedback.js';
-import { showToast, ToastMessage } from '../toast.js';
+import { showToast } from '../toast.js';
 import { Validator } from './helpers/validator.js';
 
 function init() {

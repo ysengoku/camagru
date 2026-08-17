@@ -19,22 +19,27 @@ final class PhotoApiController extends Controller {
      * @response 422 {error} Missing required elements, or post could not be saved
      */
     final public function create(): string {
-        $user = $this->getAuthenticatedUser();
-        $mediaDir = Path::getMediaDirPath();
-        $imageFilename = uniqid('', true) . '.jpg';
-        $imagePath = Path::join($mediaDir, $imageFilename);
+        $user            = $this->getAuthenticatedUser();
+        $mediaDir        = Path::getMediaDirPath();
+        $imageFilename   = uniqid('', true) . '.jpg';
+        $imagePath       = Path::join($mediaDir, $imageFilename);
         $publicImagePath = '/media/' . $imageFilename;
 
-        $data = Request::getPostData();
+        $uploadedFile = $_FILES['image'] ?? null;
+        $rawData      = Request::getPostData();
+        $jsonData     = json_decode($rawData['data'] ?? '', true) ?? [];
 
-        $baseImage = $data['baseImage'] ?? null;
-        $stickers  = $data['stickers'] ?? [];
-        /** @var mixed $text */
-        $text   = $data['textOverlay'] ?? null;
-        /** @var string $filter */
-        $filter = $data['filter'] ?? 'none';
+        $stickers = $jsonData['stickers'] ?? [];
+        // /** @var mixed $text */
+        $text = $jsonData['textOverlay'] ?? null;
+        // /** @var string $filter */
+        $filter = $jsonData['filter'] ?? 'none';
 
-        if (!is_string($baseImage) || $baseImage === '' || !is_array($stickers) || empty($stickers)) {
+        if (!is_array($uploadedFile)
+            || ($uploadedFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+            || !is_array($stickers)
+            || empty($stickers)    
+        ) {
             return $this->json(['error' => 'Missing required elements'], Response::UNPROCESSABLE);
         }
 
@@ -44,7 +49,7 @@ final class PhotoApiController extends Controller {
         }
 
         try {
-            $imageComposer = new ImageComposer($baseImage);
+            $imageComposer = new ImageComposer($uploadedFile['tmp_name']);
             /**
              * @var list<array{path: string, width: float, height: float, x: float, y: float}> $stickers
              * @var array{content: string, fontFamily: string, fontSize: float, color: string, x: float, y: float}|null $text
