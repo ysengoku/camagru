@@ -26,3 +26,14 @@ export function clearFormErrors() {
     el.classList.remove('input-error');
   });
 }
+
+export function setButtonLoading(button, loadingText) {
+  button.disabled = true;
+  button.dataset.originalText = button.textContent;
+  button.textContent = loadingText;
+}
+
+export function clearButtonLoading(button) {
+  button.disabled = false;
+  button.textContent = button.dataset.originalText;
+}

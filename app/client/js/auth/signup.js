@@ -1,6 +1,10 @@
 import { api, endpoints } from '../api.js';
 import { initPasswordToggles } from './helpers/passwordVisibility.js';
-import { showFieldError } from './helpers/formFeedback.js';
+import {
+  showFieldError,
+  setButtonLoading,
+  clearButtonLoading,
+} from './helpers/formFeedback.js';
 import { validator } from './helpers/validator.js';
 
 function validateSignupForm(username, email, password, confirmPassword) {
@@ -69,6 +73,7 @@ function init() {
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
   const confirmPasswordInput = document.getElementById('confirm-password');
+  const submitButton = signupForm.querySelector('button[type="submit"]');
 
   signupForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -83,6 +88,9 @@ function init() {
       return;
     }
 
+    const loadingText = 'Signing up...';
+    setButtonLoading(submitButton, loadingText);
+
     try {
       const response = await api.post(endpoints.SIGNUP, {
         username,
@@ -92,6 +100,7 @@ function init() {
       if (response.ok) {
         window.location.href = '/email-sent?action=verify-email';
       }
+      return;
     } catch (error) {
       if (error.data && error.data.error) {
         showServerFeedback(error.data.error);
@@ -103,6 +112,7 @@ function init() {
         }
       }
     }
+    clearButtonLoading(submitButton);
   });
 }
 

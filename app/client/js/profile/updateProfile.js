@@ -4,6 +4,8 @@ import {
   showFieldError,
   clearFormErrors,
   showServerFeedback,
+  setButtonLoading,
+  clearButtonLoading,
 } from '../auth/helpers/formFeedback.js';
 import { showToast, ToastType, ToastMessage } from '../toast.js';
 import { validator } from '../auth/helpers/validator.js';
@@ -13,6 +15,7 @@ function init() {
   if (!form) {
     return;
   }
+  const submitButton = form.querySelector('button[type="submit"]');
 
   const initialValues = new Map(
     Array.from(form.elements)
@@ -124,6 +127,9 @@ function init() {
       inputData['avatar'] = null;
     }
 
+    const loadingText = 'Updating Profile...';
+    setButtonLoading(submitButton, loadingText);
+
     try {
       const res = await api.post(endpoints.PROFILE, inputData);
 
@@ -164,6 +170,7 @@ function init() {
         showFieldError('form', error.data.error.general);
       }
     }
+    clearButtonLoading(submitButton);
   }
 
   function updateAvatarPreview(target) {
