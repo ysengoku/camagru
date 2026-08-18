@@ -1,7 +1,7 @@
 <?php
 
 $usernameMin = 3;
-$usernameMax = 20;
+$usernameMax = 15;
 $emailMax = 254;
 $passwordMin = 14;
 $passwordMax = 72;

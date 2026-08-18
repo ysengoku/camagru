@@ -106,6 +106,11 @@ final class PhotoApiController extends Controller {
             return $this->json(['error' => 'Unauthorized to delete this post'], Response::FORBIDDEN);
         }
 
+        if ($post->image_path === $user->avatar) {
+            $user->avatar = null;
+            $user->save();
+        }
+
         if (!$post->delete()) {
             return $this->json(['error' => 'Failed to delete post'], Response::INTERNAL_ERROR);
         }
@@ -138,8 +143,8 @@ final class PhotoApiController extends Controller {
             : [];
         $html = '';
         foreach ($posts as $post) {
-            $postData = PostDataFactory::fromPost($post, $this->currentUser?->id);            
-            $html .= render_post_preview($postData);
+            $postData = PostDataFactory::fromPost($post, $this->currentUser?->id);
+            $html .= render_post_preview($postData, $this->currentUser !== null);
         }
 
         return $this->json(['html' => $html, 'count' => $totalPostCount], Response::OK);

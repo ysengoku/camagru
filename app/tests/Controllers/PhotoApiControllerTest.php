@@ -76,7 +76,7 @@ final class PhotoApiControllerTest extends DbTestCase {
     // ===== create() =========================================================
 
     public function testCreateRejectsMissingBaseImage(): void {
-        $user = $this->createUser('creatormissingimg', 'creatormissingimg@example.com', 'Valid-Password123!');
+        $user = $this->createUser('missingimg', 'missingimg@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
         $_FILES = [];
@@ -88,7 +88,7 @@ final class PhotoApiControllerTest extends DbTestCase {
     }
 
     public function testCreateRejectsMissingStickers(): void {
-        $user = $this->createUser('creatornostickers', 'creatornostickers@example.com', 'Valid-Password123!');
+        $user = $this->createUser('nostickers', 'nostickers@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
         $_FILES = ['image' => $this->validUploadedFile()];
@@ -117,7 +117,7 @@ final class PhotoApiControllerTest extends DbTestCase {
     // ===== delete() =========================================================
 
     public function testDeleteRejectsInvalidPostId(): void {
-        $user = $this->createUser('deleterinvalidid', 'deleterinvalidid@example.com', 'Valid-Password123!');
+        $user = $this->createUser('invalidid', 'invalidid@example.com', 'Valid-Password123!');
         $controller = new PhotoApiController($user);
 
         $_SERVER['REQUEST_URI'] = '/api/photos';
@@ -211,14 +211,14 @@ final class PhotoApiControllerTest extends DbTestCase {
     }
 
     public function testGetCurrentUserPhotosClampsLimitWhenFewerPostsRemain(): void {
-        $user = $this->createUser('galleryclamp', 'galleryclamp@example.com', 'Valid-Password123!');
-        $other = $this->createUser('galleryclampother', 'galleryclampother@example.com', 'Valid-Password123!');
+        $user = $this->createUser('clamp', 'clamp@example.com', 'Valid-Password123!');
+        $other = $this->createUser('clampother', 'clampother@example.com', 'Valid-Password123!');
 
         for ($i = 0; $i < 2; $i++) {
-            $post = new Post("/media/gallery-clamp-{$i}.jpg", $user->id);
+            $post = new Post("/media/clamp-{$i}.jpg", $user->id);
             $post->save();
         }
-        $otherPost = new Post('/media/gallery-clamp-other.jpg', $other->id);
+        $otherPost = new Post('/media/clamp-other.jpg', $other->id);
         $otherPost->save();
 
         $controller = new PhotoApiController($user);

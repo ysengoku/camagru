@@ -51,7 +51,7 @@ final class PostControllerTest extends DbTestCase {
     }
 
     public function testViewReturnsFragmentWhenXhr(): void {
-        $owner = $this->createUser('postviewxhrowner', 'postviewxhrowner@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('postxhrowner', 'postxhrowner@example.com', 'Valid-Password123!');
         $post = new Post('/media/post-view-fragment.jpg', $owner->id);
         $post->save();
 

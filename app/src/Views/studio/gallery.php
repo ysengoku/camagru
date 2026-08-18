@@ -8,7 +8,7 @@ if (!function_exists('render_studio_gallery')) {
 
         if (empty($posts)) {
             $galleryItemsHtml = <<<HTML
-            <div class="color-primary-700 mx-4 px-4 mt-4 gap-4 text-center">
+            <div class="color-primary-700 mx-4 px-4 mt-4 gap-4 text-center no-posts">
                 <p class="py-2">Nothing here yet...</p>
                 <p>Capture your first photo now!</p>
             </div>

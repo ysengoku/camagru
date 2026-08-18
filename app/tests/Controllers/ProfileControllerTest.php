@@ -23,11 +23,11 @@ final class ProfileControllerTest extends DbTestCase {
     // ===== POST /api/profile ===================================================
 
     public function testUpdateSucceeds(): void {
-        $user = $this->createUser('profileroutesuccess', 'profileroutesuccess@example.com', 'Valid-Password123!');
+        $user = $this->createUser('profilesuccess', 'profilesuccess@example.com', 'Valid-Password123!');
         $controller = new ProfileController($user);
 
         $_POST = [
-            'username' => 'profileroutenewname',
+            'username' => 'profilenewname',
             'email' => $user->email,
             'notifications' => '1',
         ];
@@ -41,11 +41,11 @@ final class ProfileControllerTest extends DbTestCase {
     }
 
     public function testUpdateRejectsInvalidUsername(): void {
-        $user = $this->createUser('profilerouteinvalid', 'profilerouteinvalid@example.com', 'Valid-Password123!');
+        $user = $this->createUser('profileinvalid', 'profileinvalid@example.com', 'Valid-Password123!');
         $controller = new ProfileController($user);
 
         $_POST = [
-            'username' => 'bad username!!',
+            'username' => 'bad name!!',
             'email' => $user->email,
         ];
         $result = $controller->update();
@@ -58,7 +58,7 @@ final class ProfileControllerTest extends DbTestCase {
     // ===== GET /api/avatar-options =============================================
 
     public function testGetAvatarOptionsSucceeds(): void {
-        $user = $this->createUser('avataroptionsroute', 'avataroptionsroute@example.com', 'Valid-Password123!');
+        $user = $this->createUser('avataroptions', 'avataroptions@example.com', 'Valid-Password123!');
         $post = new Post('/media/avatar-options-route.jpg', $user->id);
         $post->save();
 

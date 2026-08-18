@@ -15,7 +15,7 @@ if (!function_exists('render_post_header')) {
         <div class="flex align-center mb-2 px-4 gap-4">
             {$avatar}
             <div class="flex-col gap-1">
-                <p class="font-bold {$authorNameSize} color-gray-600">
+                <p class="author-name font-bold {$authorNameSize} color-gray-600">
                     {$authorNameHtml}
                 </p>
                 <p class="font-size-3 color-gray-500">

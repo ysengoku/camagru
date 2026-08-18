@@ -534,6 +534,7 @@ class StudioManager {
       const newPhotoHtml = response.data.html;
       const galleryItemsEl = document.getElementById('gallery-items');
       if (galleryItemsEl) {
+        galleryItemsEl.querySelector('.no-posts')?.remove();
         galleryItemsEl.insertAdjacentHTML('afterbegin', newPhotoHtml);
         galleryItemsEl.scrollTo({ top: 0, behavior: 'smooth' });
       }

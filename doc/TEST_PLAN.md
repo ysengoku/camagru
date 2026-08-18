@@ -10,10 +10,12 @@ Manual test checklist to run through.
 - [ ] `make clean-db` removes all data without errors
 - [ ] No errors or warnings in any browser console on any page
 - [ ] No errors or warnings in `docker logs camagru_app` / `camagru_nginx` during normal use
+- [ ] No credentials, API keys, or env files are tracked by git
 
 ## Signup & email verification
 
 - [ ] Sign up with a new username, email, and password succeeds
+- [ ] Sign up with a password below the minimum complexity is rejected with a clear error
 - [ ] Sign up with an already-taken username is rejected with a clear error
 - [ ] Sign up with an already-registered, verified email is rejected
 - [ ] Sign up again with the same email while the previous signup is still unverified succeeds, replacing the old attempt
@@ -28,6 +30,7 @@ Manual test checklist to run through.
 - [ ] Login with wrong password is rejected with a generic error, not one that reveals whether the username exists
 - [ ] Login with a nonexistent username is rejected with the same generic error
 - [ ] Logout clears the session, subsequent protected pages redirect to login
+- [ ] A logout control is reachable in one click from every page while logged in
 - [ ] Visiting `/login` or `/signup` while already logged in redirects away instead of showing the form
 
 ## Forgot / reset password
@@ -47,6 +50,8 @@ Manual test checklist to run through.
 
 ## Studio
 
+- [ ] Visiting `/studio` while logged out redirects to login instead of showing the editor
+- [ ] The capture button is disabled until a superposable image (sticker) is selected
 - [ ] Webcam capture works and shows a live preview before confirming
 - [ ] Uploading a photo from disk works as an alternative to webcam capture
 - [ ] Adding a sticker places it on the canvas and it can be moved and resized
@@ -60,9 +65,12 @@ Manual test checklist to run through.
 ## Feed
 
 - [ ] Public feed loads and shows posts from all users
+- [ ] Posts are ordered by creation date
+- [ ] The feed loads at least 5 posts per page/scroll batch
 - [ ] Scrolling down loads more posts, infinite scroll works without duplicating or skipping posts
 - [ ] Liking a post updates the like count immediately, without navigating away
 - [ ] Unliking a post updates the count back down
+- [ ] Liking or commenting while logged out is rejected, not silently accepted
 - [ ] Opening a post shows its full view with comments
 - [ ] Adding a comment appears immediately without a full page reload
 - [ ] Deleting an own comment removes it immediately
@@ -79,6 +87,7 @@ Manual test checklist to run through.
 - [ ] Changing email requires the current password
 - [ ] Leaving password blank while updating other fields keeps the password unchanged
 - [ ] Selecting an avatar from own posts updates it across the site
+- [ ] A newly signed-up user has email notifications enabled by default
 - [ ] Toggling email notifications on/off persists the setting
 - [ ] Email notification for new comments is sent only when the setting is enabled
 

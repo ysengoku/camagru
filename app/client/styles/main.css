@@ -105,8 +105,8 @@
   --warning-dark: #b06d24;
   --danger: #f56c6c;
   --danger-dark: #b04848;
-  --info: #406eff;
-  --info-dark: #2a47b0;
+  --info: #5c7a99;
+  --info-dark: #40556b;
 }
 
 /* Breakpoints 
@@ -311,7 +311,7 @@ p {
   color: var(--primary-100);
   font-family: 'PrincessSofia', sans-serif;
   font-weight: bold;
-  margin-bottom: 0.3rem;
+  /* margin-bottom: 0.3rem; */
 }
 
 .letter-avatar.avatar-small {
@@ -328,6 +328,10 @@ p {
 
 .navbar {
   left: 160px;
+
+  .letter-avatar {
+    margin-bottom: 0.3rem;
+  }
 }
 
 .nav-link-container {
@@ -350,9 +354,11 @@ p {
   }
 }
 
-button:hover {
-  transform: scale(1.1, 1.1);
-  cursor: pointer;
+@media (hover: hover) and (pointer: fine) {
+  button:hover {
+    transform: scale(1.1, 1.1);
+    cursor: pointer;
+  }
 }
 
 button:has(.icon-visible),
@@ -420,7 +426,7 @@ button:has(.icon-invisible) {
 
 .toast-success { background: var(--success); }
 .toast-danger  { background: var(--danger); }
-.toast-info    { background: var(--primary-600); }
+.toast-info    { background: var(--info); }
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -706,11 +712,6 @@ hr {
   cursor: pointer;
 }
 
-.post-preview-card button {
-  transform: none !important;
-  cursor: none !important;
-}
-
 .post-preview-image img {
     width: 100%;
     height: auto;
@@ -821,6 +822,29 @@ hr {
   .post-view-details {
     flex: 1;
     padding: 1rem 0 78px 0;
+  }
+
+  .post-view-details .letter-avatar,
+  .post-view-details .avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .post-view-details .author-name,
+  .post-comments .author-name {
+    font-size: 1rem !important;
+  }
+
+  .post-comments .letter-avatar,
+  .post-comments .avatar  {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .post-comments .comment-content {
+    font-size: 0.85rem;
   }
 }
 
@@ -1116,6 +1140,19 @@ video {
   #studio-gallery {
     flex: 1;
     overflow-y: visible;
+  }
+}
+
+@container (max-width: 500px) {
+  .studio-menu-button {
+    svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    span {
+      font-size: 0.8rem;
+    }
   }
 }
 

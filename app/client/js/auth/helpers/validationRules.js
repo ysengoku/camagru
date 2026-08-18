@@ -10,7 +10,7 @@ try {
   rules = {
     username: {
       minLength: 3,
-      maxLength: 20,
+      maxLength: 15,
       pattern: '^[a-zA-Z0-9_-]+$',
     },
     email: {
