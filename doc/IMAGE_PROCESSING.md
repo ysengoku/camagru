@@ -13,8 +13,6 @@ the final image on the server:
 
 ## 1. Client-Side Image Editing
 
-### Where it happens
-
 The main client-side editing code lives in:
 
 - `app/client/js/studio/StudioManager.js`: owns the canvas, webcam/upload
@@ -114,7 +112,6 @@ capture(e) {
   ctx.drawImage(this.editor.video, 0, 0, width, height);
   ctx.restore();
 
-  const data = this.editor.canvas.toDataURL('image/png');
   ...
 }
 ```
@@ -275,18 +272,17 @@ const stickers = this.state.selectedStickers.map((sticker) => ({
   height: sticker.heightFraction * canvasHeight,
 }));
 
-const finalImageData = {
-  baseImage: this.editor.canvas.toDataURL('image/jpeg'),
+const imageBlob = await new Promise((resolve) =>
+  this.editor.canvas.toBlob(resolve, 'image/jpeg')
+);
+const finalImageData = new FormData();
+finalImageData.append('image', imageBlob, 'photo.jpg');
+finalImageData.append('data', JSON.stringify({
   stickers,
-  textOverlay: this.state.textOverlay,
+  textOverlay,
   filter: this.state.selectedFilter,
-};
+}));
 ```
-
-`baseImage` is always read straight from the canvas; the Share button is
-only ever visible in `captured` or `upload` mode, and both paths draw onto
-the canvas before that point, so there's no case where it's empty at share
-time.
 
 ### Client-side notes
 
@@ -326,13 +322,16 @@ chooses a filename in the media directory, and calls `ImageComposer`.
 
 ### Input data
 
-The frontend sends JSON to `POST /api/photos`.
+The frontend sends a `multipart/form-data` request to `POST /api/photos`, not
+JSON. It has two parts:
 
-Typical payload:
+- `image`: the JPEG blob produced by `canvas.toBlob()`.
+- `data`: a JSON string with everything else.
+
+Typical `data` part:
 
 ```json
 {
-  "baseImage": "data:image/jpeg;base64,...",
   "stickers": [
     {
       "path": "/assets/stickers/flower1.png",
@@ -354,11 +353,14 @@ Typical payload:
 }
 ```
 
+The controller reads the file from `$_FILES['image']` and decodes the `data`
+part with `json_decode()`.
+
 Coordinates and sizes are currently sent in pixels from the editor UI.
 
 ### Processing flow
 
-1. Decode the base image.
+1. Read the uploaded image file.
 2. Create a GD image resource with `imagecreatefromstring()`.
 3. Store the canvas width and height with `imagesx()` and `imagesy()`.
 4. Apply the selected filter.
@@ -369,34 +371,26 @@ Coordinates and sizes are currently sent in pixels from the editor UI.
 In code, this is coordinated by:
 
 ```php
-$imageComposer = new ImageComposer($baseImage);
+$imageComposer = new ImageComposer($uploadedFile['tmp_name']);
 $saved = $imageComposer->compose($stickers, $text ?? [], $filter, $imagePath);
 ```
 
 ### Base image
 
-The base image arrives as a data URL:
-
-```text
-data:image/jpeg;base64,...
-```
-
-Before GD can read it, the data URL prefix is removed and the remaining base64
-string is decoded:
+The base image arrives as an uploaded file, not JSON. `ImageComposer`'s
+constructor takes the uploaded file's temporary path and reads it directly:
 
 ```php
-$imageData = base64_decode(
-    preg_replace('/^data:image\/\w+;base64,/i', '', $base64Image)
-);
+$imageData = file_get_contents($imagePath);
 ```
 
-Then GD creates the canvas:
+Then GD creates the canvas from the raw bytes:
 
 ```php
 $this->canvas = imagecreatefromstring($imageData);
 ```
 
-If the base64 data is invalid, `ImageComposer` throws an exception.
+If the image data is invalid, `ImageComposer` throws an exception.
 
 ### Filters
 
