@@ -118,6 +118,9 @@ final class AuthController extends Controller {
         $method = Request::getMethod();
         switch ($method) {
             case 'GET':
+                if (SessionStore::activeSession()) {
+                    Response::redirect('/');
+                }                
                 return $this->render([
                     'pageTitle' => 'Forgot Password',
                     'action' => 'reset-password'
@@ -147,6 +150,9 @@ final class AuthController extends Controller {
         $method = Request::getMethod();
         switch ($method) {
             case 'GET':
+                if (SessionStore::activeSession()) {
+                    throw new HTTPNotFoundException();
+                }
                 $token = Request::getQueryParam('token') ?? '';
                 $validationResult = ResetPasswordService::getInstance()->validateToken($token);
                 if (!$validationResult->success) {
