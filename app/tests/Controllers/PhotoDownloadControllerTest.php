@@ -40,7 +40,7 @@ final class PhotoDownloadControllerTest extends DbTestCase {
     // ends in readfile() + exit, which would terminate the PHPUnit process.
 
     public function testDownloadPhotoRejectsInvalidPostId(): void {
-        $user = $this->createUser('downloadinvalidid', 'downloadinvalidid@example.com', 'Valid-Password123!');
+        $user = $this->createUser('invalidid', 'invalidid@example.com', 'Valid-Password123!');
         $controller = new PhotoDownloadController($user);
 
         $_SERVER['REQUEST_URI'] = '/photos/download';
@@ -51,7 +51,7 @@ final class PhotoDownloadControllerTest extends DbTestCase {
     }
 
     public function testDownloadPhotoRejectsNonexistentPost(): void {
-        $user = $this->createUser('downloadnotfound', 'downloadnotfound@example.com', 'Valid-Password123!');
+        $user = $this->createUser('notfound', 'notfound@example.com', 'Valid-Password123!');
         $controller = new PhotoDownloadController($user);
 
         $_SERVER['REQUEST_URI'] = '/photos/download?postId=999999';
@@ -62,8 +62,8 @@ final class PhotoDownloadControllerTest extends DbTestCase {
     }
 
     public function testDownloadPhotoRejectsNotOwnPost(): void {
-        $owner = $this->createUser('downloadowner', 'downloadowner@example.com', 'Valid-Password123!');
-        $other = $this->createUser('downloadother', 'downloadother@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('owner', 'owner@example.com', 'Valid-Password123!');
+        $other = $this->createUser('other', 'other@example.com', 'Valid-Password123!');
         $post = new Post('/media/download-not-own.jpg', $owner->id);
         $post->save();
 
@@ -76,7 +76,7 @@ final class PhotoDownloadControllerTest extends DbTestCase {
     }
 
     public function testDownloadPhotoRejectsMissingFile(): void {
-        $user = $this->createUser('downloadmissingfile', 'downloadmissingfile@example.com', 'Valid-Password123!');
+        $user = $this->createUser('missingfile', 'missingfile@example.com', 'Valid-Password123!');
         $post = new Post('/media/does-not-exist-on-disk.jpg', $user->id);
         $post->save();
 

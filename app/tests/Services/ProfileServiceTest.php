@@ -135,8 +135,8 @@ final class ProfileServiceTest extends DbTestCase {
     }
 
     public function testUpdateProfileRejectUsernameUnavailable(): void {
-        $username = 'unavailableusername';
-        $email    = 'unavailableusername@example.com';
+        $username = 'usernametaken';
+        $email    = 'usernametaken@example.com';
         $password = 'Valid-Password123!';
         $this->createUser($username, $email, $password);
         
@@ -167,8 +167,8 @@ final class ProfileServiceTest extends DbTestCase {
     }
 
     public function testUpdateProfileRejectEmailUnavailable(): void {
-        $username = 'unavailableemail';
-        $email    = 'unavailableemail@example.com';
+        $username = 'emailtaken';
+        $email    = 'emailtaken@example.com';
         $password = 'Valid-Password123!';
         $this->createUser($username, $email, $password);
         
@@ -184,8 +184,8 @@ final class ProfileServiceTest extends DbTestCase {
     }
 
     public function testUpdateProfileRejectEmailMissingCurrentPassword(): void {
-        $username = 'emailmissingpassword';
-        $email    = 'emailmissingpassword@example.com';
+        $username = 'emailmissingpw';
+        $email    = 'emailmissingpw@example.com';
         $password = 'Valid-Password123!';
         $this->createUser($username, $email, $password);
 
@@ -199,8 +199,8 @@ final class ProfileServiceTest extends DbTestCase {
     }
 
     public function testUpdateProfileRejectEmailWrongCurrentPassword(): void {
-        $username = 'emailwrongpassword';
-        $email    = 'emailwrongpassword@example.com';
+        $username = 'emailwrongpw';
+        $email    = 'emailwrongpw@example.com';
         $password = 'Valid-Password123!';
         $this->createUser($username, $email, $password);
 
@@ -243,8 +243,8 @@ final class ProfileServiceTest extends DbTestCase {
     }
 
     public function testUpdateProfileRejectAvatarNonexistentPath(): void {
-        $username = 'nonexistentavatar';
-        $email    = 'nonexistentavatar@example.com';
+        $username = 'noavatarpath';
+        $email    = 'noavatarpath@example.com';
         $password = 'Valid-Password123!';
         $this->createUser($username, $email, $password);
 

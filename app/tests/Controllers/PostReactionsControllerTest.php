@@ -77,7 +77,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     // ===== removeLike() =======================================================
 
     public function testRemoveLikeRejectsInvalidPostId(): void {
-        $user = $this->createUser('removelikeinvalid', 'removelikeinvalid@example.com', 'Valid-Password123!');
+        $user = $this->createUser('removeinvalid', 'removeinvalid@example.com', 'Valid-Password123!');
         $controller = new PostReactionsController($user);
 
         $_SERVER['REQUEST_METHOD'] = 'DELETE';
@@ -89,8 +89,8 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testRemoveLikeRejectsNotLiked(): void {
-        $owner = $this->createUser('removenotlikedowner', 'removenotlikedowner@example.com', 'Valid-Password123!');
-        $user = $this->createUser('removenotliked', 'removenotliked@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('notlikedowner', 'notlikedowner@example.com', 'Valid-Password123!');
+        $user = $this->createUser('notliked', 'notliked@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
 
         $controller = new PostReactionsController($user);
@@ -103,8 +103,8 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testRemoveLikeSucceeds(): void {
-        $owner = $this->createUser('removelikeowner', 'removelikeowner@example.com', 'Valid-Password123!');
-        $user = $this->createUser('removelikesuccess', 'removelikesuccess@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('likeowner', 'likeowner@example.com', 'Valid-Password123!');
+        $user = $this->createUser('likesuccess', 'likesuccess@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
 
         $controller = new PostReactionsController($user);
@@ -125,7 +125,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     // ===== getComments() ======================================================
 
     public function testGetCommentsRejectsInvalidPostId(): void {
-        $user = $this->createUser('commentsinvalidpost', 'commentsinvalidpost@example.com', 'Valid-Password123!');
+        $user = $this->createUser('invalidpost', 'invalidpost@example.com', 'Valid-Password123!');
         $controller = new PostReactionsController($user);
 
         $_SERVER['REQUEST_URI'] = '/api/comments?postId=not-a-number';
@@ -136,7 +136,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testGetCommentsRejectsInvalidOffsetOrLimit(): void {
-        $owner = $this->createUser('commentlimitowner', 'commentlimitowner@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('limitowner', 'limitowner@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
         $controller = new PostReactionsController($owner);
 
@@ -148,7 +148,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testGetCommentsPaginationCorrectness(): void {
-        $owner = $this->createUser('commentpageowner', 'commentpageowner@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('pageowner', 'pageowner@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
 
         for ($i = 0; $i < 3; $i++) {
@@ -169,7 +169,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     // ===== addComment() =======================================================
 
     public function testAddCommentRejectsInvalidPostId(): void {
-        $user = $this->createUser('addcommentbadpost', 'addcommentbadpost@example.com', 'Valid-Password123!');
+        $user = $this->createUser('badpost', 'badpost@example.com', 'Valid-Password123!');
         $controller = new PostReactionsController($user);
 
         $_POST = ['postId' => 'not-a-number', 'content' => 'Hello'];
@@ -180,7 +180,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testAddCommentRejectsEmptyContent(): void {
-        $owner = $this->createUser('addcommentemptyowner', 'addcommentemptyowner@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('emptyowner', 'emptyowner@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
         $controller = new PostReactionsController($owner);
 
@@ -192,7 +192,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testAddCommentRejectsPostNotFound(): void {
-        $user = $this->createUser('addcommentnotfound', 'addcommentnotfound@example.com', 'Valid-Password123!');
+        $user = $this->createUser('notfound', 'notfound@example.com', 'Valid-Password123!');
         $controller = new PostReactionsController($user);
 
         $_POST = ['postId' => 999999, 'content' => 'Hello'];
@@ -203,7 +203,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testAddCommentSucceeds(): void {
-        $owner = $this->createUser('addcommentsuccessown', 'addcommentsuccessown@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('successown', 'successown@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
         $controller = new PostReactionsController($owner);
 
@@ -220,7 +220,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     // ===== deleteComment() ====================================================
 
     public function testDeleteCommentRejectsInvalidId(): void {
-        $user = $this->createUser('deletecommentinvalid', 'deletecommentinvalid@example.com', 'Valid-Password123!');
+        $user = $this->createUser('deleteinvalid', 'deleteinvalid@example.com', 'Valid-Password123!');
         $controller = new PostReactionsController($user);
 
         $_SERVER['REQUEST_URI'] = '/api/comments?commentId=not-a-number';
@@ -231,8 +231,8 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testDeleteCommentRejectsNotOwnComment(): void {
-        $owner = $this->createUser('deletecommentowner', 'deletecommentowner@example.com', 'Valid-Password123!');
-        $other = $this->createUser('deletecommentother', 'deletecommentother@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('deleteowner', 'deleteowner@example.com', 'Valid-Password123!');
+        $other = $this->createUser('deleteother', 'deleteother@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
         $comment = new Comment($post->id, $owner->id, 'Owned by owner');
         $comment->save();
@@ -246,7 +246,7 @@ final class PostReactionsControllerTest extends DbTestCase {
     }
 
     public function testDeleteCommentSucceeds(): void {
-        $owner = $this->createUser('deletecommentsuccess', 'deletecommentsuccess@example.com', 'Valid-Password123!');
+        $owner = $this->createUser('deletesuccess', 'deletesuccess@example.com', 'Valid-Password123!');
         $post = $this->createPost($owner);
         $comment = new Comment($post->id, $owner->id, 'Comment to delete');
         $comment->save();

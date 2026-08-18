@@ -41,11 +41,11 @@ final class AuthControllerTest extends DbTestCase {
 
     public function testLoginSucceeds(): void {
         $password = 'Valid-Password123!';
-        $this->createVerifiedUser('loginroutesuccess', $password);
+        $this->createVerifiedUser('loginsuccess', $password);
 
         $controller = new AuthController();
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_POST = ['username' => 'loginroutesuccess', 'password' => $password];
+        $_POST = ['username' => 'loginsuccess', 'password' => $password];
 
         $result = $controller->login();
         $data = json_decode($result, true);
@@ -55,11 +55,11 @@ final class AuthControllerTest extends DbTestCase {
     }
 
     public function testLoginRejectsWrongPassword(): void {
-        $this->createVerifiedUser('loginroutewrongpw', 'Valid-Password123!');
+        $this->createVerifiedUser('loginwrongpw', 'Valid-Password123!');
 
         $controller = new AuthController();
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_POST = ['username' => 'loginroutewrongpw', 'password' => 'Wrong-Password123!'];
+        $_POST = ['username' => 'loginwrongpw', 'password' => 'Wrong-Password123!'];
 
         $result = $controller->login();
         $data = json_decode($result, true);
@@ -98,7 +98,7 @@ final class AuthControllerTest extends DbTestCase {
     // ===== POST /api/forgot-password ========================================
 
     public function testForgotPasswordSucceeds(): void {
-        $this->createVerifiedUser('forgotpwroute', 'Valid-Password123!');
+        $this->createVerifiedUser('forgotpw', 'Valid-Password123!');
         SessionStore::delete(SessionKey::LastEmailSentTime);
 
         $controller = new AuthController();
@@ -127,8 +127,8 @@ final class AuthControllerTest extends DbTestCase {
     // ===== POST /api/reset-password =========================================
 
     public function testResetPasswordSucceeds(): void {
-        $email = 'resetpwroute@example.com';
-        $this->createVerifiedUser('resetpwroute', 'Valid-Password123!');
+        $email = 'resetpw@example.com';
+        $this->createVerifiedUser('resetpw', 'Valid-Password123!');
         SessionStore::delete(SessionKey::LastEmailSentTime);
         ForgotPasswordService::getInstance()->processForgotPassword($email);
         $token = User::findByEmail($email)->password_reset_token;
@@ -159,7 +159,7 @@ final class AuthControllerTest extends DbTestCase {
     // ===== POST /api/resend-email =============================================
 
     public function testResendEmailSucceeds(): void {
-        $user = $this->createVerifiedUser('resendemailroute', 'Valid-Password123!');
+        $user = $this->createVerifiedUser('resendemail', 'Valid-Password123!');
         $user->email_verified = 0;
         $user->email_verification_token = 'a-token';
         $user->email_verification_token_expires_at = (new DateTime('+1 hour'))->format('Y-m-d H:i:s');

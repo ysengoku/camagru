@@ -19,7 +19,7 @@ final class SessionServiceTest extends DbTestCase {
     }
 
     public function testProcessLoginRejectWrongPassword(): void {
-        $username = 'loginwrongpassword';
+        $username = 'loginwrongpw';
         $password = 'Valid-Password123!';
         $wrongPassword = 'Wrong-Password123!';
         $this->createVerifiedUser($username, $password);
