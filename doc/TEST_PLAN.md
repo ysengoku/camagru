@@ -99,7 +99,7 @@ Manual test checklist to run through.
     # Get a Session Cookie (login from browser)
     # Execute from terminal:
     curl -i -k -X POST https://<host>/api/profile \
-        -H "Cookie: <session cookie>" \
+        -H "Cookie: PHPSESSID=<session cookie>" \
         -H "Content-Type: application/json" \
         -d '{"username":"test"}'
     ```
@@ -117,7 +117,7 @@ Manual test checklist to run through.
     # How to test
     # Log in as user A, grab A's session, then try IDs/paths belonging to user B
     curl -i -k -X DELETE https://<host>/api/photos\?postId\=12 \
-        -H "Cookie: <A's session cookie>" \
+        -H "Cookie: PHPSESSID=<A's session cookie>" \
         -H "X-CSRF-Token: <A's csrf token from meta tag>"
     ```
 

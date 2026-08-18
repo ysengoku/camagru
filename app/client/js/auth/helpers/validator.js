@@ -92,7 +92,7 @@ export class Validator {
     ) {
       return {
         valid: false,
-        message: rules.password.messages.requireCharPattern,
+        message: rules.password.messages.pattern,
       };
     }
     return { valid: true };
