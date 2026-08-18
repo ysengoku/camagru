@@ -6,6 +6,7 @@ $users = [
     ['username' => 'claude', 'email' => 'claude@test.local'],
     ['username' => 'David', 'email' => 'david@test.local'],
     ['username' => 'Guy', 'email' => 'guy@test.local'],
+    ['username' => 'Jacquet_Meunier', 'email' => 'jecquet@test.local'],
 ];
 
 $comments = [

@@ -10,7 +10,7 @@ if (!function_exists('render_comment')) {
         $authorName = htmlspecialchars($comment->author_name);
         $timestamp = strtotime($comment->created_at);
         $createdAt = $timestamp !== false
-            ? htmlspecialchars(date('F j, Y, g:i A', $timestamp), ENT_QUOTES)
+            ? htmlspecialchars(date('M', $timestamp) . date(' j, Y, g:i A', $timestamp), ENT_QUOTES)
             : htmlspecialchars($comment->created_at, ENT_QUOTES);
         $content = htmlspecialchars($comment->content);
 
@@ -29,7 +29,7 @@ if (!function_exists('render_comment')) {
                 <div class="flex align-center mb-1 gap-2">
                     {$avatarHtml}
                     <div class="flex align-end gap-2">
-                        <span class="color-gray-600 font-bold font-size-4">     
+                        <span class="color-gray-600 font-bold font-size-4 author-name">     
                             {$authorName}
                         </span>
                         <span class="color-gray-500 font-size-3">
@@ -38,7 +38,7 @@ if (!function_exists('render_comment')) {
                     </div>
                 </div>
                 <div class="flex align-center justify-between gap-2">
-                    <p class="color-gray-700 font-size-4">
+                    <p class="color-gray-700 font-size-4 comment-content">
                         {$content}
                     </p>
                     {$deleteButtonHtml}

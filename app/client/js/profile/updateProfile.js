@@ -133,12 +133,12 @@ function init() {
       }
 
       if (res.data.avatarHtml) {
-        const profileNavLink = document.querySelector(
+        const profileNavLinks = document.querySelectorAll(
           '.nav-link[href="/profile"]'
         );
-        if (profileNavLink) {
+        profileNavLinks.forEach((profileNavLink) => {
           profileNavLink.innerHTML = res.data.avatarHtml;
-        }
+        });
       }
 
       showToast(ToastType.SUCCESS, ToastMessage['profile-update-success']);
