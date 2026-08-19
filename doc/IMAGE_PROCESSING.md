@@ -3,13 +3,9 @@
 This project renders the photo editor entirely in the browser, then recreates
 the final image on the server:
 
-1. **Client**: a `<canvas>` holds the base image (webcam capture or upload),
-   and stickers/text are separate absolutely-positioned DOM elements drawn on
-   top of it. When the user hits Share, the canvas and overlay positions are
-   packaged into JSON and sent to `POST /api/photos`.
-2. **Server**: PHP's GD extension recreates the final image from that JSON:
-   stickers, optional filters, and text are composited onto the base image
-   and saved as a JPEG.
+1. [**Client**](#1-client-side-image-editing): a `<canvas>` holds the base image (webcam capture or upload), and stickers/text are separate absolutely-positioned DOM elements drawn on top of it. When the user hits Share, the canvas is converted to a JPEG blob and sent via POST to `/api/photos`, along with sticker, text, and filter metadata.
+
+2. [**Server**](#2-server-side-image-processing-gd): PHP's GD extension recreates the final image from that JSON: stickers, optional filters, and text are composited onto the base image and saved as a JPEG.
 
 ## 1. Client-Side Image Editing
 
@@ -29,40 +25,23 @@ The main client-side editing code lives in:
 
 ### Two coordinate spaces
 
-The editor (`#studio-editor`) is a responsive element: it can be as wide as
-the row layout allows on desktop, or the full viewport width when stacked on
-mobile (see `ARCHITECTURE.md`'s container-query layout). This means there are
-two different pixel scales in play at any moment, and the whole overlay
-system exists to convert between them:
+The editor (`#studio-editor`) is responsive, so its on-screen size changes as the layout reflows. This creates two different pixel scales that the overlay system has to convert between:
 
-- **Canvas drawing-buffer pixels**: `canvas.width` / `canvas.height`. This
-  is the actual resolution of the photo, fixed once measured (see below). It
-  never changes just because the window resizes.
-- **CSS-rendered pixels**: the editor's current on-screen size
-  (`#studio-editor.getBoundingClientRect()`), which does change as the
-  layout reflows.
+- **Canvas drawing-buffer pixels** (`canvas.width` / `canvas.height`): the
+  actual resolution of the photo. Fixed once measured ([see below](#canvas-sizing)) and
+  never changes on resize.
+- **CSS-rendered pixels** (`#studio-editor.getBoundingClientRect()`): the
+  editor's current on-screen size, which does change as the layout reflows.
 
-Stickers and the text overlay are stored as **fractions (0-1) of the
-editor's current rendered size**, not raw pixels, precisely so a value stays
-meaningful in either space: multiply by the CSS rect for on-screen
-placement, multiply by `canvas.width`/`canvas.height` for the payload sent
-to the server.
+Stickers and the text overlay are stored as **fractions (0-1) of the editor's current rendered size**, not raw pixels, precisely so that a value stays meaningful in either space: multiply by the CSS rect for on-screen placement, multiply by `canvas.width`/`canvas.height` for the payload sent to the server.
 
 ### Canvas sizing
 
-`#studio-editor` is `display: none` until the user activates the webcam or
-uploads an image, and its width is a CSS percentage (`width: 100%;
-aspect-ratio: 4 / 3;`), not a fixed value. Percentages can't be resolved on a
-hidden element, so measuring too early locks the canvas to a 0×0 (or stale)
-resolution for the rest of the session.
+`#studio-editor` stays hidden (`display: none`) until the user starts the webcam or uploads an image. Once it becomes visible, `StudioManager.js` measures it in `measureCanvas()`.
 
-To avoid that, sizing is split into two steps in `StudioManager.js`:
+This has to wait for visibility: the editor's size isn't a fixed pixel value, it comes from CSS (`flex: 1 1 auto`, `aspect-ratio: 16 / 9`, `width`/`height: auto`, capped by `max-width`/`max-height: 100%`), and none of that resolves on a hidden element. Measuring too early would lock the canvas to a 0×0 (or stale) resolution for the rest of the session.
 
 ```js
-initCanvas() {
-  this.canvasContext = this.editor.canvas.getContext('2d');
-}
-
 measureCanvas() {
   const computedStyle = getComputedStyle(this.editor.canvas);
   const cssWidth = parseInt(computedStyle.width);
@@ -76,7 +55,7 @@ measureCanvas() {
 }
 ```
 
-`measureCanvas()` runs from `updateEditorView()`, but only on the actual
+`measureCanvas()` runs from `updateEditorView()`, and only on the actual
 `menu → editor` transition:
 
 ```js
@@ -88,46 +67,57 @@ if (wasHidden) {
 }
 ```
 
-This guard matters: assigning to `canvas.width`/`canvas.height` always
-clears the canvas, even to the same value. Re-running `measureCanvas()` on
-every mode change (e.g. `webcam → captured` right after `capture()` draws a
-frame) would silently wipe whatever was just drawn.
+Assigning to `canvas.width`/`canvas.height` always clears the canvas, even　when set to the same value. That's why the guard matters. Without it,　`measureCanvas()` would re-run on every mode change, for example right　after `capture()` draws a frame during `webcam → captured`, and silently　discard whatever was just drawn.
 
-The canvas resolution is intentionally **not** re-measured on window resize
-after that; only the overlay positions are (see Stickers, below). Keeping
-the drawing buffer fixed avoids having to rescale or redraw whatever is
-already on the canvas mid-edit.
+For the same reason, the canvas resolution is never re-measured when the window resizes. Only the overlay positions are (see [Stickers](#stickers), below). Keeping the drawing buffer fixed means the app never has to rescale or redraw whatever is already on the canvas mid-edit.
 
 ### Capturing a photo
 
+`capture()` crops the live video to match the canvas's aspect ratio, mirrors it to match the live preview, and draws the result onto the canvas before switching to `captured` mode:
+
 ```js
 capture(e) {
-  const ctx = this.canvasContext;
+  const ctx = this.canvasContext; // this.editor.canvas.getContext('2d')
   const width = this.editor.canvas.width;
   const height = this.editor.canvas.height;
+  ...
+  const scale = Math.max(width / videoWidth, height / videoHeight);
+  const scaledWidth = width / scale;
+  const scaledHeight = height / scale;
+  const scaledX = (videoWidth - scaledWidth) / 2;
+  const scaledY = (videoHeight - scaledHeight) / 2;
 
-  ctx.save();
-  ctx.translate(width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(this.editor.video, 0, 0, width, height);
+  ctx.save(); // snapshot context state to restore later
+  ctx.translate(width, 0); // move origin to canvas's right edge
+  ctx.scale(-1, 1); // flip horizontally
+  ctx.drawImage(
+    video,
+    scaledX,
+    scaledY,
+    scaledWidth,
+    scaledHeight,
+    0,
+    0,
+    width,
+    height
+  );
   ctx.restore();
 
   ...
 }
 ```
 
-`#webcam` is mirrored for the live preview with CSS (`transform:
-scaleX(-1)`), but `drawImage()` reads the video element's underlying frame
-data, which CSS transforms don't affect. The capture applies the same
-horizontal flip directly on the canvas context so the saved photo matches
-what the user saw in the preview, instead of coming out mirror-reversed
-relative to it.
+The video's native resolution (`videoWidth`/`videoHeight`) doesn't necessarily match the canvas's aspect ratio, so drawing it directly would stretch and distort the image.
+
+`capture()` first works out a `cover`-style crop, the same idea as CSS `object-fit: cover`. `scale` is the larger of the two ratios needed to fill the canvas in each dimension, and `scaledX`/`scaledY` center a crop of that size within the source video.
+
+`drawImage()` then reads that cropped rectangle from the video and draws it to fill the whole canvas, so that the result matches the canvas's aspect ratio with nothing stretched, only cropped.
+
+`#webcam` is mirrored for the live preview with CSS (`transform: scaleX(-1)`), but `drawImage()` reads the video element's underlying frame data, which CSS transforms don't affect. The capture applies the same horizontal flip directly on the canvas context so the saved photo matches what the user saw in the preview.
 
 ### Uploading a photo
 
-`handleFileUpload()` reads the file with a `FileReader`, and once the image
-element has decoded it, `drawUploadedImage()` paints it onto the same
-canvas used for webcam capture:
+`handleFileUpload()` reads the file with a `FileReader`, and once the image element has decoded it, `drawUploadedImage()` paints it onto the same canvas used for webcam capture:
 
 ```js
 const imgAspectRatio = img.naturalWidth / img.naturalHeight;
@@ -143,25 +133,37 @@ if (imgAspectRatio > canvasAspectRatio) {
 }
 ```
 
-The image is scaled to fit entirely inside the canvas (matching whichever
-dimension is the constraint, same idea as CSS `object-fit: contain`), then
-`offsetX`/`offsetY`/`zoom` from `studioStore` let the user pan and zoom;
-`drawUploadedImage()` re-runs on every change.
+The image is scaled to fit entirely inside the canvas (matching whichever　dimension is the constraint), the same idea as CSS `object-fit: contain`.　`drawUploadedImage()` re-runs whenever the uploaded image changes.
 
-Because the canvas is always 4:3, an image with a different ratio (e.g. a
-portrait upload) doesn't cover the whole canvas; it leaves the sides (or
-top/bottom) unpainted. `drawUploadedImage()` fills the canvas with the
-brand's lightest color (`--primary-100`, `#f2fcfa`) before drawing the
-image, for two reasons: JPEG has no alpha channel, so `toDataURL('image/jpeg')`
-would otherwise flatten that transparency to black on share; and filling
-with a real color makes the live editor match what gets saved, instead of
-the gaps only turning black after sharing.
+Because the canvas is 16:9, an image with a different ratio (e.g. a　portrait upload) doesn't cover the whole canvas. It leaves the sides (or
+top/bottom) unpainted.  
+`drawUploadedImage()` fills the canvas with the brand's lightest color before drawing the
+image.
 
 ### Stickers
 
-`StickerManager.addSticker()` sizes a new sticker as a fraction of the
-canvas, using the same "fit the constraining dimension" comparison as the
-uploaded-image logic above, scaled to half the canvas:
+Stickers are positioned and sized as **fractions (0-1) of the editor's current rendered size**, not raw pixels (see Two coordinate spaces above).  
+`applyStickerGeometry()` converts a sticker's stored fractions into an absolute CSS box on demand:
+
+```js
+applyStickerGeometry(overlay, stickerData) {
+  const rect = this.editor.container.getBoundingClientRect();
+  overlay.style.left = `${stickerData.xFraction * rect.width}px`;
+  overlay.style.top = `${stickerData.yFraction * rect.height}px`;
+  overlay.style.width = `${stickerData.widthFraction * rect.width}px`;
+  overlay.style.height = `${stickerData.heightFraction * rect.height}px`;
+}
+```
+
+### Sticker position
+
+New stickers always start at `xFraction: 0.25, yFraction: 0.25`.
+
+Dragging (via `ToolManager.bindMouseInteraction()`) works in raw pixels while the pointer is moving. That part only needs the editor's _current_ rect, which `bindMouseInteraction()` reads fresh on `pointerdown`. Only `onDragEnd` converts the final pixel position back into a fraction before writing it to `studioStore`.
+
+### Sticker size
+
+A new sticker starts at half the editor's size, using the same fit-to-aspect-ratio logic as the uploaded image above:
 
 ```js
 let widthFraction, heightFraction;
@@ -174,28 +176,9 @@ if (aspectRatio > this.config.canvasAspectRatio) {
 }
 ```
 
-New stickers always start at `xFraction: 0.25, yFraction: 0.25`.
-`applyStickerGeometry()` converts a sticker's stored fractions into an
-absolute CSS box on demand:
+Resizing via the sticker's resize handle works the same way as dragging above: `onDragMove` sets the width/height in raw pixels while the pointer moves, and `onDragEnd` converts the final size back into `widthFraction`/`heightFraction` before writing it to `studioStore`.
 
-```js
-applyStickerGeometry(overlay, stickerData) {
-  const rect = this.editor.container.getBoundingClientRect();
-  overlay.style.left = `${stickerData.xFraction * rect.width}px`;
-  overlay.style.top = `${stickerData.yFraction * rect.height}px`;
-  overlay.style.width = `${stickerData.widthFraction * rect.width}px`;
-  overlay.style.height = `${stickerData.heightFraction * rect.height}px`;
-}
-```
-
-Dragging and resizing (via `ToolManager.bindMouseInteraction()`) still work
-in raw pixels while the pointer is moving; that part only needs the
-editor's *current* rect, which `bindMouseInteraction()` reads fresh on
-`pointerdown`. Only `onDragEnd` converts the final pixel position/size back
-into a fraction before writing it to `studioStore`.
-
-A `ResizeObserver` on `#studio-editor` re-applies every sticker's stored
-fraction whenever the container's size actually changes:
+A `ResizeObserver` on `#studio-editor` re-applies every sticker's stored fractions whenever the container's size actually changes, keeping stickers visually anchored to the same spot on the photo as the layout reflows or the window resizes, instead of drifting or overflowing the editor:
 
 ```js
 setupResizeObserver() {
@@ -203,10 +186,6 @@ setupResizeObserver() {
   observer.observe(this.editor.container);
 }
 ```
-
-This is what keeps stickers visually anchored to the same spot on the photo
-as the layout reflows between the row and stacked breakpoints, or as the
-window is resized generally, instead of drifting or overflowing the editor.
 
 ### Text overlay
 
@@ -233,7 +212,7 @@ this at send time:
 ```js
 const editorRect = this.editor.container.getBoundingClientRect();
 fontSize: t.fontSize * (canvasHeight / editorRect.height),
-```
+````
 
 scaling the chosen font size by how the editor's current height compares to
 the canvas's actual resolution, so the text keeps the same proportion in
@@ -245,7 +224,7 @@ the final image as it had in the live preview.
 element for a live preview:
 
 ```js
-this.editor.canvas.style.filter = selectedFilterObj?.filterValue || 'none';
+this.editor.canvas.style.filter = selectedFilterObj?.filterValue || "none";
 ```
 
 This is a visual approximation only; the actual pixels are never touched
@@ -273,15 +252,18 @@ const stickers = this.state.selectedStickers.map((sticker) => ({
 }));
 
 const imageBlob = await new Promise((resolve) =>
-  this.editor.canvas.toBlob(resolve, 'image/jpeg')
+  this.editor.canvas.toBlob(resolve, "image/jpeg"),
 );
 const finalImageData = new FormData();
-finalImageData.append('image', imageBlob, 'photo.jpg');
-finalImageData.append('data', JSON.stringify({
-  stickers,
-  textOverlay,
-  filter: this.state.selectedFilter,
-}));
+finalImageData.append("image", imageBlob, "photo.jpg");
+finalImageData.append(
+  "data",
+  JSON.stringify({
+    stickers,
+    textOverlay,
+    filter: this.state.selectedFilter,
+  }),
+);
 ```
 
 ### Client-side notes
@@ -297,7 +279,7 @@ Reference information about current behavior and constraints.
   implementations by necessity. There's no CSS filter that reproduces GD's
   custom combos (e.g. sepia is grayscale + colorize, vintage and polaroid
   stack colorize/brightness/contrast over a partial grayscale). Filter
-  *names* are the only thing shared between them, so the live preview is
+  _names_ are the only thing shared between them, so the live preview is
   always an approximation of the actual output, and the two can drift
   further out of visual sync if one side's filter recipe changes without
   the other.
@@ -307,8 +289,6 @@ Reference information about current behavior and constraints.
 This project uses PHP's GD extension to compose the final photo on the server.
 The browser sends a base image and the selected editing data to the API, then
 the backend recreates the final image with stickers, optional filters and text.
-
-### Where it happens
 
 The main image processing code lives in:
 
@@ -322,8 +302,8 @@ chooses a filename in the media directory, and calls `ImageComposer`.
 
 ### Input data
 
-The frontend sends a `multipart/form-data` request to `POST /api/photos`, not
-JSON. It has two parts:
+The frontend sends a `multipart/form-data` request to `POST /api/photos`.  
+It has two parts:
 
 - `image`: the JPEG blob produced by `canvas.toBlob()`.
 - `data`: a JSON string with everything else.
@@ -453,33 +433,17 @@ imagecopy(
 
 Text is drawn with `imagefttext()`, which supports TrueType fonts.
 
-Fonts are stored in:
-
-```text
-public/assets/fonts
-```
-
-The frontend sends a font family, and the backend maps it to a font file:
-
-```php
-const FONT_MAP = [
-    'Raleway' => 'Raleway-Regular.ttf',
-    'Pacifico' => 'Pacifico-Regular.ttf'
-];
-```
+Fonts are stored in `public/assets/fonts`.
+The client sends a font family, and the backend maps it to a font file.
 
 The text color is sent as a hex string, for example `#adffff`. The backend
-converts it into RGB values for GD:
+converts it into RGB values for GD.
+
+GD's font size number does not match a CSS `font-size` of the same value.   
+GD renders noticeably larger. GD treats its size number as points at 96dpi, while the browser renders CSS pixels directly, and 1 point is 1/72 inch. So a GD size of 72 renders the same as a CSS `font-size` of 96, a ratio of `72 / 96`. The size sent from the client is scaled down by that ratio before it reaches GD:
 
 ```php
-$hexColor = ltrim($textOverlay['color'] ?? '#001919', '#');
-
-$color = imagecolorallocate(
-    $this->canvas,
-    hexdec(substr($hexColor, 0, 2)),
-    hexdec(substr($hexColor, 2, 2)),
-    hexdec(substr($hexColor, 4, 2))
-);
+$fontSize = $cssFontSize * (72.0 / 96.0);
 ```
 
 Then the text is drawn:
@@ -487,10 +451,10 @@ Then the text is drawn:
 ```php
 imagefttext(
     $this->canvas,
-    (float) $fontSize,
+    $fontSize,
     0.0,
     $x,
-    $y,
+    $baselineY,
     $color,
     $fontPath,
     $content
@@ -498,17 +462,23 @@ imagefttext(
 ```
 
 `imagefttext()` positions text by its **baseline**, not the top of the
-glyphs, but `x`/`y` arrive from the client as the top-left corner of the CSS
+glyphs, but `x`/`y` arrive from the client as the top left corner of the CSS
 text box shown in the editor preview (see Section 1, Text overlay, above).
-Passing that `y` straight through would draw text lower than the preview
-showed, and clip ascenders off entirely for text placed near the top edge.
-`imagettfbbox()` gives the font's ascent for the given size/content, which
-is added to `y` before drawing to convert "top of box" into "baseline":
+Turning "top of box" into "baseline" needs to know how much space the font
+reserves above the baseline. That space depends on the font itself, not on
+which letters were actually typed, so it is read straight from the font
+file rather than measured from the typed content:
 
 ```php
-$bbox = imagettfbbox((float)$fontSize, 0.0, $fontPath, $content);
-$ascent = -$bbox[7];
+[$lineAscent, $lineDescent] = $this->getLineMetrics($fontPath, $cssFontSize);
+$baselineY = ($textOverlay['y'] ?? 0) + $lineAscent;
 ```
+
+`x` and `baselineY` are then kept within the canvas bounds, so text placed
+near an edge in the preview cannot be cut off in the final image. `x` is
+checked against `imagettfbbox()` for the actual typed content, while
+`baselineY` is checked against the same `lineAscent`/`lineDescent` used
+above, since those already describe the space the browser reserves.
 
 ### Saving
 

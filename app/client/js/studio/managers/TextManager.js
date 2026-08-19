@@ -147,6 +147,7 @@ export class TextManager extends ToolManager {
       (previewRect.left - containerRect.left) / containerRect.width;
     const yFraction =
       (previewRect.top - containerRect.top) / containerRect.height;
+    const fontSizeFraction = textData.fontSize / containerRect.height;
 
     this.textPreviewContainer.style.transform = 'none';
 
@@ -156,6 +157,7 @@ export class TextManager extends ToolManager {
         ...textData,
         xFraction,
         yFraction,
+        fontSizeFraction,
       },
     });
 
@@ -168,6 +170,18 @@ export class TextManager extends ToolManager {
     this.textPreview.style.fontFamily = textData.fontFamily;
     this.textPreview.style.fontSize = `${textData.fontSize}px`;
     this.textPreview.style.color = textData.color;
+  }
+
+  resetTextStyle() {
+    this.fontSelect.value = this.config.text.defaultFont;
+    this.fontSelect.style.fontFamily = this.config.text.defaultFont;
+    this.fontSizeSelect.value = this.config.text.defaultSize;
+    this.colorInput.value = this.config.text.defaultColor;
+    this.colorSelectButton.style.color = this.config.text.defaultColor;
+
+    this.textPreviewContainer.style.left = '';
+    this.textPreviewContainer.style.top = '';
+    this.textPreviewContainer.style.transform = '';
   }
 
   removeText() {
@@ -219,7 +233,7 @@ export class TextManager extends ToolManager {
     );
 
     this.editor.container.addEventListener('pointerdown', (e) => {
-      if (!e.target.closest('#text-preview')) {
+      if (!e.target.closest('#text-preview-container')) {
         this.isEditing = false;
         this.textPreviewContainer.classList.remove('overlay-editing');
       }
@@ -236,10 +250,12 @@ export class TextManager extends ToolManager {
     this.showTextInput();
 
     const onConfirm = () => {
+      const containerRect = this.editor.container.getBoundingClientRect();
       const newTextData = {
         content: this.textInputField.value.trim(),
         fontFamily: this.fontSelect.value,
         fontSize: this.fontSizeSelect.value,
+        fontSizeFraction: this.fontSizeSelect.value / containerRect.height,
         color: this.colorInput.value,
       };
       this.confirmButton.removeEventListener('click', onConfirm);

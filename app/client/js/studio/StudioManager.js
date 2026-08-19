@@ -184,7 +184,9 @@ class StudioManager {
       this.tool.menu.container.classList.remove('disabled');
       this.tool.container.classList.remove('disabled');
       if (wasHidden) {
-        this.measureCanvas();
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => this.measureCanvas())
+        );
       }
     }
   }
@@ -496,10 +498,9 @@ class StudioManager {
       height: sticker.heightFraction * canvasHeight,
     }));
 
-    // Same fraction -> pixel conversion as stickers, plus fontSize scaled by canvas/editor ratio.
+    // Same fraction -> pixel conversion as stickers, including fontSize.
     let textOverlay = null;
     if (this.state.textOverlay) {
-      const editorRect = this.editor.container.getBoundingClientRect();
       const t = this.state.textOverlay;
       textOverlay = {
         content: t.content,
@@ -507,7 +508,7 @@ class StudioManager {
         color: t.color,
         x: t.xFraction * canvasWidth,
         y: t.yFraction * canvasHeight,
-        fontSize: t.fontSize * (canvasHeight / editorRect.height),
+        fontSize: t.fontSizeFraction * canvasHeight,
       };
     }
 
@@ -515,6 +516,7 @@ class StudioManager {
       this.editor.canvas.toBlob(resolve, 'image/jpeg')
     );
     const finalImageData = new FormData();
+    console.log(JSON.stringify(textOverlay));
     finalImageData.append('image', imageBlob, 'photo.jpg');
     finalImageData.append(
       'data',
@@ -549,6 +551,7 @@ class StudioManager {
     this.clearWebcam();
     this.clearEditor();
     this.clearCanvas();
+    this.textManager.resetTextStyle();
     this.stickerManager.panel.list?.scrollTo({ left: 0, behavior: 'smooth' });
     studioStore.setState({ editorMode: 'menu' });
   }
