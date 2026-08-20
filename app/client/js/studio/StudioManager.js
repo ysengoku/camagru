@@ -184,9 +184,7 @@ class StudioManager {
       this.tool.menu.container.classList.remove('disabled');
       this.tool.container.classList.remove('disabled');
       if (wasHidden) {
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => this.measureCanvas())
-        );
+        this.measureCanvas();
       }
     }
   }
@@ -516,7 +514,6 @@ class StudioManager {
       this.editor.canvas.toBlob(resolve, 'image/jpeg')
     );
     const finalImageData = new FormData();
-    console.log(JSON.stringify(textOverlay));
     finalImageData.append('image', imageBlob, 'photo.jpg');
     finalImageData.append(
       'data',
