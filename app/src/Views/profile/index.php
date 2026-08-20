@@ -49,7 +49,7 @@ $notificationsEnabled = $user->email_notifications_enabled;
         <hr />
 
         <div class="flex-col gap-1 mb-4">
-            <label for="avatar" class="block color-gray-600">Profile Picture</label>
+            <p class="block color-gray-600">Profile Picture</p>
             <div id="avatar-preview">
                 <?= render_avatar($user->username, 'large', $user->avatar !== null ? $user->avatar : null) ?>
             </div>
