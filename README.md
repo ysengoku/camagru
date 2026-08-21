@@ -3,10 +3,12 @@
 <img src="./assets/camagru-cover.jpg" width="100%" />
 
 <div align="center">
+  <img src="https://img.shields.io/badge/validated-125/100-brightgreen?style=for-the-badge&logo=cachet" />
+  <br />
   <em>  
     This project was created as part of the 42 curriculum by <a href="https://github.com/ysengoku">yusengok</a>.
   </em>
-  <br /><br />
+  <br /><br /><br />
   <img src="https://img.shields.io/github/commit-activity/t/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/github/last-commit/ysengoku/camagru?style=flat-square&color=9D9E0A" />
   <img src="https://img.shields.io/badge/coverage-61.30%25-9D9E0A?style=flat-square" />
